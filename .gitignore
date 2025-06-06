@@ -16,7 +16,6 @@ tmp
 bin/
 pkg/
 *.modcache/
-*.sum
 
 # Vendor directories (if you use `go mod vendor`)
 vendor/
