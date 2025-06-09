@@ -3,9 +3,7 @@ package ocpi221
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
-	"net/http/httputil"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -127,14 +125,15 @@ func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
+
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		httpError(w, err, ocpi.GenericServerError)
 		return
 	}
 
+	ctx := r.Context()
 	countryCode := chi.URLParam(r, "country_code")
 	partyId := chi.URLParam(r, "party_id")
 	locationId := chi.URLParam(r, "location_id")
@@ -197,14 +196,15 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
+
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		httpError(w, err, ocpi.GenericServerError)
 		return
 	}
 
+	ctx := r.Context()
 	countryCode := chi.URLParam(r, "country_code")
 	partyId := chi.URLParam(r, "party_id")
 	locationId := chi.URLParam(r, "location_id")
@@ -288,14 +288,15 @@ func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
+
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		httpError(w, err, ocpi.GenericServerError)
 		return
 	}
 
+	ctx := r.Context()
 	countryCode := chi.URLParam(r, "country_code")
 	partyId := chi.URLParam(r, "party_id")
 	sessionId := chi.URLParam(r, "session_id")
@@ -322,14 +323,15 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
+
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		httpError(w, err, ocpi.GenericServerError)
 		return
 	}
 
+	ctx := r.Context()
 	countryCode := chi.URLParam(r, "country_code")
 	partyId := chi.URLParam(r, "party_id")
 	sessionId := chi.URLParam(r, "session_id")
@@ -398,14 +400,15 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PostOcpiCdr(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
+
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		httpError(w, err, ocpi.GenericServerError)
 		return
 	}
 
+	ctx := r.Context()
 	if err := s.receiver.PostCDR(ctx, ocpi.RawMessage[ChargeDetailRecord](body)); err != nil {
 		httpError(w, err, ocpi.GenericServerError)
 		return
@@ -423,10 +426,7 @@ func (s *Server) PostOcpiCdr(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	commandType := chi.URLParam(r, "command_type")
-	log.Println("debug PostOcpiCommandResponse ->")
-	bb, _ := httputil.DumpRequest(r, true)
-	log.Println(commandType, string(bb))
+	// commandType := chi.URLParam(r, "command_type")
 }
 
 func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
@@ -452,7 +452,13 @@ func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	if err := s.receiver.PostCDR(r.Context(), ocpi.RawMessage[ChargeDetailRecord](nil)); err != nil {
+	var body json.RawMessage
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		httpError(w, err, ocpi.GenericServerError)
+		return
+	}
+
+	if err := s.receiver.PostCDR(r.Context(), ocpi.RawMessage[ChargeDetailRecord](body)); err != nil {
 		httpError(w, err, ocpi.GenericServerError)
 		return
 	}
