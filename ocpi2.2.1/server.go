@@ -1,31 +1,28 @@
 package ocpi221
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
-	"path"
 	"time"
 
-	"github.com/ggicci/httpin"
 	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
 type Server struct {
-	baseUrl    string
-	httpServer *http.Server
-	logger     *slog.Logger
-	sender     Sender
-	receiver   Receiver
+	baseUrl string
+	// httpServer *http.Server
+	httpHandler http.Handler
+	logger      *slog.Logger
+	sender      Sender
+	receiver    Receiver
 }
 
-func NewServer(basePath string, sender Sender, receiver Receiver) *Server {
+func NewServer(sender Sender, receiver Receiver) *Server {
 	s := new(Server)
-	s.baseUrl = path.Join(basePath, string(ocpi.VersionN221))
+	s.baseUrl = "/" + string(ocpi.VersionN221)
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
@@ -34,7 +31,14 @@ func NewServer(basePath string, sender Sender, receiver Receiver) *Server {
 	return s
 }
 
-func (s *Server) Handler() http.Handler {
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if s.httpHandler == nil {
+		s.httpHandler = s.handler()
+	}
+	s.httpHandler.ServeHTTP(w, r)
+}
+
+func (s *Server) handler() http.Handler {
 	router := chi.NewRouter()
 
 	// router.Use(func(next http.Handler) http.Handler {
@@ -70,48 +74,29 @@ func (s *Server) Handler() http.Handler {
 	}
 
 	router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
-	router.With(
-		httpin.NewInput(PutOcpiSessionRequestBody{}),
-	).Put(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
-
-	router.With(
-		httpin.NewInput(PatchOcpiSessionRequestBody{}),
-	).Patch(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
+	router.Put(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
+	router.Patch(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
 
 	router.Get(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.GetOcpiSession)
-	router.With(
-		httpin.NewInput(PutOcpiSessionRequestBody{}),
-	).Put(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)
-	router.With(
-		httpin.NewInput(PatchOcpiSessionRequestBody{}),
-	).Patch(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
+	router.Put(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)
+	router.Patch(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
 
 	router.Get(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.GetOcpiToken)
 
 	router.Get(s.baseUrl+"/cdrs/{id}", s.GetOcpiCDR)
-	router.With(
-		httpin.NewInput(PostOcpiCdrRequestBody{}),
-	).Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
+	router.Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
 
 	router.Post(s.baseUrl+"/commands/{command_type}/{session_uid}", s.PostOcpiCommandResponse)
 
 	return router
 }
 
-func (s *Server) Start(listenPort int) error {
-	s.httpServer = &http.Server{
-		Addr:    fmt.Sprintf(":%d", listenPort),
-		Handler: s.Handler(),
-	}
-	return s.httpServer.ListenAndServe()
-}
-
-func (s *Server) Stop() error {
-	if s.httpServer == nil {
-		return nil
-	}
-	return s.httpServer.Shutdown(context.Background())
-}
+// func (s *Server) Stop() error {
+// 	if s.httpServer == nil {
+// 		return nil
+// 	}
+// 	return s.httpServer.Shutdown(context.Background())
+// }
 
 func getHostname(r *http.Request) string {
 	hostname := "http://" + r.Host

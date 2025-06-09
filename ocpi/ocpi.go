@@ -2,8 +2,40 @@ package ocpi
 
 import (
 	"encoding/json"
+	"reflect"
 	"time"
+
+	"github.com/go-playground/validator/v10"
 )
+
+var validate *validator.Validate
+
+func init() {
+	validate = validator.New()
+	validate.RegisterCustomTypeFunc(func(field reflect.Value) any {
+		if value, ok := field.Interface().(DateTime); ok {
+			return value.Time
+		}
+		return nil
+	}, DateTime{})
+	if err := validate.RegisterValidation("version", func(fl validator.FieldLevel) bool {
+		v, ok := fl.Field().Interface().(Version)
+		if !ok {
+			return false
+		}
+		switch v {
+		case VersionN20, VersionN21, VersionN211, VersionN22, VersionN221:
+			return true
+		default:
+			return false
+		}
+	}); err != nil {
+		panic(err)
+	}
+
+}
+
+// ModuleIdentifier defines the OCPI module identifier.
 
 // Version defines model for DetailsData.Version.
 type Version string
@@ -22,6 +54,9 @@ type RawMessage[T any] json.RawMessage
 func (r RawMessage[T]) Data() (T, error) {
 	var o T
 	if err := json.Unmarshal((json.RawMessage)(r), &o); err != nil {
+		return o, err
+	}
+	if err := validate.Struct(o); err != nil {
 		return o, err
 	}
 	return o, nil

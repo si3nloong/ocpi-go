@@ -7,12 +7,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 	"sync"
 	"unsafe"
 
-	"github.com/samber/lo"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
@@ -43,7 +40,7 @@ func NewClient(versionUrl string, options ...Option) *Client {
 	return c
 }
 
-func (c *Client) getEndpoint(ctx context.Context, mod ModuleIDType, role InterfaceRoleType) (string, error) {
+func (c *Client) getEndpoint(ctx context.Context, mod ModuleIdentifier, role InterfaceRoleType) (string, error) {
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
@@ -52,7 +49,11 @@ func (c *Client) getEndpoint(ctx context.Context, mod ModuleIDType, role Interfa
 			return "", err
 		}
 
-		version, _ := lo.First(versions)
+		if len(versions) == 0 {
+			return "", fmt.Errorf("ocpi: no versions found at %s", c.versionUrl)
+		}
+
+		version := versions[0]
 		var o ocpi.Response[DetailsData]
 		if err := c.do(ctx, http.MethodGet, version.Url, nil, &o); err != nil {
 			return "", err
@@ -122,19 +123,9 @@ func (c *Client) do(
 	}
 	defer res.Body.Close()
 
-	dir := filepath.Base(endpoint)
-	f, err := os.OpenFile("./examples/"+dir, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	b, _ := io.ReadAll(res.Body)
-	f.Write(b)
-	// b, _ := httputil.DumpResponse(res, true)
-	// log.Println(string(b))
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		b, _ := io.ReadAll(res.Body)
 		return fmt.Errorf(`ocpi221: encounter status code (%d) due to %s`, res.StatusCode, unsafe.String(unsafe.SliceData(b), len(b)))
 	}
-	return json.NewDecoder(bytes.NewBuffer(b)).Decode(dst)
+	return json.NewDecoder(res.Body).Decode(dst)
 }

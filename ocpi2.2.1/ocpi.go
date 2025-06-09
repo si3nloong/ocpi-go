@@ -7,93 +7,99 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-// Defines values for ActiveChargingProfileResultResult.
+type Role string
+
+// Defines values for Role.
 const (
-	ActiveChargingProfileResultResultAccepted ActiveChargingProfileResultResult = "ACCEPTED"
-	ActiveChargingProfileResultResultRejected ActiveChargingProfileResultResult = "REJECTED"
-	ActiveChargingProfileResultResultUknown   ActiveChargingProfileResultResult = "UNKNOWN"
+	RoleCPO   Role = "CPO"
+	RoleEMSP  Role = "EMSP"
+	RoleHUB   Role = "HUB"
+	RoleNAP   Role = "NAP"
+	RoleNSP   Role = "NSP"
+	RoleOTHER Role = "OTHER"
+	RoleSCSP  Role = "SCSP"
+)
+
+// InterfaceRoleType Interface role endpoint implements.
+type InterfaceRoleType string
+
+// Defines values for InterfaceRoleType.
+const (
+	RoleReceiver InterfaceRoleType = "RECEIVER"
+	RoleSender   InterfaceRoleType = "SENDER"
+)
+
+// ModuleIdentifier OCPI 2.2.1 modules
+type ModuleIdentifier string
+
+// Defines values for ModuleIdentifier.
+const (
+	ModuleIdentifierCdrs             ModuleIdentifier = "cdrs"
+	ModuleIdentifierChargingProfiles ModuleIdentifier = "chargingprofiles"
+	ModuleIdentifierCommands         ModuleIdentifier = "commands"
+	ModuleIdentifierCredentials      ModuleIdentifier = "credentials"
+	ModuleIdentifierHubClientInfo    ModuleIdentifier = "hubclientinfo"
+	ModuleIdentifierLocations        ModuleIdentifier = "locations"
+	ModuleIdentifierSessions         ModuleIdentifier = "sessions"
+	ModuleIdentifierTariffs          ModuleIdentifier = "tariffs"
+	ModuleIdentifierTokens           ModuleIdentifier = "tokens"
+)
+
+// ChargingProfileResultType defines model for ActiveChargingProfileResult.Result.
+type ChargingProfileResultType string
+
+// Defines values for ChargingProfileResultType.
+const (
+	ChargingProfileResultTypeAccepted ChargingProfileResultType = "ACCEPTED"
+	ChargingProfileResultTypeRejected ChargingProfileResultType = "REJECTED"
+	ChargingProfileResultTypeUknown   ChargingProfileResultType = "UNKNOWN"
 )
 
 // Defines values for AuthorizationAllowed.
 const (
-	AuthorizationAllowedALLOWED    AuthorizationAllowed = "ALLOWED"
-	AuthorizationAllowedBLOCKED    AuthorizationAllowed = "BLOCKED"
-	AuthorizationAllowedEXPIRED    AuthorizationAllowed = "EXPIRED"
-	AuthorizationAllowedNOCREDIT   AuthorizationAllowed = "NO_CREDIT"
-	AuthorizationAllowedNOTALLOWED AuthorizationAllowed = "NOT_ALLOWED"
+	AuthorizationAllowedAllowed    AuthorizationAllowed = "ALLOWED"
+	AuthorizationAllowedBlocked    AuthorizationAllowed = "BLOCKED"
+	AuthorizationAllowedExpired    AuthorizationAllowed = "EXPIRED"
+	AuthorizationAllowedNoCredit   AuthorizationAllowed = "NO_CREDIT"
+	AuthorizationAllowedNotAllowed AuthorizationAllowed = "NOT_ALLOWED"
 )
 
-// Defines values for CdrBodyAuthMethod.
-const (
-	CdrBodyAuthMethodAUTHREQUEST CdrBodyAuthMethod = "AUTH_REQUEST"
-	CdrBodyAuthMethodCOMMAND     CdrBodyAuthMethod = "COMMAND"
-	CdrBodyAuthMethodWHITELIST   CdrBodyAuthMethod = "WHITELIST"
-)
+// CdrDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
+type CdrDimensionType string
 
-// Defines values for CdrBodyCdrLocationConnectorFormat.
+// Defines values for CdrDimensionType.
 const (
-	CdrBodyCdrLocationConnectorFormatCABLE  CdrBodyCdrLocationConnectorFormat = "CABLE"
-	CdrBodyCdrLocationConnectorFormatSOCKET CdrBodyCdrLocationConnectorFormat = "SOCKET"
-)
-
-// Defines values for CdrBodyChargingPeriodsDimensionsType.
-const (
-	CdrBodyChargingPeriodsDimensionsTypeCURRENT         CdrBodyChargingPeriodsDimensionsType = "CURRENT"
-	CdrBodyChargingPeriodsDimensionsTypeENERGY          CdrBodyChargingPeriodsDimensionsType = "ENERGY"
-	CdrBodyChargingPeriodsDimensionsTypeENERGYEXPORT    CdrBodyChargingPeriodsDimensionsType = "ENERGY_EXPORT"
-	CdrBodyChargingPeriodsDimensionsTypeENERGYIMPORT    CdrBodyChargingPeriodsDimensionsType = "ENERGY_IMPORT"
-	CdrBodyChargingPeriodsDimensionsTypeMAXCURRENT      CdrBodyChargingPeriodsDimensionsType = "MAX_CURRENT"
-	CdrBodyChargingPeriodsDimensionsTypeMAXPOWER        CdrBodyChargingPeriodsDimensionsType = "MAX_POWER"
-	CdrBodyChargingPeriodsDimensionsTypeMINCURRENT      CdrBodyChargingPeriodsDimensionsType = "MIN_CURRENT"
-	CdrBodyChargingPeriodsDimensionsTypeMINPOWER        CdrBodyChargingPeriodsDimensionsType = "MIN_POWER"
-	CdrBodyChargingPeriodsDimensionsTypePARKINGTIME     CdrBodyChargingPeriodsDimensionsType = "PARKING_TIME"
-	CdrBodyChargingPeriodsDimensionsTypePOWER           CdrBodyChargingPeriodsDimensionsType = "POWER"
-	CdrBodyChargingPeriodsDimensionsTypeRESERVATIONTIME CdrBodyChargingPeriodsDimensionsType = "RESERVATION_TIME"
-	CdrBodyChargingPeriodsDimensionsTypeSTATEOFCHARGE   CdrBodyChargingPeriodsDimensionsType = "STATE_OF_CHARGE"
-	CdrBodyChargingPeriodsDimensionsTypeTIME            CdrBodyChargingPeriodsDimensionsType = "TIME"
-)
-
-// Defines values for CdrBodyTariffsElementsPriceComponents.
-const (
-	CdrBodyTariffsElementsPriceComponentsENERGY      CdrBodyTariffsElementsPriceComponents = "ENERGY"
-	CdrBodyTariffsElementsPriceComponentsFLAT        CdrBodyTariffsElementsPriceComponents = "FLAT"
-	CdrBodyTariffsElementsPriceComponentsPARKINGTIME CdrBodyTariffsElementsPriceComponents = "PARKING_TIME"
-	CdrBodyTariffsElementsPriceComponentsTIME        CdrBodyTariffsElementsPriceComponents = "TIME"
-)
-
-// Defines values for CdrBodyTariffsElementsRestrictionsDayOfWeek.
-const (
-	CdrBodyTariffsElementsRestrictionsDayOfWeekFRIDAY    CdrBodyTariffsElementsRestrictionsDayOfWeek = "FRIDAY"
-	CdrBodyTariffsElementsRestrictionsDayOfWeekMONDAY    CdrBodyTariffsElementsRestrictionsDayOfWeek = "MONDAY"
-	CdrBodyTariffsElementsRestrictionsDayOfWeekSATURDAY  CdrBodyTariffsElementsRestrictionsDayOfWeek = "SATURDAY"
-	CdrBodyTariffsElementsRestrictionsDayOfWeekSUNDAY    CdrBodyTariffsElementsRestrictionsDayOfWeek = "SUNDAY"
-	CdrBodyTariffsElementsRestrictionsDayOfWeekTHURSDAY  CdrBodyTariffsElementsRestrictionsDayOfWeek = "THURSDAY"
-	CdrBodyTariffsElementsRestrictionsDayOfWeekTUESDAY   CdrBodyTariffsElementsRestrictionsDayOfWeek = "TUESDAY"
-	CdrBodyTariffsElementsRestrictionsDayOfWeekWEDNESDAY CdrBodyTariffsElementsRestrictionsDayOfWeek = "WEDNESDAY"
-)
-
-// Defines values for CdrBodyTariffsElementsRestrictionsReservation.
-const (
-	CdrBodyTariffsElementsRestrictionsReservationRESERVATION        CdrBodyTariffsElementsRestrictionsReservation = "RESERVATION"
-	CdrBodyTariffsElementsRestrictionsReservationRESERVATIONEXPIRES CdrBodyTariffsElementsRestrictionsReservation = "RESERVATION_EXPIRES"
+	CdrDimensionTypeCurrent         CdrDimensionType = "CURRENT"
+	CdrDimensionTypeEnergy          CdrDimensionType = "ENERGY"
+	CdrDimensionTypeEnergyExport    CdrDimensionType = "ENERGY_EXPORT"
+	CdrDimensionTypeEnergyImport    CdrDimensionType = "ENERGY_IMPORT"
+	CdrDimensionTypeMaxCurrent      CdrDimensionType = "MAX_CURRENT"
+	CdrDimensionTypeMaxPower        CdrDimensionType = "MAX_POWER"
+	CdrDimensionTypeMinCurrent      CdrDimensionType = "MIN_CURRENT"
+	CdrDimensionTypeMinPower        CdrDimensionType = "MIN_POWER"
+	CdrDimensionTypeParkingTime     CdrDimensionType = "PARKING_TIME"
+	CdrDimensionTypePower           CdrDimensionType = "POWER"
+	CdrDimensionTypeReservationTime CdrDimensionType = "RESERVATION_TIME"
+	CdrDimensionTypeStateOfCharge   CdrDimensionType = "STATE_OF_CHARGE"
+	CdrDimensionTypeTime            CdrDimensionType = "TIME"
 )
 
 // Defines values for EnergySourceCategory.
 const (
-	COAL          EnergySourceCategory = "COAL"
-	GAS           EnergySourceCategory = "GAS"
-	GENERALFOSSIL EnergySourceCategory = "GENERAL_FOSSIL"
-	GENERALGREEN  EnergySourceCategory = "GENERAL_GREEN"
-	NUCLEAR       EnergySourceCategory = "NUCLEAR"
-	SOLAR         EnergySourceCategory = "SOLAR"
-	WATER         EnergySourceCategory = "WATER"
-	WIND          EnergySourceCategory = "WIND"
+	EnergySourceCategoryCoal          EnergySourceCategory = "COAL"
+	EnergySourceCategoryGas           EnergySourceCategory = "GAS"
+	EnergySourceCategoryGeneralFossil EnergySourceCategory = "GENERAL_FOSSIL"
+	EnergySourceCategoryGeneralGreen  EnergySourceCategory = "GENERAL_GREEN"
+	EnergySourceCategoryNuclear       EnergySourceCategory = "NUCLEAR"
+	EnergySourceCategorySolar         EnergySourceCategory = "SOLAR"
+	EnergySourceCategoryWater         EnergySourceCategory = "WATER"
+	EnergySourceCategoryWind          EnergySourceCategory = "WIND"
 )
 
 // Defines values for EnvironmentalImpactCategory.
 const (
-	EnvironmentalImpactCategoryCARBONDIOXIDE EnvironmentalImpactCategory = "CARBON_DIOXIDE"
-	EnvironmentalImpactCategoryNUCLEARWASTE  EnvironmentalImpactCategory = "NUCLEAR_WASTE"
+	EnvironmentalImpactCategoryCarbonDioxide EnvironmentalImpactCategory = "CARBON_DIOXIDE"
+	EnvironmentalImpactCategoryNuclearWaste  EnvironmentalImpactCategory = "NUCLEAR_WASTE"
 )
 
 // Defines values for ChargingPreferencesProfileType.
@@ -109,36 +115,23 @@ const (
 	ChargingPreferencesResponseChargingPreferencesACCEPTED                ChargingPreferencesResponseChargingPreferences = "ACCEPTED"
 	ChargingPreferencesResponseChargingPreferencesDEPARTUREREQUIRED       ChargingPreferencesResponseChargingPreferences = "DEPARTURE_REQUIRED"
 	ChargingPreferencesResponseChargingPreferencesENERGYNEEDREQUIRED      ChargingPreferencesResponseChargingPreferences = "ENERGY_NEED_REQUIRED"
-	ChargingPreferencesResponseChargingPreferencesNOTPOSSIBLE             ChargingPreferencesResponseChargingPreferences = "NOT_POSSIBLE"
+	ChargingPreferencesResponseChargingPreferencesNotPossible             ChargingPreferencesResponseChargingPreferences = "NOT_POSSIBLE"
 	ChargingPreferencesResponseChargingPreferencesPROFILETYPENOTSUPPORTED ChargingPreferencesResponseChargingPreferences = "PROFILE_TYPE_NOT_SUPPORTED"
 )
 
-// Defines values for ChargingProfileChargingRateUnit.
+// Defines values for ChargingRateUnit.
 const (
-	A ChargingProfileChargingRateUnit = "A"
-	W ChargingProfileChargingRateUnit = "W"
+	ChargingRateUnitAmperes ChargingRateUnit = "A"
+	ChargingRateUnitWatts   ChargingRateUnit = "W"
 )
 
 // Defines values for ChargingProfileResponseType.
 const (
 	ChargingProfileResponseTypeAccepted       ChargingProfileResponseType = "ACCEPTED"
-	ChargingProfileResponseTypeNOTSUPPORTED   ChargingProfileResponseType = "NOT_SUPPORTED"
-	ChargingProfileResponseTypeREJECTED       ChargingProfileResponseType = "REJECTED"
-	ChargingProfileResponseTypeTOOOFTEN       ChargingProfileResponseType = "TOO_OFTEN"
-	ChargingProfileResponseTypeUNKNOWNSESSION ChargingProfileResponseType = "UNKNOWN_SESSION"
-)
-
-type Role string
-
-// Defines values for Role.
-const (
-	RoleCPO   Role = "CPO"
-	RoleEMSP  Role = "EMSP"
-	RoleHUB   Role = "HUB"
-	RoleNAP   Role = "NAP"
-	RoleNSP   Role = "NSP"
-	RoleOTHER Role = "OTHER"
-	RoleSCSP  Role = "SCSP"
+	ChargingProfileResponseTypeNotSupported   ChargingProfileResponseType = "NOT_SUPPORTED"
+	ChargingProfileResponseTypeRejected       ChargingProfileResponseType = "REJECTED"
+	ChargingProfileResponseTypeTooOften       ChargingProfileResponseType = "TOO_OFTEN"
+	ChargingProfileResponseTypeUnknownSession ChargingProfileResponseType = "UNKNOWN_SESSION"
 )
 
 // Defines values for ChargingProfileResultResult.
@@ -155,47 +148,59 @@ const (
 	ClearProfileResultResultUnknown  ClearProfileResultResult = "UNKNOWN"
 )
 
-// Defines values for ClientInfoStatus.
+// Defines values for ConnectionStatus.
 const (
-	ClientInfoStatusCONNECTED ClientInfoStatus = "CONNECTED"
-	ClientInfoStatusOFFLINE   ClientInfoStatus = "OFFLINE"
-	ClientInfoStatusPLANNED   ClientInfoStatus = "PLANNED"
-	ClientInfoStatusSUSPENDED ClientInfoStatus = "SUSPENDED"
+	ConnectionStatusConnected ConnectionStatus = "CONNECTED"
+	ConnectionStatusOffline   ConnectionStatus = "OFFLINE"
+	ConnectionStatusPlanned   ConnectionStatus = "PLANNED"
+	ConnectionStatusSuspended ConnectionStatus = "SUSPENDED"
 )
 
-// Defines values for CommandResponseResult.
+// CommandType defines parameters for type of commands.
+type CommandType string
+
+// Defines values for PostOcpiCommandsCommandParamsCommand.
 const (
-	CommandResponseResultAccepted       CommandResponseResult = "ACCEPTED"
-	CommandResponseResultNotSupported   CommandResponseResult = "NOT_SUPPORTED"
-	CommandResponseResultRejected       CommandResponseResult = "REJECTED"
-	CommandResponseResultUnknownSession CommandResponseResult = "UNKNOWN_SESSION"
+	CommandTypeCancelReservation CommandType = "CANCEL_RESERVATION"
+	CommandTypeReserveNow        CommandType = "RESERVE_NOW"
+	CommandTypeStartSession      CommandType = "START_SESSION"
+	CommandTypeStopSession       CommandType = "STOP_SESSION"
+	CommandTypeUnlockConnector   CommandType = "UNLOCK_CONNECTOR"
 )
 
-// Defines values for CommandResultResult.
+// Defines values for CommandResponseType.
 const (
-	ACCEPTED            CommandResultResult = "ACCEPTED"
-	CANCELEDRESERVATION CommandResultResult = "CANCELED_RESERVATION"
-	EVSEINOPERATIVE     CommandResultResult = "EVSE_INOPERATIVE"
-	EVSEOCCUPIED        CommandResultResult = "EVSE_OCCUPIED"
-	FAILED              CommandResultResult = "FAILED"
-	NOTSUPPORTED        CommandResultResult = "NOT_SUPPORTED"
-	REJECTED            CommandResultResult = "REJECTED"
-	TIMEOUT             CommandResultResult = "TIMEOUT"
-	UNKNOWNRESERVATION  CommandResultResult = "UNKNOWN_RESERVATION"
+	CommandResponseTypeAccepted       CommandResponseType = "ACCEPTED"
+	CommandResponseTypeNotSupported   CommandResponseType = "NOT_SUPPORTED"
+	CommandResponseTypeRejected       CommandResponseType = "REJECTED"
+	CommandResponseTypeUnknownSession CommandResponseType = "UNKNOWN_SESSION"
+)
+
+// Defines values for CommandResultType.
+const (
+	CommandResultTypeAccepted            CommandResultType = "ACCEPTED"
+	CommandResultTypeCanceledReservation CommandResultType = "CANCELED_RESERVATION"
+	CommandResultTypeEVSEInOperative     CommandResultType = "EVSE_INOPERATIVE"
+	CommandResultTypeEVSEOccupied        CommandResultType = "EVSE_OCCUPIED"
+	CommandResultTypeFailed              CommandResultType = "FAILED"
+	CommandResultTypeNotSupported        CommandResultType = "NOT_SUPPORTED"
+	CommandResultTypeRejected            CommandResultType = "REJECTED"
+	CommandResultTypeTimeout             CommandResultType = "TIMEOUT"
+	CommandResultTypeUnknownReservation  CommandResultType = "UNKNOWN_RESERVATION"
 )
 
 // Defines values for ConnectorFormat.
 const (
-	ConnectorFormatCABLE  ConnectorFormat = "CABLE"
-	ConnectorFormatSOCKET ConnectorFormat = "SOCKET"
+	ConnectorFormatCable  ConnectorFormat = "CABLE"
+	ConnectorFormatSocket ConnectorFormat = "SOCKET"
 )
 
 // Defines values for PowerType.
 const (
-	PowerTypeAC1PHASE      PowerType = "AC_1_PHASE"
-	PowerTypeAC2PHASE      PowerType = "AC_2_PHASE"
-	PowerTypeAC2PHASESPLIT PowerType = "AC_2_PHASE_SPLIT"
-	PowerTypeAC3PHASE      PowerType = "AC_3_PHASE"
+	PowerTypeAC1Phase      PowerType = "AC_1_PHASE"
+	PowerTypeAC2Phase      PowerType = "AC_2_PHASE"
+	PowerTypeAC2PhaseSplit PowerType = "AC_2_PHASE_SPLIT"
+	PowerTypeAC3Phase      PowerType = "AC_3_PHASE"
 	PowerTypeDC            PowerType = "DC"
 )
 
@@ -242,38 +247,21 @@ const (
 	ConnectorStandardTeslaS             ConnectorStandard = "TESLA_S"
 )
 
-// Defines values for CredentialsDataRolesBusinessDetailsLogoCategory.
-const (
-	CredentialsDataRolesBusinessDetailsLogoCategoryCHARGER  CredentialsDataRolesBusinessDetailsLogoCategory = "CHARGER"
-	CredentialsDataRolesBusinessDetailsLogoCategoryENTRANCE CredentialsDataRolesBusinessDetailsLogoCategory = "ENTRANCE"
-	CredentialsDataRolesBusinessDetailsLogoCategoryLOCATION CredentialsDataRolesBusinessDetailsLogoCategory = "LOCATION"
-	CredentialsDataRolesBusinessDetailsLogoCategoryNETWORK  CredentialsDataRolesBusinessDetailsLogoCategory = "NETWORK"
-	CredentialsDataRolesBusinessDetailsLogoCategoryOPERATOR CredentialsDataRolesBusinessDetailsLogoCategory = "OPERATOR"
-	CredentialsDataRolesBusinessDetailsLogoCategoryOTHER    CredentialsDataRolesBusinessDetailsLogoCategory = "OTHER"
-	CredentialsDataRolesBusinessDetailsLogoCategoryOWNER    CredentialsDataRolesBusinessDetailsLogoCategory = "OWNER"
-)
-
-// Defines values for EnvironmentalImpactCategoryType.
-const (
-	EnvironmentalImpactCategoryTypeCARBONDIOXIDE EnvironmentalImpactCategoryType = "CARBON_DIOXIDE"
-	EnvironmentalImpactCategoryTypeNUCLEARWASTE  EnvironmentalImpactCategoryType = "NUCLEAR_WASTE"
-)
-
 // Defines values for EvseCapabilities.
 const (
-	CapabilityCHARGINGPREFERENCESCAPABLE    Capability = "CHARGING_PREFERENCES_CAPABLE"
-	CapabilityCHARGINGPROFILECAPABLE        Capability = "CHARGING_PROFILE_CAPABLE"
-	CapabilityCHIPCARDSUPPORT               Capability = "CHIP_CARD_SUPPORT"
-	CapabilityCONTACTLESSCARDSUPPORT        Capability = "CONTACTLESS_CARD_SUPPORT"
-	CapabilityCREDITCARDPAYABLE             Capability = "CREDIT_CARD_PAYABLE"
-	CapabilityDEBITCARDPAYABLE              Capability = "DEBIT_CARD_PAYABLE"
-	CapabilityPEDTERMINAL                   Capability = "PED_TERMINAL"
-	CapabilityREMOTESTARTSTOPCAPABLE        Capability = "REMOTE_START_STOP_CAPABLE"
-	CapabilityRESERVABLE                    Capability = "RESERVABLE"
-	CapabilityRFIDREADER                    Capability = "RFID_READER"
-	CapabilitySTARTSESSIONCONNECTORREQUIRED Capability = "START_SESSION_CONNECTOR_REQUIRED"
-	CapabilityTOKENGROUPCAPABLE             Capability = "TOKEN_GROUP_CAPABLE"
-	CapabilityUNLOCKCAPABLE                 Capability = "UNLOCK_CAPABLE"
+	CapabilityChargingPreferencesCapable    Capability = "CHARGING_PREFERENCES_CAPABLE"
+	CapabilityChargingProfileCapable        Capability = "CHARGING_PROFILE_CAPABLE"
+	CapabilityChipCardSupport               Capability = "CHIP_CARD_SUPPORT"
+	CapabilityContactlessCardSupport        Capability = "CONTACTLESS_CARD_SUPPORT"
+	CapabilityCreditCardPayable             Capability = "CREDIT_CARD_PAYABLE"
+	CapabilityDebitCardPayable              Capability = "DEBIT_CARD_PAYABLE"
+	CapabilityPEDTerminal                   Capability = "PED_TERMINAL"
+	CapabilityRemoteStartStopCapable        Capability = "REMOTE_START_STOP_CAPABLE"
+	CapabilityReservable                    Capability = "RESERVABLE"
+	CapabilityRFIDReader                    Capability = "RFID_READER"
+	CapabilityStartSessionConnectorRequired Capability = "START_SESSION_CONNECTOR_REQUIRED"
+	CapabilityTokenGroupCapable             Capability = "TOKEN_GROUP_CAPABLE"
+	CapabilityUnlockCapable                 Capability = "UNLOCK_CAPABLE"
 )
 
 // Defines values for ParkingRestriction.
@@ -325,12 +313,6 @@ const (
 	ImageCategoryOwner    ImageCategory = "OWNER"
 )
 
-// Defines values for InterfaceRoleType.
-const (
-	RoleReceiver InterfaceRoleType = "RECEIVER"
-	RoleSender   InterfaceRoleType = "SENDER"
-)
-
 // Defines values for LocationsDataFacilities.
 const (
 	FacilityAirport        Facility = "AIRPORT"
@@ -373,30 +355,17 @@ const (
 	PublishTokenTypeTypeRFID      PublishTokenTypeType = "RFID"
 )
 
-// Defines values for ModuleIDType.
-const (
-	ModuleIDTypeCdrs             ModuleIDType = "cdrs"
-	ModuleIDTypeChargingProfiles ModuleIDType = "chargingprofiles"
-	ModuleIDTypeCommands         ModuleIDType = "commands"
-	ModuleIDTypeCredentials      ModuleIDType = "credentials"
-	ModuleIDTypeHubClientInfo    ModuleIDType = "hubclientinfo"
-	ModuleIDTypeLocations        ModuleIDType = "locations"
-	ModuleIDTypeSessions         ModuleIDType = "sessions"
-	ModuleIDTypeTariffs          ModuleIDType = "tariffs"
-	ModuleIDTypeTokens           ModuleIDType = "tokens"
-)
-
 // Defines values for ReservationRestrictionType.
 const (
 	ReservationRestrictionTypeRESERVATION        ReservationRestrictionType = "RESERVATION"
 	ReservationRestrictionTypeRESERVATIONEXPIRES ReservationRestrictionType = "RESERVATION_EXPIRES"
 )
 
-// Defines values for SessionAuthMethod.
+// Defines values for AuthMethod.
 const (
-	SessionAuthMethodAuthRequest SessionAuthMethod = "AUTH_REQUEST"
-	SessionAuthMethodCommand     SessionAuthMethod = "COMMAND"
-	SessionAuthMethodWhitelist   SessionAuthMethod = "WHITELIST"
+	AuthMethodAuthRequest AuthMethod = "AUTH_REQUEST"
+	AuthMethodCommand     AuthMethod = "COMMAND"
+	AuthMethodWhitelist   AuthMethod = "WHITELIST"
 )
 
 // Defines values for SessionStatus.
@@ -408,13 +377,6 @@ const (
 	RESERVATION SessionStatus = "RESERVATION"
 )
 
-// Defines values for SessionChargingPeriodsDimensionsType.
-const (
-	AUTHREQUEST SessionChargingPeriodsDimensionsType = "AUTH_REQUEST"
-	COMMAND     SessionChargingPeriodsDimensionsType = "COMMAND"
-	WHITELIST   SessionChargingPeriodsDimensionsType = "WHITELIST"
-)
-
 // Defines values for TariffType.
 const (
 	TariffTypeAdHocPayment TariffType = "AD_HOC_PAYMENT"
@@ -424,34 +386,40 @@ const (
 	TariffTypeRegular      TariffType = "REGULAR"
 )
 
-type TariffElementsPriceComponentsType string
+type PriceComponentType string
 
-// Defines values for TariffElementsPriceComponents.
+// Defines values for PriceComponent.
 const (
-	TariffElementsPriceComponentsTypeEnergy      TariffElementsPriceComponentsType = "ENERGY"
-	TariffElementsPriceComponentsTypeFlat        TariffElementsPriceComponentsType = "FLAT"
-	TariffElementsPriceComponentsTypeParkingTime TariffElementsPriceComponentsType = "PARKING_TIME"
-	TariffElementsPriceComponentsTypeTime        TariffElementsPriceComponentsType = "TIME"
+	PriceComponentTypeEnergy      PriceComponentType = "ENERGY"
+	PriceComponentTypeFlat        PriceComponentType = "FLAT"
+	PriceComponentTypeParkingTime PriceComponentType = "PARKING_TIME"
+	PriceComponentTypeTime        PriceComponentType = "TIME"
 )
 
-// Defines values for TariffElementsRestrictionsDayOfWeek.
+// Defines values for DayOfWeek.
 const (
-	TariffElementsRestrictionsDayOfWeekMonday    TariffElementsRestrictionsDayOfWeek = "MONDAY"
-	TariffElementsRestrictionsDayOfWeekTUESDAY   TariffElementsRestrictionsDayOfWeek = "TUESDAY"
-	TariffElementsRestrictionsDayOfWeekWEDNESDAY TariffElementsRestrictionsDayOfWeek = "WEDNESDAY"
-	TariffElementsRestrictionsDayOfWeekTHURSDAY  TariffElementsRestrictionsDayOfWeek = "THURSDAY"
-	TariffElementsRestrictionsDayOfWeekFRIDAY    TariffElementsRestrictionsDayOfWeek = "FRIDAY"
-	TariffElementsRestrictionsDayOfWeekSaturday  TariffElementsRestrictionsDayOfWeek = "SATURDAY"
-	TariffElementsRestrictionsDayOfWeekSunday    TariffElementsRestrictionsDayOfWeek = "SUNDAY"
+	DayOfWeekMonday    DayOfWeek = "MONDAY"
+	DayOfWeekTuesday   DayOfWeek = "TUESDAY"
+	DayOfWeekWednesday DayOfWeek = "WEDNESDAY"
+	DayOfWeekThursday  DayOfWeek = "THURSDAY"
+	DayOfWeekFriday    DayOfWeek = "FRIDAY"
+	DayOfWeekSaturday  DayOfWeek = "SATURDAY"
+	DayOfWeekSunday    DayOfWeek = "SUNDAY"
 )
 
-// Defines values for TokenDefaultProfileType.
+// ProfileType defines model for Token.DefaultProfileType.
+type ProfileType string
+
+// Defines values for ProfileType.
 const (
-	TokenDefaultProfileTypeCheap   TokenDefaultProfileType = "CHEAP"
-	TokenDefaultProfileTypeFast    TokenDefaultProfileType = "FAST"
-	TokenDefaultProfileTypeGreen   TokenDefaultProfileType = "GREEN"
-	TokenDefaultProfileTypeRegular TokenDefaultProfileType = "REGULAR"
+	ProfileTypeCheap   ProfileType = "CHEAP"
+	ProfileTypeFast    ProfileType = "FAST"
+	ProfileTypeGreen   ProfileType = "GREEN"
+	ProfileTypeRegular ProfileType = "REGULAR"
 )
+
+// TokenType defines model for Token.Type.
+type TokenType string
 
 // Defines values for TokenType.
 const (
@@ -461,6 +429,9 @@ const (
 	TokenTypeRFID      TokenType = "RFID"
 )
 
+// WhitelistType defines model for Token.Whitelist.
+type WhitelistType string
+
 // Defines values for WhitelistType.
 const (
 	WhitelistTypeAllowed        WhitelistType = "ALLOWED"
@@ -469,34 +440,16 @@ const (
 	WhitelistTypeNever          WhitelistType = "NEVER"
 )
 
-// Defines values for PostOcpiCommandsCommandParamsCommand.
-const (
-	CommandTypeCancelReservation CommandType = "CANCEL_RESERVATION"
-	CommandTypeReserveNow        CommandType = "RESERVE_NOW"
-	CommandTypeStartSession      CommandType = "START_SESSION"
-	CommandTypeStopSession       CommandType = "STOP_SESSION"
-	CommandTypeUnlockConnector   CommandType = "UNLOCK_CONNECTOR"
-)
-
 type VersionsResponse = ocpi.Response[[]Version]
-
-// ActiveChargingProfile defines model for activeChargingProfile.
-type ActiveChargingProfile struct {
-	ChargingProfile ChargingProfile `json:"charging_profile"`
-	StartDateTime   string          `json:"start_date_time"`
-}
 
 // ActiveChargingProfileResult defines model for activeChargingProfileResult.
 type ActiveChargingProfileResult struct {
-	Profile *ActiveChargingProfileResultProfile `json:"profile,omitempty"`
-	Result  ActiveChargingProfileResultResult   `json:"result"`
+	Profile *ActiveChargingProfile    `json:"profile,omitempty"`
+	Result  ChargingProfileResultType `json:"result"`
 }
 
-// ActiveChargingProfileResultResult defines model for ActiveChargingProfileResult.Result.
-type ActiveChargingProfileResultResult string
-
-// ActiveChargingProfileResultProfile defines model for activeChargingProfileResult_profile.
-type ActiveChargingProfileResultProfile struct {
+// ActiveChargingProfile defines model for activeChargingProfile.
+type ActiveChargingProfile struct {
 	ChargingProfile ChargingProfile `json:"charging_profile"`
 	StartDateTime   string          `json:"start_date_time"`
 }
@@ -515,77 +468,71 @@ type AuthorizationAllowed string
 
 // BusinessDetails defines model for businessDetails.
 type BusinessDetails struct {
-	Logo    *CredentialsDataRolesBusinessDetailsLogo `json:"logo,omitempty"`
-	Name    string                                   `json:"name"`
-	Website *string                                  `json:"website,omitempty"`
+	Logo    *Image  `json:"logo,omitempty"`
+	Name    string  `json:"name"`
+	Website *string `json:"website,omitempty"`
 }
 
 // CancelReservation defines model for cancelReservation.
 type CancelReservation struct {
-	ReservationId string `json:"reservation_id"`
-	ResponseUrl   string `json:"response_url"`
+	ReservationID string `json:"reservation_id"`
+	ResponseURL   string `json:"response_url"`
 }
 
 // CdrBody defines model for cdrBody.
 type ChargeDetailRecord struct {
-	AuthMethod               CdrBodyAuthMethod       `json:"auth_method"`
-	AuthorizationReference   *string                 `json:"authorization_reference,omitempty"`
-	CdrLocation              CdrBodyCdrLocation      `json:"cdr_location"`
-	CdrToken                 CdrBodyCdrToken         `json:"cdr_token"`
-	ChargingPeriods          *CdrBodyChargingPeriods `json:"charging_periods,omitempty"`
-	CountryCode              string                  `json:"country_code"`
-	Credit                   *bool                   `json:"credit,omitempty"`
-	CreditReferenceId        *string                 `json:"credit_reference_id,omitempty"`
-	Currency                 string                  `json:"currency"`
-	EndDateTime              string                  `json:"end_date_time"`
-	HomeChargingCompensation *bool                   `json:"home_charging_compensation,omitempty"`
-	Id                       string                  `json:"id"`
-	InvoiceReferenceId       *string                 `json:"invoice_reference_id,omitempty"`
-	LastUpdated              string                  `json:"last_updated"`
-	MeterId                  *string                 `json:"meter_id,omitempty"`
-	PartyId                  string                  `json:"party_id"`
-	Remark                   *string                 `json:"remark,omitempty"`
-	SessionId                *string                 `json:"session_id,omitempty"`
-	SignedData               *CdrBodySignedData      `json:"signed_data,omitempty"`
-	StartDateTime            string                  `json:"start_date_time"`
-	Tariffs                  *CdrBodyTariffs         `json:"tariffs,omitempty"`
-	TotalCost                Price                   `json:"total_cost"`
-	TotalEnergy              float32                 `json:"total_energy"`
-	TotalEnergyCost          *Price                  `json:"total_energy_cost,omitempty"`
-	TotalFixedCost           *Price                  `json:"total_fixed_cost,omitempty"`
-	TotalParkingCost         *Price                  `json:"total_parking_cost,omitempty"`
-	TotalParkingTime         *float32                `json:"total_parking_time,omitempty"`
-	TotalReservationCost     *Price                  `json:"total_reservation_cost,omitempty"`
-	TotalTime                float32                 `json:"total_time"`
-	TotalTimeCost            *Price                  `json:"total_time_cost,omitempty"`
+	CountryCode              string           `json:"country_code" validate:"required,len=2"`
+	PartyID                  string           `json:"party_id" validate:"required,len=3"`
+	ID                       string           `json:"id" validate:"required"`
+	StartDateTime            ocpi.DateTime    `json:"start_date_time" validate:"required"`
+	EndDateTime              ocpi.DateTime    `json:"end_date_time" validate:"required"`
+	SessionID                *string          `json:"session_id,omitempty"`
+	CdrToken                 CdrToken         `json:"cdr_token" validate:"required"`
+	AuthMethod               AuthMethod       `json:"auth_method" validate:"required"`
+	AuthorizationReference   *string          `json:"authorization_reference,omitempty"`
+	CdrLocation              CdrLocation      `json:"cdr_location" validate:"required"`
+	MeterID                  *string          `json:"meter_id,omitempty"`
+	Currency                 string           `json:"currency" validate:"required,len=3"`
+	Tariffs                  []Tariff         `json:"tariffs,omitempty"`
+	ChargingPeriods          []ChargingPeriod `json:"charging_periods,omitempty"`
+	SignedData               *SignedData      `json:"signed_data,omitempty"`
+	TotalCost                Price            `json:"total_cost" validate:"required"`
+	TotalFixedCost           *Price           `json:"total_fixed_cost,omitempty"`
+	TotalEnergy              json.Number      `json:"total_energy" validate:"required"`
+	TotalEnergyCost          *Price           `json:"total_energy_cost,omitempty"`
+	TotalTime                json.Number      `json:"total_time" validate:"required"`
+	TotalTimeCost            *Price           `json:"total_time_cost,omitempty"`
+	TotalParkingTime         *json.Number     `json:"total_parking_time,omitempty"`
+	TotalParkingCost         *Price           `json:"total_parking_cost,omitempty"`
+	TotalReservationCost     *Price           `json:"total_reservation_cost,omitempty"`
+	Remark                   *string          `json:"remark,omitempty"`
+	InvoiceReferenceID       *string          `json:"invoice_reference_id,omitempty"`
+	Credit                   *bool            `json:"credit,omitempty"`
+	CreditReferenceID        *string          `json:"credit_reference_id,omitempty"`
+	HomeChargingCompensation *bool            `json:"home_charging_compensation,omitempty"`
+	LastUpdated              ocpi.DateTime    `json:"last_updated" validate:"required"`
 }
 
-// CdrBodyAuthMethod defines model for CdrBody.AuthMethod.
-type CdrBodyAuthMethod string
+// AuthMethod defines model for CdrBody.AuthMethod.
+type AuthMethod string
 
-// CdrBodyCdrLocation defines model for cdrBody_cdr_location.
-type CdrBodyCdrLocation struct {
-	Address           *string                            `json:"address,omitempty"`
-	City              *string                            `json:"city,omitempty"`
-	ConnectorFormat   *CdrBodyCdrLocationConnectorFormat `json:"connector_format,omitempty"`
-	ConnectorId       *string                            `json:"connector_id,omitempty"`
-	PowerType         *CdrBodyCdrLocationPowerType       `json:"connector_power_type,omitempty"`
-	ConnectorStandard *ConnectorStandard                 `json:"connector_standard,omitempty"`
-	Coordinates       *GeoLocation                       `json:"coordinates,omitempty"`
-	Country           *string                            `json:"country,omitempty"`
-	EvseId            *string                            `json:"evse_id,omitempty"`
-	EvseUid           *string                            `json:"evse_uid,omitempty"`
-	Id                *string                            `json:"id,omitempty"`
-	Name              *string                            `json:"name,omitempty"`
-	PostalCode        *string                            `json:"postal_code,omitempty"`
-	State             *string                            `json:"state,omitempty"`
+// CdrLocation defines model for cdrBody_cdr_location.
+type CdrLocation struct {
+	ID                 string            `json:"id" validate:"required"`
+	Name               *string           `json:"name,omitempty"`
+	Address            string            `json:"address" validate:"required"`
+	City               string            `json:"city" validate:"required"`
+	PostalCode         *string           `json:"postal_code,omitempty"`
+	State              *string           `json:"state,omitempty"`
+	Country            string            `json:"country" validate:"required,len=3"`
+	Coordinates        GeoLocation       `json:"coordinates"`
+	EvseUID            string            `json:"evse_uid" validate:"required,max=36"`
+	EvseID             string            `json:"evse_id" validate:"required,max=48"`
+	ConnectorID        string            `json:"connector_id"`
+	ConnectorStandard  ConnectorStandard `json:"connector_standard" validate:"required"`
+	ConnectorFormat    ConnectorFormat   `json:"connector_format" validate:"required"`
+	ConnectorPowerType PowerType         `json:"connector_power_type" validate:"required"`
 }
-
-// CdrBodyCdrLocationConnectorFormat defines model for CdrBodyCdrLocation.ConnectorFormat.
-type CdrBodyCdrLocationConnectorFormat string
-
-// CdrBodyCdrLocationPowerType defines model for CdrBodyCdrLocation.PowerType.
-type CdrBodyCdrLocationPowerType string
 
 // GeoLocation defines model for cdrBody_cdr_location_coordinates.
 type GeoLocation struct {
@@ -593,108 +540,56 @@ type GeoLocation struct {
 	Longitude json.Number `json:"longitude"`
 }
 
-// CdrBodyCdrToken defines model for cdrBody_cdr_token.
-type CdrBodyCdrToken struct {
-	ContractId  string              `json:"contract_id"`
-	CountryCode string              `json:"country_code"`
-	PartyId     string              `json:"party_id"`
-	Type        CdrBodyCdrTokenType `json:"type"`
-	Uid         string              `json:"uid"`
+// CdrToken defines model for cdrBody_cdr_token.
+type CdrToken struct {
+	CountryCode string    `json:"country_code"`
+	PartyID     string    `json:"party_id"`
+	UID         string    `json:"uid"`
+	Type        TokenType `json:"type"`
+	ContractID  string    `json:"contract_id"`
 }
 
-// CdrBodyCdrTokenType defines model for CdrBodyCdrToken.Type.
-type CdrBodyCdrTokenType string
-
-// CdrBodyChargingPeriods defines model for cdrBody_charging_periods.
-type CdrBodyChargingPeriods struct {
-	Dimensions    *CdrBodyChargingPeriodsDimensions `json:"dimensions,omitempty"`
-	StartDateTime string                            `json:"start_date_time"`
-	TariffId      *string                           `json:"tariff_id,omitempty"`
+// SignedData defines model for cdrBody_signed_data.
+type SignedData struct {
+	EncodingMethod        string        `json:"encoding_method" validate:"required"`
+	EncodingMethodVersion *int          `json:"encoding_method_version,omitempty"`
+	PublicKey             *string       `json:"public_key,omitempty"`
+	SignedValues          []SignedValue `json:"signed_values"`
+	URL                   *string       `json:"url,omitempty"`
 }
 
-// CdrBodyChargingPeriodsDimensions defines model for cdrBody_charging_periods_dimensions.
-type CdrBodyChargingPeriodsDimensions struct {
-	Type   CdrBodyChargingPeriodsDimensionsType `json:"type"`
-	Volume float32                              `json:"volume"`
+// SignedValue defines model for cdrBody_signed_data_signed_values.
+type SignedValue struct {
+	Nature     string `json:"nature" validate:"required,max=32"`
+	PlainData  string `json:"plain_data" validate:"required,max=512"`
+	SignedData string `json:"signed_data" validate:"required,max=5000"`
 }
-
-// CdrBodyChargingPeriodsDimensionsType defines model for CdrBodyChargingPeriodsDimensions.Type.
-type CdrBodyChargingPeriodsDimensionsType string
-
-// CdrBodySignedData defines model for cdrBody_signed_data.
-type CdrBodySignedData struct {
-	EncodingMethod        string                         `json:"encoding_method"`
-	EncodingMethodVersion *int                           `json:"encoding_method_version,omitempty"`
-	PublicKey             *string                        `json:"public_key,omitempty"`
-	SignedValues          *CdrBodySignedDataSignedValues `json:"signed_values,omitempty"`
-	Url                   *string                        `json:"url,omitempty"`
-}
-
-// CdrBodySignedDataSignedValues defines model for cdrBody_signed_data_signed_values.
-type CdrBodySignedDataSignedValues struct {
-	Nature     string `json:"nature"`
-	PlainData  string `json:"plain_data"`
-	SignedData string `json:"signed_data"`
-}
-
-// CdrBodyTariffs defines model for cdrBody_tariffs.
-type CdrBodyTariffs struct {
-	CountryCode   string                  `json:"country_code"`
-	Currency      string                  `json:"currency"`
-	Elements      *CdrBodyTariffsElements `json:"elements,omitempty"`
-	EndDateTime   *string                 `json:"end_date_time,omitempty"`
-	EnergyMix     *EnergyMix              `json:"energy_mix,omitempty"`
-	Id            string                  `json:"id"`
-	LastUpdated   string                  `json:"last_updated"`
-	MaxPrice      *Price                  `json:"max_price,omitempty"`
-	MinPrice      *Price                  `json:"min_price,omitempty"`
-	PartyId       string                  `json:"party_id"`
-	StartDateTime *string                 `json:"start_date_time,omitempty"`
-	TariffAltText *DisplayText            `json:"tariff_alt_text,omitempty"`
-	TariffAltUrl  *string                 `json:"tariff_alt_url,omitempty"`
-	Type          *TariffType             `json:"type,omitempty"`
-}
-
-// CdrBodyTariffsElements defines model for cdrBody_tariffs_elements.
-type CdrBodyTariffsElements struct {
-	PriceComponents *CdrBodyTariffsElementsPriceComponents `json:"price_components,omitempty"`
-	Restrictions    *CdrBodyTariffsElementsRestrictions    `json:"restrictions,omitempty"`
-}
-
-// CdrBodyTariffsElementsPriceComponents defines model for CdrBodyTariffsElements.PriceComponents.
-type CdrBodyTariffsElementsPriceComponents string
 
 // CdrBodyTariffsElementsRestrictions defines model for cdrBody_tariffs_elements_restrictions.
 type CdrBodyTariffsElementsRestrictions struct {
-	DayOfWeek   *CdrBodyTariffsElementsRestrictionsDayOfWeek   `json:"day_of_week,omitempty"`
-	EndDate     *string                                        `json:"end_date,omitempty"`
-	EndTime     *string                                        `json:"end_time,omitempty"`
-	MaxCurrent  *float32                                       `json:"max_current,omitempty"`
-	MaxDuration *int                                           `json:"max_duration,omitempty"`
-	MaxKwh      *float32                                       `json:"max_kwh,omitempty"`
-	MaxPower    *float32                                       `json:"max_power,omitempty"`
-	MinCurrent  *float32                                       `json:"min_current,omitempty"`
-	MinDuration *int                                           `json:"min_duration,omitempty"`
-	MinKwh      *float32                                       `json:"min_kwh,omitempty"`
-	MinPower    *float32                                       `json:"min_power,omitempty"`
-	Reservation *CdrBodyTariffsElementsRestrictionsReservation `json:"reservation,omitempty"`
-	StartDate   *string                                        `json:"start_date,omitempty"`
-	StartTime   *string                                        `json:"start_time,omitempty"`
+	DayOfWeek   *DayOfWeek                  `json:"day_of_week,omitempty"`
+	EndDate     *string                     `json:"end_date,omitempty"`
+	EndTime     *string                     `json:"end_time,omitempty"`
+	MaxCurrent  *float32                    `json:"max_current,omitempty"`
+	MaxDuration *int                        `json:"max_duration,omitempty"`
+	MaxKwh      *float32                    `json:"max_kwh,omitempty"`
+	MaxPower    *float32                    `json:"max_power,omitempty"`
+	MinCurrent  *float32                    `json:"min_current,omitempty"`
+	MinDuration *int                        `json:"min_duration,omitempty"`
+	MinKwh      *float32                    `json:"min_kwh,omitempty"`
+	MinPower    *float32                    `json:"min_power,omitempty"`
+	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
+	StartDate   *string                     `json:"start_date,omitempty"`
+	StartTime   *string                     `json:"start_time,omitempty"`
 }
-
-// CdrBodyTariffsElementsRestrictionsDayOfWeek defines model for CdrBodyTariffsElementsRestrictions.DayOfWeek.
-type CdrBodyTariffsElementsRestrictionsDayOfWeek string
-
-// CdrBodyTariffsElementsRestrictionsReservation defines model for CdrBodyTariffsElementsRestrictions.Reservation.
-type CdrBodyTariffsElementsRestrictionsReservation string
 
 // EnergyMix defines model for cdrBody_tariffs_energy_mix.
 type EnergyMix struct {
-	IsGreenEnergy     bool                 `json:"is_green_energy"`
-	EnergySources     *EnergySource        `json:"energy_sources,omitempty"`
-	EnvironImpact     *EnvironmentalImpact `json:"environ_impact,omitempty"`
-	SupplierName      *string              `json:"supplier_name,omitempty"`
-	EnergyProductName *string              `json:"energy_product_name,omitempty"`
+	IsGreenEnergy     bool                  `json:"is_green_energy"`
+	EnergySources     []EnergySource        `json:"energy_sources,omitempty"`
+	EnvironImpact     []EnvironmentalImpact `json:"environ_impact,omitempty"`
+	SupplierName      *string               `json:"supplier_name,omitempty"`
+	EnergyProductName *string               `json:"energy_product_name,omitempty"`
 }
 
 // EnergySource defines model for cdrBody_tariffs_energy_mix_energy_sources.
@@ -726,7 +621,7 @@ type CdrResponse struct {
 	StatusCode    float32 `json:"status_code"`
 	StatusMessage *string `json:"status_message,omitempty"`
 	TimeStamp     *string `json:"timeStamp,omitempty"`
-	Url           string  `json:"url"`
+	URL           string  `json:"url"`
 }
 
 // CdrsResponse defines model for cdrsResponse.
@@ -760,15 +655,15 @@ type ChargingPreferencesResponseChargingPreferences string
 
 // ChargingProfile defines model for chargingProfile.
 type ChargingProfile struct {
-	ChargingProfilePeriod *ChargingProfileChargingProfilePeriod `json:"charging_profile_period,omitempty"`
-	ChargingRateUnit      ChargingProfileChargingRateUnit       `json:"charging_rate_unit"`
-	Duration              *int                                  `json:"duration,omitempty"`
-	MinChargingRate       *float32                              `json:"min_charging_rate,omitempty"`
-	StartDateTime         *string                               `json:"start_date_time,omitempty"`
+	ChargingProfilePeriod []ChargingProfilePeriod `json:"charging_profile_period,omitempty"`
+	ChargingRateUnit      ChargingRateUnit        `json:"charging_rate_unit"`
+	Duration              *int                    `json:"duration,omitempty"`
+	MinChargingRate       *json.Number            `json:"min_charging_rate,omitempty"`
+	StartDateTime         *ocpi.DateTime          `json:"start_date_time,omitempty"`
 }
 
-// ChargingProfileChargingRateUnit defines model for ChargingProfile.ChargingRateUnit.
-type ChargingProfileChargingRateUnit string
+// ChargingRateUnit defines model for ChargingProfile.ChargingRateUnit.
+type ChargingRateUnit string
 
 // ChargingProfileResponse defines model for chargingProfileResponse.
 type ChargingProfileResponse struct {
@@ -788,10 +683,10 @@ type ChargingProfileResult struct {
 // ChargingProfileResultResult defines model for ChargingProfileResult.Result.
 type ChargingProfileResultResult string
 
-// ChargingProfileChargingProfilePeriod defines model for chargingProfile_charging_profile_period.
-type ChargingProfileChargingProfilePeriod struct {
-	Limit       float32 `json:"limit"`
-	StartPeriod int     `json:"start_period"`
+// ChargingProfilePeriod defines model for chargingProfile_charging_profile_period.
+type ChargingProfilePeriod struct {
+	StartPeriod int         `json:"start_period"`
+	Limit       json.Number `json:"limit"`
 }
 
 // ChargingProfilesResponse defines model for chargingProfilesResponse.
@@ -812,18 +707,15 @@ type ClearProfileResultResult string
 
 // ClientInfo defines model for clientInfo.
 type ClientInfo struct {
+	PartyID     string           `json:"party_id"`
 	CountryCode string           `json:"country_code"`
-	LastUpdated string           `json:"last_updated"`
-	PartyId     string           `json:"party_id"`
-	Role        ClientInfoRole   `json:"role"`
-	Status      ClientInfoStatus `json:"status"`
+	Role        Role             `json:"role"`
+	Status      ConnectionStatus `json:"status"`
+	LastUpdated ocpi.DateTime    `json:"last_updated"`
 }
 
-// ClientInfoRole defines model for ClientInfo.Role.
-type ClientInfoRole string
-
-// ClientInfoStatus defines model for ClientInfo.Status.
-type ClientInfoStatus string
+// ConnectionStatus defines model for ClientInfo.Status.
+type ConnectionStatus string
 
 // ClientInfoResponse defines model for clientInfoResponse.
 type ClientInfoResponse struct {
@@ -844,12 +736,12 @@ type ClientsInfoResponse struct {
 // CommandResponse defines model for commandResponse.
 type CommandResponse struct {
 	Message *CommandResponseMessage `json:"message,omitempty"`
-	Result  CommandResponseResult   `json:"result"`
+	Result  CommandResponseType     `json:"result"`
 	Timeout int                     `json:"timeout"`
 }
 
-// CommandResponseResult defines model for CommandResponse.Result.
-type CommandResponseResult string
+// CommandResponseType defines model for CommandResponse.Result.
+type CommandResponseType string
 
 // CommandResponseMessage defines model for commandResponse_message.
 type CommandResponseMessage struct {
@@ -860,11 +752,11 @@ type CommandResponseMessage struct {
 // CommandResult defines model for commandResult.
 type CommandResult struct {
 	Message *CommandResponseMessage `json:"message,omitempty"`
-	Result  CommandResultResult     `json:"result"`
+	Result  CommandResultType       `json:"result"`
 }
 
-// CommandResultResult defines model for CommandResult.Result.
-type CommandResultResult string
+// CommandResultType defines model for CommandResult.Result.
+type CommandResultType string
 
 type ConnectorCapability string
 
@@ -903,32 +795,29 @@ type CredentialsData struct {
 type CredentialsDataRoles struct {
 	BusinessDetails CredentialsDataRolesBusinessDetails `json:"business_details"`
 	CountryCode     string                              `json:"country_code"`
-	PartyId         string                              `json:"party_id"`
-	Role            CredentialsDataRolesRole            `json:"role"`
+	PartyID         string                              `json:"party_id"`
+	Role            Role                                `json:"role"`
 }
-
-// CredentialsDataRolesRole defines model for CredentialsDataRoles.Role.
-type CredentialsDataRolesRole string
 
 // CredentialsDataRolesBusinessDetails defines model for credentials_data_roles_business_details.
 type CredentialsDataRolesBusinessDetails struct {
-	Logo    *CredentialsDataRolesBusinessDetailsLogo `json:"logo,omitempty"`
-	Name    string                                   `json:"name"`
-	Website *string                                  `json:"website,omitempty"`
+	Logo    *Image  `json:"logo,omitempty"`
+	Name    string  `json:"name"`
+	Website *string `json:"website,omitempty"`
 }
 
-// CredentialsDataRolesBusinessDetailsLogo defines model for credentials_data_roles_business_details_logo.
-type CredentialsDataRolesBusinessDetailsLogo struct {
-	Category  CredentialsDataRolesBusinessDetailsLogoCategory `json:"category"`
-	Height    *float32                                        `json:"height,omitempty"`
-	Thumbnail *string                                         `json:"thumbnail,omitempty"`
-	Type      string                                          `json:"type"`
-	Url       string                                          `json:"url"`
-	Width     *float32                                        `json:"width,omitempty"`
+// Image defines model for credentials_data_roles_business_details_logo.
+type Image struct {
+	URL       string        `json:"url" validate:"required"`
+	Thumbnail *string       `json:"thumbnail,omitempty"`
+	Category  ImageCategory `json:"category" validate:"required"`
+	Type      string        `json:"type" validate:"required"`
+	Width     *int          `json:"width,omitempty"`
+	Height    *int          `json:"height,omitempty"`
 }
 
-// CredentialsDataRolesBusinessDetailsLogoCategory defines model for CredentialsDataRolesBusinessDetailsLogo.Category.
-type CredentialsDataRolesBusinessDetailsLogoCategory string
+// ImageCategory defines model for Image.Category.
+type ImageCategory string
 
 // Details defines model for details.
 type Details struct {
@@ -950,7 +839,7 @@ type DetailsDataVersion string
 // DetailsDataEndpoints defines model for details_data_endpoints.
 type DetailsDataEndpoints struct {
 	// Identifier OCPI 2.2.1 modules
-	Identifier ModuleIDType `json:"identifier"`
+	Identifier ModuleIdentifier `json:"identifier"`
 
 	// Role Interface role endpoint implements.
 	Role InterfaceRoleType `json:"role"`
@@ -958,9 +847,6 @@ type DetailsDataEndpoints struct {
 	// Url URL to the endpoint.
 	Url string `json:"url"`
 }
-
-// EnvironmentalImpactCategoryType Categories of environmental impact values
-type EnvironmentalImpactCategoryType string
 
 // EVSE defines model for evse.
 type EVSE struct {
@@ -1013,22 +899,6 @@ type StatusSchedule struct {
 // StatusScheduleStatus defines model for StatusSchedule.Status.
 type StatusScheduleStatus string
 
-// Image defines model for image.
-type Image struct {
-	Category  ImageCategory `json:"category"`
-	Thumbnail *string       `json:"thumbnail,omitempty"`
-	Type      string        `json:"type"`
-	Url       string        `json:"url"`
-	Width     *float32      `json:"width,omitempty"`
-	Height    *float32      `json:"height,omitempty"`
-}
-
-// ImageCategory defines model for Image.Category.
-type ImageCategory string
-
-// InterfaceRoleType Interface role endpoint implements.
-type InterfaceRoleType string
-
 // LocationReferences defines model for locationReferences.
 type LocationReferences struct {
 	EvseUids   *string `json:"evse_uids,omitempty"`
@@ -1043,8 +913,8 @@ type LocationResponse = ocpi.Response[Location]
 
 // LocationsData defines model for locations_data.
 type Location struct {
-	CountryCode        string                  `json:"country_code"`
-	PartyId            string                  `json:"party_id"`
+	CountryCode        string                  `json:"country_code" validate:"required,len=2"`
+	PartyId            string                  `json:"party_id" validate:"required,len=3"`
 	ID                 string                  `json:"id" validate:"required"`
 	Publish            bool                    `json:"publish"`
 	PublishAllowedTo   []PublishTokenType      `json:"publish_allowed_to,omitempty"`
@@ -1052,8 +922,8 @@ type Location struct {
 	Address            string                  `json:"address"`
 	City               string                  `json:"city"`
 	PostalCode         *string                 `json:"postal_code,omitempty"`
-	State              *string                 `json:"state,omitempty"`
-	Country            string                  `json:"country"`
+	State              *string                 `json:"state,omitempty" validate:"omitempty,required,max=20"`
+	Country            string                  `json:"country" validate:"required,len=3"`
 	Coordinates        GeoLocation             `json:"coordinates"`
 	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
 	ParkingType        *ParkingType            `json:"parking_type,omitempty"`
@@ -1160,10 +1030,10 @@ type RegularHours struct {
 
 // PublishTokenType defines model for locations_data_publish_allowed_to.
 type PublishTokenType struct {
-	GroupId      *string               `json:"group_id,omitempty"`
+	GroupID      *string               `json:"group_id,omitempty"`
 	Issuer       *string               `json:"issuer,omitempty"`
 	Type         *PublishTokenTypeType `json:"type,omitempty"`
-	Uid          *string               `json:"uid,omitempty"`
+	UID          *string               `json:"uid,omitempty"`
 	VisualNumber *string               `json:"visual_number,omitempty"`
 }
 
@@ -1177,13 +1047,10 @@ type AdditionalGeoLocation struct {
 	Name      *DisplayText `json:"name,omitempty"`
 }
 
-// ModuleIDType OCPI 2.2.1 modules
-type ModuleIDType string
-
 // Price defines model for price.
 type Price struct {
-	ExclVat float32  `json:"excl_vat"`
-	InclVat *float32 `json:"incl_vat,omitempty"`
+	ExclVat json.Number  `json:"excl_vat"`
+	InclVat *json.Number `json:"incl_vat,omitempty"`
 }
 
 // ReservationRestrictionType defines model for reservationRestrictionType.
@@ -1193,58 +1060,55 @@ type ReservationRestrictionType string
 type ReserveNowRequest struct {
 	AuthorizationReference *string `json:"authorization_reference,omitempty"`
 	EvseUid                *string `json:"evse_uid,omitempty"`
-	ExpiryDate             string  `json:"expiry_date"`
-	LocationId             string  `json:"location_id"`
-	ReservationId          string  `json:"reservation_id"`
-	ResponseUrl            string  `json:"response_url"`
+	ExpiryDate             string  `json:"expiry_date" validate:"required"`
+	LocationID             string  `json:"location_id" validate:"required"`
+	ReservationID          string  `json:"reservation_id" validate:"required"`
+	ResponseURL            string  `json:"response_url" validate:"required"`
 	Token                  Token   `json:"token"`
 }
 
 // Session defines model for session.
 type Session struct {
-	AuthMethod             SessionAuthMethod       `json:"auth_method"`
-	AuthorizationReference *string                 `json:"authorization_reference,omitempty"`
-	CdrToken               CdrBodyCdrToken         `json:"cdr_token"`
-	ChargingPeriods        *SessionChargingPeriods `json:"charging_periods,omitempty"`
-	ConnectorId            string                  `json:"connector_id"`
-	CountryCode            string                  `json:"country_code"`
-	Currency               string                  `json:"currency"`
-	EndDateTime            *ocpi.DateTime          `json:"end_date_time,omitempty"`
-	EvseUid                string                  `json:"evse_uid"`
-	Id                     string                  `json:"id"`
-	Kwh                    json.Number             `json:"kwh"`
-	LastUpdated            ocpi.DateTime           `json:"last_updated"`
-	LocationId             string                  `json:"location_id"`
-	MeterId                *string                 `json:"meter_id,omitempty"`
-	PartyId                string                  `json:"party_id"`
-	StartDateTime          ocpi.DateTime           `json:"start_date_time"`
-	Status                 SessionStatus           `json:"status"`
-	TotalCosts             *SessionTotalCosts      `json:"total_costs,omitempty"`
+	CountryCode            string           `json:"country_code" validate:"required,len=2"`
+	PartyID                string           `json:"party_id" validate:"required,len=3"`
+	ID                     string           `json:"id" validate:"required"`
+	StartDateTime          ocpi.DateTime    `json:"start_date_time" validate:"required"`
+	EndDateTime            *ocpi.DateTime   `json:"end_date_time,omitempty"`
+	Kwh                    json.Number      `json:"kwh" validate:"required"`
+	CdrToken               CdrToken         `json:"cdr_token"`
+	AuthMethod             AuthMethod       `json:"auth_method" validate:"required"`
+	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
+	LocationID             string           `json:"location_id" validate:"required"`
+	EvseUid                string           `json:"evse_uid" validate:"required"`
+	ConnectorID            string           `json:"connector_id" validate:"required"`
+	MeterID                *string          `json:"meter_id,omitempty"`
+	Currency               string           `json:"currency" validate:"required,len=3"`
+	ChargingPeriods        []ChargingPeriod `json:"charging_periods,omitempty"`
+	TotalCost              *Price           `json:"total_cost,omitempty"`
+	Status                 SessionStatus    `json:"status" validate:"required"`
+	LastUpdated            ocpi.DateTime    `json:"last_updated" validate:"required"`
 }
 
 type PatchedSession struct {
-	LastUpdated            ocpi.DateTime           `json:"last_updated"`
-	AuthMethod             *SessionAuthMethod      `json:"auth_method,omitempty"`
-	AuthorizationReference *string                 `json:"authorization_reference,omitempty"`
-	CdrToken               *CdrBodyCdrToken        `json:"cdr_token,omitempty"`
-	ChargingPeriods        *SessionChargingPeriods `json:"charging_periods,omitempty"`
-	ConnectorId            *string                 `json:"connector_id,omitempty"`
-	CountryCode            *string                 `json:"country_code,omitempty"`
-	Currency               *string                 `json:"currency,omitempty"`
-	EndDateTime            *ocpi.DateTime          `json:"end_date_time,omitempty"`
-	EvseUid                *string                 `json:"evse_uid,omitempty"`
-	Id                     *string                 `json:"id,omitempty"`
-	Kwh                    *json.Number            `json:"kwh,omitempty"`
-	LocationId             *string                 `json:"location_id,omitempty"`
-	MeterId                *string                 `json:"meter_id,omitempty"`
-	PartyId                *string                 `json:"party_id,omitempty"`
-	StartDateTime          *ocpi.DateTime          `json:"start_date_time,omitempty"`
-	Status                 *SessionStatus          `json:"status,omitempty"`
-	TotalCosts             *SessionTotalCosts      `json:"total_costs,omitempty"`
+	LastUpdated            ocpi.DateTime   `json:"last_updated" validate:"required"`
+	AuthMethod             *AuthMethod     `json:"auth_method,omitempty"`
+	AuthorizationReference *string         `json:"authorization_reference,omitempty"`
+	CdrToken               *CdrToken       `json:"cdr_token,omitempty"`
+	ChargingPeriods        *ChargingPeriod `json:"charging_periods,omitempty"`
+	ConnectorID            *string         `json:"connector_id,omitempty"`
+	CountryCode            *string         `json:"country_code,omitempty"`
+	Currency               *string         `json:"currency,omitempty"`
+	EndDateTime            *ocpi.DateTime  `json:"end_date_time,omitempty"`
+	EvseUid                *string         `json:"evse_uid,omitempty"`
+	ID                     *string         `json:"id,omitempty"`
+	Kwh                    *json.Number    `json:"kwh,omitempty"`
+	LocationID             *string         `json:"location_id,omitempty"`
+	MeterID                *string         `json:"meter_id,omitempty"`
+	PartyID                *string         `json:"party_id,omitempty"`
+	StartDateTime          *ocpi.DateTime  `json:"start_date_time,omitempty"`
+	Status                 *SessionStatus  `json:"status,omitempty"`
+	TotalCost              *Price          `json:"total_cost,omitempty"`
 }
-
-// SessionAuthMethod defines model for Session.AuthMethod.
-type SessionAuthMethod string
 
 // SessionStatus defines model for Session.Status.
 type SessionStatus string
@@ -1255,26 +1119,17 @@ type SessionsResponse = ocpi.Response[[]Session]
 // SessionResponse defines model for sessionResponse.
 type SessionResponse = ocpi.Response[Session]
 
-// SessionChargingPeriods defines model for session_charging_periods.
-type SessionChargingPeriods struct {
-	Dimensions    *SessionChargingPeriodsDimensions `json:"dimensions,omitempty"`
-	StartDateTime string                            `json:"start_date_time"`
-	TariffId      *string                           `json:"tariff_id,omitempty"`
+// ChargingPeriod defines model for session_charging_periods.
+type ChargingPeriod struct {
+	StartDateTime ocpi.DateTime  `json:"start_date_time" validate:"required"`
+	Dimensions    []CdrDimension `json:"dimensions"`
+	TariffID      *string        `json:"tariff_id,omitempty"`
 }
 
-// SessionChargingPeriodsDimensions defines model for session_charging_periods_dimensions.
-type SessionChargingPeriodsDimensions struct {
-	Type   SessionChargingPeriodsDimensionsType `json:"type"`
-	Volume float32                              `json:"volume"`
-}
-
-// SessionChargingPeriodsDimensionsType defines model for SessionChargingPeriodsDimensions.Type.
-type SessionChargingPeriodsDimensionsType string
-
-// SessionTotalCosts defines model for session_total_costs.
-type SessionTotalCosts struct {
-	ExclVat float32  `json:"excl_vat"`
-	InclVat *float32 `json:"incl_vat,omitempty"`
+// CdrDimension defines model for session_charging_periods_dimensions.
+type CdrDimension struct {
+	Type   CdrDimensionType `json:"type"`
+	Volume json.Number      `json:"volume"`
 }
 
 // SetChargingProfile defines model for setChargingProfile.
@@ -1286,35 +1141,35 @@ type SetChargingProfile struct {
 // StartSessionRequest defines model for startSession.
 type StartSessionRequest struct {
 	AuthorizationReference *string `json:"authorization_reference,omitempty"`
-	ConnectorId            *string `json:"connector_id,omitempty"`
+	ConnectorID            *string `json:"connector_id,omitempty"`
 	EvseUid                *string `json:"evse_uid,omitempty"`
-	LocationId             string  `json:"location_id"`
-	ResponseUrl            string  `json:"response_url"`
+	LocationID             string  `json:"location_id" validate:"required"`
+	ResponseURL            string  `json:"response_url" validate:"required"`
 	Token                  Token   `json:"token"`
 }
 
 // StopSessionRequest defines model for stopSession.
 type StopSessionRequest struct {
-	ResponseUrl string  `json:"response_url"`
-	SessionId   *string `json:"session_id,omitempty"`
+	ResponseURL string  `json:"response_url"`
+	SessionID   *string `json:"session_id,omitempty"`
 }
 
 // Tariff defines model for tariff.
 type Tariff struct {
-	CountryCode   string           `json:"country_code"`
-	Currency      string           `json:"currency"`
-	Elements      []TariffElements `json:"elements,omitempty"`
-	EndDateTime   *string          `json:"end_date_time,omitempty"`
-	EnergyMix     *TariffEnergyMix `json:"energy_mix,omitempty"`
-	Id            string           `json:"id"`
-	LastUpdated   ocpi.DateTime    `json:"last_updated"`
-	MaxPrice      *Price           `json:"max_price,omitempty"`
-	MinPrice      *Price           `json:"min_price,omitempty"`
-	PartyId       string           `json:"party_id"`
-	StartDateTime *string          `json:"start_date_time,omitempty"`
-	TariffAltText *DisplayText     `json:"tariff_alt_text,omitempty"`
-	TariffAltUrl  *string          `json:"tariff_alt_url,omitempty"`
-	Type          *TariffType      `json:"type,omitempty"`
+	CountryCode   string          `json:"country_code" validate:"required,len=2"`
+	PartyID       string          `json:"party_id" validate:"required,len=3"`
+	ID            string          `json:"id" validate:"required"`
+	Currency      string          `json:"currency" validate:"required,len=3"`
+	Type          *TariffType     `json:"type,omitempty"`
+	TariffAltText []DisplayText   `json:"tariff_alt_text,omitempty"`
+	TariffAltURL  *string         `json:"tariff_alt_url,omitempty"`
+	MinPrice      *Price          `json:"min_price,omitempty"`
+	MaxPrice      *Price          `json:"max_price,omitempty"`
+	Elements      []TariffElement `json:"elements"`
+	StartDateTime *ocpi.DateTime  `json:"start_date_time,omitempty"`
+	EndDateTime   *ocpi.DateTime  `json:"end_date_time,omitempty"`
+	EnergyMix     *EnergyMix      `json:"energy_mix,omitempty"`
+	LastUpdated   ocpi.DateTime   `json:"last_updated" validate:"required"`
 }
 
 // TariffType defines model for Tariff.Type.
@@ -1335,56 +1190,39 @@ type TariffResponse struct {
 	TimeStamp     *string `json:"timeStamp,omitempty"`
 }
 
-// TariffElements defines model for tariff_elements.
-type TariffElements struct {
-	PriceComponents []TariffElementsPriceComponents `json:"price_components,omitempty"`
-	Restrictions    *TariffElementsRestrictions     `json:"restrictions,omitempty"`
+// TariffElement defines model for tariff_elements.
+type TariffElement struct {
+	PriceComponents []PriceComponent    `json:"price_components,omitempty"`
+	Restrictions    *TariffRestrictions `json:"restrictions,omitempty"`
 }
 
-// TariffElementsPriceComponents defines model for TariffElements.PriceComponents.
-type TariffElementsPriceComponents struct {
-	Type     TariffElementsPriceComponentsType `json:"type"`
-	StepSize uint16                            `json:"step_size"`
-	Price    json.Number                       `json:"price"`
+// PriceComponent defines model for TariffElement.PriceComponents.
+type PriceComponent struct {
+	Type     PriceComponentType `json:"type"`
+	StepSize uint16             `json:"step_size"`
+	Price    json.Number        `json:"price"`
 }
 
-// TariffElementsRestrictions defines model for tariff_elements_restrictions.
-type TariffElementsRestrictions struct {
-	DayOfWeek   []TariffElementsRestrictionsDayOfWeek `json:"day_of_week,omitempty"`
-	EndDate     *string                               `json:"end_date,omitempty"`
-	EndTime     *string                               `json:"end_time,omitempty"`
-	MaxCurrent  *float32                              `json:"max_current,omitempty"`
-	MaxDuration *int                                  `json:"max_duration,omitempty"`
-	MaxKwh      *float32                              `json:"max_kwh,omitempty"`
-	MaxPower    *float32                              `json:"max_power,omitempty"`
-	MinCurrent  *float32                              `json:"min_current,omitempty"`
-	MinDuration *int                                  `json:"min_duration,omitempty"`
-	MinKwh      *float32                              `json:"min_kwh,omitempty"`
-	MinPower    *float32                              `json:"min_power,omitempty"`
-	Reservation *ReservationRestrictionType           `json:"reservation,omitempty"`
-	StartDate   *string                               `json:"start_date,omitempty"`
-	StartTime   *string                               `json:"start_time,omitempty"`
+// TariffRestrictions defines model for tariff_elements_restrictions.
+type TariffRestrictions struct {
+	StartTime   *string                     `json:"start_time,omitempty"`
+	EndTime     *string                     `json:"end_time,omitempty"`
+	StartDate   *string                     `json:"start_date,omitempty"`
+	EndDate     *string                     `json:"end_date,omitempty"`
+	MinKwh      *json.Number                `json:"min_kwh,omitempty"`
+	MaxKwh      *json.Number                `json:"max_kwh,omitempty"`
+	MinCurrent  *json.Number                `json:"min_current,omitempty"`
+	MaxCurrent  *json.Number                `json:"max_current,omitempty"`
+	MinPower    *json.Number                `json:"min_power,omitempty"`
+	MaxPower    *json.Number                `json:"max_power,omitempty"`
+	MinDuration *int                        `json:"min_duration,omitempty"`
+	MaxDuration *int                        `json:"max_duration,omitempty"`
+	DayOfWeek   []DayOfWeek                 `json:"day_of_week,omitempty"`
+	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
 }
 
-// TariffElementsRestrictionsDayOfWeek defines model for TariffElementsRestrictions.DayOfWeek.
-type TariffElementsRestrictionsDayOfWeek string
-
-// TariffEnergyMix defines model for tariff_energy_mix.
-type TariffEnergyMix struct {
-	EnergyProductName *string                    `json:"energy_product_name,omitempty"`
-	EnergySources     []EnergySource             `json:"energy_sources,omitempty"`
-	EnvironImpact     *TariffEnvironmentalImpact `json:"environ_impact,omitempty"`
-	IsGreenEnergy     bool                       `json:"is_green_energy"`
-	SupplierName      *string                    `json:"supplier_name,omitempty"`
-}
-
-// TariffEnvironmentalImpact defines model for tariff_energy_mix_environ_impact.
-type TariffEnvironmentalImpact struct {
-	Amount float32 `json:"amount"`
-
-	// Category Categories of environmental impact values
-	Category EnvironmentalImpactCategoryType `json:"category"`
-}
+// DayOfWeek defines model for TariffRestrictions.DayOfWeek.
+type DayOfWeek string
 
 // TariffsResponse defines model for tariffsResponse.
 type TariffsResponse = ocpi.Response[[]Tariff]
@@ -1436,47 +1274,38 @@ type FinancialAdviceConfirmation struct {
 
 // Token defines model for token.
 type Token struct {
-	ContractId         string                   `json:"contract_id"`
-	CountryCode        string                   `json:"country_code"`
-	DefaultProfileType *TokenDefaultProfileType `json:"default_profile_type,omitempty"`
-	EnergyContract     *TokenEnergyContract     `json:"energy_contract,omitempty"`
-	GroupId            *string                  `json:"group_id,omitempty"`
-	Issuer             string                   `json:"issuer"`
-	Language           *string                  `json:"language,omitempty"`
-	LastUpdated        ocpi.DateTime            `json:"last_updated"`
-	PartyId            string                   `json:"party_id"`
-	Type               TokenType                `json:"type"`
-	Uid                string                   `json:"uid"`
-	Valid              bool                     `json:"valid"`
-	VisualNumber       *string                  `json:"visual_number,omitempty"`
-	Whitelist          WhitelistType            `json:"whitelist"`
+	ContractId         string               `json:"contract_id"`
+	CountryCode        string               `json:"country_code"`
+	DefaultProfileType *ProfileType         `json:"default_profile_type,omitempty"`
+	EnergyContract     *TokenEnergyContract `json:"energy_contract,omitempty"`
+	GroupId            *string              `json:"group_id,omitempty"`
+	Issuer             string               `json:"issuer"`
+	Language           *string              `json:"language,omitempty"`
+	LastUpdated        ocpi.DateTime        `json:"last_updated"`
+	PartyId            string               `json:"party_id"`
+	Type               TokenType            `json:"type"`
+	Uid                string               `json:"uid"`
+	Valid              bool                 `json:"valid"`
+	VisualNumber       *string              `json:"visual_number,omitempty"`
+	Whitelist          WhitelistType        `json:"whitelist"`
 }
 
 type PatchedToken struct {
-	ContractId         string                   `json:"contract_id"`
-	CountryCode        string                   `json:"country_code"`
-	DefaultProfileType *TokenDefaultProfileType `json:"default_profile_type,omitempty"`
-	EnergyContract     *TokenEnergyContract     `json:"energy_contract,omitempty"`
-	GroupId            *string                  `json:"group_id,omitempty"`
-	Issuer             string                   `json:"issuer"`
-	Language           *string                  `json:"language,omitempty"`
-	LastUpdated        ocpi.DateTime            `json:"last_updated"`
-	PartyId            string                   `json:"party_id"`
-	Type               TokenType                `json:"type"`
-	Uid                string                   `json:"uid"`
-	Valid              bool                     `json:"valid"`
-	VisualNumber       *string                  `json:"visual_number,omitempty"`
-	Whitelist          WhitelistType            `json:"whitelist"`
+	ContractId         string               `json:"contract_id"`
+	CountryCode        string               `json:"country_code"`
+	DefaultProfileType *ProfileType         `json:"default_profile_type,omitempty"`
+	EnergyContract     *TokenEnergyContract `json:"energy_contract,omitempty"`
+	GroupId            *string              `json:"group_id,omitempty"`
+	Issuer             string               `json:"issuer"`
+	Language           *string              `json:"language,omitempty"`
+	LastUpdated        ocpi.DateTime        `json:"last_updated"`
+	PartyId            string               `json:"party_id"`
+	Type               TokenType            `json:"type"`
+	Uid                string               `json:"uid"`
+	Valid              bool                 `json:"valid"`
+	VisualNumber       *string              `json:"visual_number,omitempty"`
+	Whitelist          WhitelistType        `json:"whitelist"`
 }
-
-// TokenDefaultProfileType defines model for Token.DefaultProfileType.
-type TokenDefaultProfileType string
-
-// TokenType defines model for Token.Type.
-type TokenType string
-
-// WhitelistType defines model for Token.Whitelist.
-type WhitelistType string
 
 // TokenResponse defines model for tokenResponse.
 type TokenResponse struct {
@@ -1502,10 +1331,10 @@ type TokensResponse struct {
 
 // UnlockConnector defines model for unlockConnector.
 type UnlockConnector struct {
-	ConnectorId string `json:"connector_id"`
-	EvseUid     string `json:"evse_uid"`
-	LocationId  string `json:"location_id"`
-	ResponseUrl string `json:"response_url"`
+	ConnectorID string `json:"connector_id"`
+	EvseUID     string `json:"evse_uid"`
+	LocationID  string `json:"location_id"`
+	ResponseURL string `json:"response_url"`
 }
 
 // VersionsData defines model for versions_data.
@@ -1528,9 +1357,6 @@ type GetOcpiCdrsParams struct {
 	// Limit Maximum number of objects to GET.
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
-
-// CommandType defines parameters for type of commands.
-type CommandType string
 
 // GetOcpiHubclientinfoParams defines parameters for GetOcpiHubclientinfo.
 type GetOcpiHubclientinfoParams struct {
@@ -1560,42 +1386,6 @@ type GetOcpiLocationsParams struct {
 
 	// Limit Maximum number of objects to GET.
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
-}
-
-// GetOcpiLocationsCountryCodePartyIdLocationIdParams defines parameters for GetOcpiLocationsCountryCodePartyIdLocationId.
-type GetOcpiLocationsCountryCodePartyIdLocationIdParams struct {
-	// EvseUid Evse.uid, required when requesting an EVSE or Connector object.
-	EvseUid *string `form:"evse_uid,omitempty" json:"evse_uid,omitempty"`
-
-	// ConnectorId Connector.id, required when requesting a Connector object.
-	ConnectorId *string `form:"connector_id,omitempty" json:"connector_id,omitempty"`
-}
-
-// PatchOcpiLocationsCountryCodePartyIdLocationIdParams defines parameters for PatchOcpiLocationsCountryCodePartyIdLocationId.
-type PatchOcpiLocationsCountryCodePartyIdLocationIdParams struct {
-	// EvseUid Evse.uid, required when requesting an EVSE or Connector object.
-	EvseUid *string `form:"evse_uid,omitempty" json:"evse_uid,omitempty"`
-
-	// ConnectorId Connector.id, required when requesting a Connector object.
-	ConnectorId *string `form:"connector_id,omitempty" json:"connector_id,omitempty"`
-}
-
-// PutOcpiLocationsCountryCodePartyIdLocationIdParams defines parameters for PutOcpiLocationsCountryCodePartyIdLocationId.
-type PutOcpiLocationsCountryCodePartyIdLocationIdParams struct {
-	// EvseUid Evse.uid, required when requesting an EVSE or Connector object.
-	EvseUid *string `form:"evse_uid,omitempty" json:"evse_uid,omitempty"`
-
-	// ConnectorId Connector.id, required when requesting a Connector object.
-	ConnectorId *string `form:"connector_id,omitempty" json:"connector_id,omitempty"`
-}
-
-// GetOcpiLocationsLocationIdParams defines parameters for GetOcpiLocationsLocationId.
-type GetOcpiLocationsLocationIdParams struct {
-	// EvseUid Evse.uid, required when requesting an EVSE or Connector object.
-	EvseUid *string `form:"evse_uid,omitempty" json:"evse_uid,omitempty"`
-
-	// ConnectorId Connector.id, required when requesting a Connector object.
-	ConnectorId *string `form:"connector_id,omitempty" json:"connector_id,omitempty"`
 }
 
 // GetOcpiSessionsParams defines parameters for GetOcpiSessions.
@@ -1642,30 +1432,3 @@ type GetOcpiTokensParams struct {
 	// Limit Maximum number of objects to GET.
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
-
-// GetOcpiTokensCountryCodePartyIdTokenUidParams defines parameters for GetOcpiTokensCountryCodePartyIdTokenUid.
-type GetOcpiTokensCountryCodePartyIdTokenUidParams struct {
-	// Type Token.type of the Token to retrieve. Default if omitted: RFID
-	Type *GetOcpiTokensCountryCodePartyIdTokenUidParamsType `form:"type,omitempty" json:"type,omitempty"`
-}
-
-// GetOcpiTokensCountryCodePartyIdTokenUidParamsType defines parameters for GetOcpiTokensCountryCodePartyIdTokenUid.
-type GetOcpiTokensCountryCodePartyIdTokenUidParamsType string
-
-// PatchOcpiTokensCountryCodePartyIdTokenUidParams defines parameters for PatchOcpiTokensCountryCodePartyIdTokenUid.
-type PatchOcpiTokensCountryCodePartyIdTokenUidParams struct {
-	// Type Token.type of the Token to retrieve. Default if omitted: RFID
-	Type *PatchOcpiTokensCountryCodePartyIdTokenUidParamsType `form:"type,omitempty" json:"type,omitempty"`
-}
-
-// PatchOcpiTokensCountryCodePartyIdTokenUidParamsType defines parameters for PatchOcpiTokensCountryCodePartyIdTokenUid.
-type PatchOcpiTokensCountryCodePartyIdTokenUidParamsType string
-
-// PutOcpiTokensCountryCodePartyIdTokenUidParams defines parameters for PutOcpiTokensCountryCodePartyIdTokenUid.
-type PutOcpiTokensCountryCodePartyIdTokenUidParams struct {
-	// Type Token.type of the Token to retrieve. Default if omitted: RFID
-	Type *PutOcpiTokensCountryCodePartyIdTokenUidParamsType `form:"type,omitempty" json:"type,omitempty"`
-}
-
-// PutOcpiTokensCountryCodePartyIdTokenUidParamsType defines parameters for PutOcpiTokensCountryCodePartyIdTokenUid.
-type PutOcpiTokensCountryCodePartyIdTokenUidParamsType string

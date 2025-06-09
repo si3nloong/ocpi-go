@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Client) StartSessionCommands(ctx context.Context, req StartSessionRequest) (any, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTypeCommands, RoleReceiver)
+	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierCommands, RoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func (c *Client) StartSessionCommands(ctx context.Context, req StartSessionReque
 }
 
 func (c *Client) StopSessionCommands(ctx context.Context, req StopSessionRequest) (any, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTypeCommands, RoleReceiver)
+	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierCommands, RoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (c *Client) StopSessionCommands(ctx context.Context, req StopSessionRequest
 }
 
 func (c *Client) ReserveNowCommands(ctx context.Context, req ReserveNowRequest) (any, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTypeCommands, RoleReceiver)
+	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierCommands, RoleReceiver)
 	if err != nil {
 		return nil, err
 	}
