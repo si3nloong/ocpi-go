@@ -19,7 +19,7 @@ func (c *Client) GetSessions(
 	dateFrom time.Time,
 	params ...GetSessionsParams,
 ) (*SessionsResponse, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTypeSessions, RoleReceiver)
+	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierSessions, RoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *Client) GetSession(
 	partyId string,
 	sessionId string,
 ) (*SessionResponse, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTypeSessions, RoleReceiver)
+	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierSessions, RoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (c *Client) GetSession(
 }
 
 func (c *Client) SetSessionChargingPreferences(ctx context.Context, sessionId string) (any, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTypeSessions, RoleReceiver)
+	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierSessions, RoleReceiver)
 	if err != nil {
 		return nil, err
 	}
