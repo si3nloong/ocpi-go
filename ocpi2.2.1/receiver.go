@@ -69,14 +69,14 @@ type Receiver interface {
 func (s *Server) GetOcpiEndpoints(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	endpoints := []DetailsDataEndpoints{
-		{Identifier: ModuleIdentifierCredentials, Role: RoleReceiver, Url: getHostname(r) + s.baseUrl + "/credentials"},
-		{Identifier: ModuleIdentifierLocations, Role: RoleReceiver, Url: getHostname(r) + s.baseUrl + "/locations"},
-		{Identifier: ModuleIdentifierSessions, Role: RoleReceiver, Url: getHostname(r) + s.baseUrl + "/sessions"},
-		{Identifier: ModuleIdentifierTokens, Role: RoleReceiver, Url: getHostname(r) + s.baseUrl + "/tokens"},
-		{Identifier: ModuleIdentifierTariffs, Role: RoleReceiver, Url: getHostname(r) + s.baseUrl + "/tariffs"},
-		{Identifier: ModuleIdentifierCdrs, Role: RoleReceiver, Url: getHostname(r) + s.baseUrl + "/cdrs"},
-		{Identifier: ModuleIdentifierChargingProfiles, Role: RoleReceiver, Url: getHostname(r) + s.baseUrl + "/chargingprofiles"},
+	endpoints := []Endpoint{
+		{Identifier: ModuleIDCredentials, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/credentials"},
+		{Identifier: ModuleIDLocations, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/locations"},
+		{Identifier: ModuleIDSessions, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/sessions"},
+		{Identifier: ModuleIDTokens, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/tokens"},
+		{Identifier: ModuleIDTariffs, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/tariffs"},
+		{Identifier: ModuleIDCdrs, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/cdrs"},
+		{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/chargingprofiles"},
 	}
 	b, err := toResponse(endpoints)
 	if err != nil {

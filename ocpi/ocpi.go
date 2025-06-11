@@ -10,6 +10,18 @@ import (
 
 var validate *validator.Validate
 
+// Version defines model for DetailsData.Version.
+type VersionNumber string
+
+// Defines values for Version.
+const (
+	VersionNumber20  VersionNumber = "2.0"
+	VersionNumber21  VersionNumber = "2.1" // deprecated
+	VersionNumber211 VersionNumber = "2.1.1"
+	VersionNumber22  VersionNumber = "2.2"
+	VersionNumber221 VersionNumber = "2.2.1"
+)
+
 func init() {
 	validate = validator.New()
 	validate.RegisterCustomTypeFunc(func(field reflect.Value) any {
@@ -19,12 +31,13 @@ func init() {
 		return nil
 	}, DateTime{})
 	if err := validate.RegisterValidation("version", func(fl validator.FieldLevel) bool {
-		v, ok := fl.Field().Interface().(Version)
+		v, ok := fl.Field().Interface().(VersionNumber)
 		if !ok {
 			return false
 		}
 		switch v {
-		case VersionN20, VersionN21, VersionN211, VersionN22, VersionN221:
+		case VersionNumber20, VersionNumber21, VersionNumber211,
+			VersionNumber22, VersionNumber221:
 			return true
 		default:
 			return false
@@ -35,19 +48,7 @@ func init() {
 
 }
 
-// ModuleIdentifier defines the OCPI module identifier.
-
-// Version defines model for DetailsData.Version.
-type Version string
-
-// Defines values for Version.
-const (
-	VersionN20  Version = "2.0"
-	VersionN21  Version = "2.1"
-	VersionN211 Version = "2.1.1"
-	VersionN22  Version = "2.2"
-	VersionN221 Version = "2.2.1"
-)
+// ModuleID defines the OCPI module identifier.
 
 type RawMessage[T any] json.RawMessage
 

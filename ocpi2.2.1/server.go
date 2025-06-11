@@ -22,7 +22,7 @@ type Server struct {
 
 func NewServer(sender Sender, receiver Receiver) *Server {
 	s := new(Server)
-	s.baseUrl = "/" + string(ocpi.VersionN221)
+	s.baseUrl = "/" + string(ocpi.VersionNumber221)
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
@@ -40,27 +40,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handler() http.Handler {
 	router := chi.NewRouter()
-
-	// router.Use(func(next http.Handler) http.Handler {
-	// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// 		b, _ := httputil.DumpRequest(r, true)
-	// 		s.logger.DebugContext(r.Context(), `Client Request`, "request", unsafe.String(unsafe.SliceData(b), len(b)))
-	// 		recorder := httptest.NewRecorder()
-	// 		next.ServeHTTP(recorder, r)
-	// 		result := recorder.Result()
-	// 		b, _ = httputil.DumpResponse(result, true)
-	// 		s.logger.DebugContext(r.Context(), `Server Response`, "response", unsafe.String(unsafe.SliceData(b), len(b)))
-	// 		w.WriteHeader(result.StatusCode)
-	// 		w.Write(recorder.Body.Bytes())
-	// 		for k, headers := range result.Header.Clone() {
-	// 			for len(headers) > 0 {
-	// 				h := headers[0]
-	// 				w.Header().Set(k, h)
-	// 				headers = headers[1:]
-	// 			}
-	// 		}
-	// 	})
-	// })
 
 	router.HandleFunc(s.baseUrl, s.GetOcpiEndpoints)
 	router.HandleFunc(s.baseUrl+"/credentials", s.GetOcpiCredentials)

@@ -21,7 +21,7 @@ type Client struct {
 	tokenC       string
 	versionUrl   string
 	httpClient   *http.Client
-	endpointDict map[string]DetailsDataEndpoints
+	endpointDict map[string]Endpoint
 }
 
 func WithTokenC(tokenC string) Option {
@@ -40,7 +40,7 @@ func NewClient(versionUrl string, options ...Option) *Client {
 	return c
 }
 
-func (c *Client) getEndpoint(ctx context.Context, mod ModuleIdentifier, role InterfaceRoleType) (string, error) {
+func (c *Client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error) {
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
@@ -54,13 +54,13 @@ func (c *Client) getEndpoint(ctx context.Context, mod ModuleIdentifier, role Int
 		}
 
 		version := versions[0]
-		var o ocpi.Response[DetailsData]
-		if err := c.do(ctx, http.MethodGet, version.Url, nil, &o); err != nil {
+		var o ocpi.Response[VersionDetails]
+		if err := c.do(ctx, http.MethodGet, version.URL, nil, &o); err != nil {
 			return "", err
 		}
 
 		c.rw.Lock()
-		c.endpointDict = make(map[string]DetailsDataEndpoints)
+		c.endpointDict = make(map[string]Endpoint)
 		for _, v := range o.Data.Endpoints {
 			c.endpointDict[string(v.Identifier)+":"+string(v.Role)] = v
 		}
@@ -70,7 +70,7 @@ func (c *Client) getEndpoint(ctx context.Context, mod ModuleIdentifier, role Int
 	defer c.rw.RUnlock()
 	v, ok := c.endpointDict[string(mod)+":"+string(role)]
 	if ok {
-		return v.Url, nil
+		return v.URL, nil
 	}
 	return "", fmt.Errorf(`ocpi: missing endpoint for module id %q (%s)`, mod, role)
 }

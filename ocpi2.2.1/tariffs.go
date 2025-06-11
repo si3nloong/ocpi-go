@@ -22,7 +22,7 @@ func (c *Client) GetTariffs(
 	ctx context.Context,
 	params ...GetTariffsParams,
 ) (ocpi.Result[[]Tariff], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierTariffs, RoleSender)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (c *Client) GetTariffs(
 }
 
 func (c *Client) GetTariff(ctx context.Context, countryCode, partyId, tariffId string) (any, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierTariffs, RoleSender)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}

@@ -21,7 +21,7 @@ func (c *Client) GetLocations(
 	ctx context.Context,
 	params ...GetLocationsParams,
 ) (ocpi.Result[[]Location], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierLocations, RoleSender)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (c *Client) GetLocation(
 	ctx context.Context,
 	locationID string,
 ) (*LocationResponse, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIdentifierLocations, RoleSender)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}

@@ -20,29 +20,29 @@ const (
 	RoleSCSP  Role = "SCSP"
 )
 
-// InterfaceRoleType Interface role endpoint implements.
-type InterfaceRoleType string
+// InterfaceRole Interface role endpoint implements.
+type InterfaceRole string
 
-// Defines values for InterfaceRoleType.
+// Defines values for InterfaceRole.
 const (
-	RoleReceiver InterfaceRoleType = "RECEIVER"
-	RoleSender   InterfaceRoleType = "SENDER"
+	InterfaceRoleReceiver InterfaceRole = "RECEIVER"
+	InterfaceRoleSender   InterfaceRole = "SENDER"
 )
 
-// ModuleIdentifier OCPI 2.2.1 modules
-type ModuleIdentifier string
+// ModuleID OCPI 2.2.1 modules
+type ModuleID string
 
-// Defines values for ModuleIdentifier.
+// Defines values for ModuleID.
 const (
-	ModuleIdentifierCdrs             ModuleIdentifier = "cdrs"
-	ModuleIdentifierChargingProfiles ModuleIdentifier = "chargingprofiles"
-	ModuleIdentifierCommands         ModuleIdentifier = "commands"
-	ModuleIdentifierCredentials      ModuleIdentifier = "credentials"
-	ModuleIdentifierHubClientInfo    ModuleIdentifier = "hubclientinfo"
-	ModuleIdentifierLocations        ModuleIdentifier = "locations"
-	ModuleIdentifierSessions         ModuleIdentifier = "sessions"
-	ModuleIdentifierTariffs          ModuleIdentifier = "tariffs"
-	ModuleIdentifierTokens           ModuleIdentifier = "tokens"
+	ModuleIDCdrs             ModuleID = "cdrs"
+	ModuleIDChargingProfiles ModuleID = "chargingprofiles"
+	ModuleIDCommands         ModuleID = "commands"
+	ModuleIDCredentials      ModuleID = "credentials"
+	ModuleIDHubClientInfo    ModuleID = "hubclientinfo"
+	ModuleIDLocations        ModuleID = "locations"
+	ModuleIDSessions         ModuleID = "sessions"
+	ModuleIDTariffs          ModuleID = "tariffs"
+	ModuleIDTokens           ModuleID = "tokens"
 )
 
 // ChargingProfileResultType defines model for ActiveChargingProfileResult.Result.
@@ -189,11 +189,17 @@ const (
 	CommandResultTypeUnknownReservation  CommandResultType = "UNKNOWN_RESERVATION"
 )
 
+// ConnectorFormat defines model for Connector.Format.
+type ConnectorFormat string
+
 // Defines values for ConnectorFormat.
 const (
 	ConnectorFormatCable  ConnectorFormat = "CABLE"
 	ConnectorFormatSocket ConnectorFormat = "SOCKET"
 )
+
+// PowerType defines model for Connector.PowerType.
+type PowerType string
 
 // Defines values for PowerType.
 const (
@@ -204,47 +210,50 @@ const (
 	PowerTypeDC            PowerType = "DC"
 )
 
-// Defines values for ConnectorStandard.
+// ConnectorType defines model for Connector.Standard.
+type ConnectorType string
+
+// Defines values for ConnectorType.
 const (
-	ConnectorStandardCHAdeMO            ConnectorStandard = "CHADEMO"
-	ConnectorStandardChaoJi             ConnectorStandard = "CHAOJI"
-	ConnectorStandardDomesticA          ConnectorStandard = "DOMESTIC_A"
-	ConnectorStandardDomesticB          ConnectorStandard = "DOMESTIC_B"
-	ConnectorStandardDomesticC          ConnectorStandard = "DOMESTIC_C"
-	ConnectorStandardDomesticD          ConnectorStandard = "DOMESTIC_D"
-	ConnectorStandardDomesticE          ConnectorStandard = "DOMESTIC_E"
-	ConnectorStandardDomesticF          ConnectorStandard = "DOMESTIC_F"
-	ConnectorStandardDomesticG          ConnectorStandard = "DOMESTIC_G"
-	ConnectorStandardDomesticH          ConnectorStandard = "DOMESTIC_H"
-	ConnectorStandardDomesticJ          ConnectorStandard = "DOMESTIC_J"
-	ConnectorStandardDomesticK          ConnectorStandard = "DOMESTIC_K"
-	ConnectorStandardDomesticL          ConnectorStandard = "DOMESTIC_L"
-	ConnectorStandardDomesticM          ConnectorStandard = "DOMESTIC_M"
-	ConnectorStandardDomesticN          ConnectorStandard = "DOMESTIC_N"
-	ConnectorStandardDomesticO          ConnectorStandard = "DOMESTIC_O"
-	ConnectorStandardGBTAC              ConnectorStandard = "GBT_AC"
-	ConnectorStandardGBTDC              ConnectorStandard = "GBT_DC"
-	ConnectorStandardIEC603092Single16  ConnectorStandard = "IEC_60309_2_single_16"
-	ConnectorStandardIEC603092Three16   ConnectorStandard = "IEC_60309_2_three_16"
-	ConnectorStandardIEC603092Three32   ConnectorStandard = "IEC_60309_2_three_32"
-	ConnectorStandardIEC603092Three64   ConnectorStandard = "IEC_60309_2_three_64"
-	ConnectorStandardIEC62196T1         ConnectorStandard = "IEC_62196_T1"
-	ConnectorStandardIEC62196T1Combo    ConnectorStandard = "IEC_62196_T1_COMBO"
-	ConnectorStandardIEC62196T2         ConnectorStandard = "IEC_62196_T2"
-	ConnectorStandardIEC62196T2Combo    ConnectorStandard = "IEC_62196_T2_COMBO"
-	ConnectorStandardIEC62196T3A        ConnectorStandard = "IEC_62196_T3A"
-	ConnectorStandardIEC62196T3C        ConnectorStandard = "IEC_62196_T3C"
-	ConnectorStandardNema1030           ConnectorStandard = "NEMA_10_30"
-	ConnectorStandardNema1050           ConnectorStandard = "NEMA_10_50"
-	ConnectorStandardNema1430           ConnectorStandard = "NEMA_14_30"
-	ConnectorStandardNema1450           ConnectorStandard = "NEMA_14_50"
-	ConnectorStandardNema520            ConnectorStandard = "NEMA_5_20"
-	ConnectorStandardNema630            ConnectorStandard = "NEMA_6_30"
-	ConnectorStandardNema650            ConnectorStandard = "NEMA_6_50"
-	ConnectorStandardPantographBottomUp ConnectorStandard = "PANTOGRAPH_BOTTOM_UP"
-	ConnectorStandardPantographTopDown  ConnectorStandard = "PANTOGRAPH_TOP_DOWN"
-	ConnectorStandardTeslaR             ConnectorStandard = "TESLA_R"
-	ConnectorStandardTeslaS             ConnectorStandard = "TESLA_S"
+	ConnectorTypeCHAdeMO            ConnectorType = "CHADEMO"
+	ConnectorTypeChaoJi             ConnectorType = "CHAOJI"
+	ConnectorTypeDomesticA          ConnectorType = "DOMESTIC_A"
+	ConnectorTypeDomesticB          ConnectorType = "DOMESTIC_B"
+	ConnectorTypeDomesticC          ConnectorType = "DOMESTIC_C"
+	ConnectorTypeDomesticD          ConnectorType = "DOMESTIC_D"
+	ConnectorTypeDomesticE          ConnectorType = "DOMESTIC_E"
+	ConnectorTypeDomesticF          ConnectorType = "DOMESTIC_F"
+	ConnectorTypeDomesticG          ConnectorType = "DOMESTIC_G"
+	ConnectorTypeDomesticH          ConnectorType = "DOMESTIC_H"
+	ConnectorTypeDomesticJ          ConnectorType = "DOMESTIC_J"
+	ConnectorTypeDomesticK          ConnectorType = "DOMESTIC_K"
+	ConnectorTypeDomesticL          ConnectorType = "DOMESTIC_L"
+	ConnectorTypeDomesticM          ConnectorType = "DOMESTIC_M"
+	ConnectorTypeDomesticN          ConnectorType = "DOMESTIC_N"
+	ConnectorTypeDomesticO          ConnectorType = "DOMESTIC_O"
+	ConnectorTypeGBTAC              ConnectorType = "GBT_AC"
+	ConnectorTypeGBTDC              ConnectorType = "GBT_DC"
+	ConnectorTypeIEC603092Single16  ConnectorType = "IEC_60309_2_single_16"
+	ConnectorTypeIEC603092Three16   ConnectorType = "IEC_60309_2_three_16"
+	ConnectorTypeIEC603092Three32   ConnectorType = "IEC_60309_2_three_32"
+	ConnectorTypeIEC603092Three64   ConnectorType = "IEC_60309_2_three_64"
+	ConnectorTypeIEC62196T1         ConnectorType = "IEC_62196_T1"
+	ConnectorTypeIEC62196T1Combo    ConnectorType = "IEC_62196_T1_COMBO"
+	ConnectorTypeIEC62196T2         ConnectorType = "IEC_62196_T2"
+	ConnectorTypeIEC62196T2Combo    ConnectorType = "IEC_62196_T2_COMBO"
+	ConnectorTypeIEC62196T3A        ConnectorType = "IEC_62196_T3A"
+	ConnectorTypeIEC62196T3C        ConnectorType = "IEC_62196_T3C"
+	ConnectorTypeNema1030           ConnectorType = "NEMA_10_30"
+	ConnectorTypeNema1050           ConnectorType = "NEMA_10_50"
+	ConnectorTypeNema1430           ConnectorType = "NEMA_14_30"
+	ConnectorTypeNema1450           ConnectorType = "NEMA_14_50"
+	ConnectorTypeNema520            ConnectorType = "NEMA_5_20"
+	ConnectorTypeNema630            ConnectorType = "NEMA_6_30"
+	ConnectorTypeNema650            ConnectorType = "NEMA_6_50"
+	ConnectorTypePantographBottomUp ConnectorType = "PANTOGRAPH_BOTTOM_UP"
+	ConnectorTypePantographTopDown  ConnectorType = "PANTOGRAPH_TOP_DOWN"
+	ConnectorTypeTeslaR             ConnectorType = "TESLA_R"
+	ConnectorTypeTeslaS             ConnectorType = "TESLA_S"
 )
 
 // Defines values for EvseCapabilities.
@@ -327,7 +336,7 @@ const (
 	FacilityMuseum         Facility = "MUSEUM"
 	FacilityNature         Facility = "NATURE"
 	FacilityParkingLot     Facility = "PARKING_LOT"
-	FacilityRECREATIONAREA Facility = "RECREATION_AREA"
+	FacilityRecreationArea Facility = "RECREATION_AREA"
 	FacilityRestaurant     Facility = "RESTAURANT"
 	FacilitySport          Facility = "SPORT"
 	FacilitySuperMarket    Facility = "SUPERMARKET"
@@ -440,8 +449,6 @@ const (
 	WhitelistTypeNever          WhitelistType = "NEVER"
 )
 
-type VersionsResponse = ocpi.Response[[]Version]
-
 // ActiveChargingProfileResult defines model for activeChargingProfileResult.
 type ActiveChargingProfileResult struct {
 	Profile *ActiveChargingProfile    `json:"profile,omitempty"`
@@ -518,20 +525,20 @@ type AuthMethod string
 
 // CdrLocation defines model for cdrBody_cdr_location.
 type CdrLocation struct {
-	ID                 string            `json:"id" validate:"required"`
-	Name               *string           `json:"name,omitempty"`
-	Address            string            `json:"address" validate:"required"`
-	City               string            `json:"city" validate:"required"`
-	PostalCode         *string           `json:"postal_code,omitempty"`
-	State              *string           `json:"state,omitempty"`
-	Country            string            `json:"country" validate:"required,len=3"`
-	Coordinates        GeoLocation       `json:"coordinates"`
-	EvseUID            string            `json:"evse_uid" validate:"required,max=36"`
-	EvseID             string            `json:"evse_id" validate:"required,max=48"`
-	ConnectorID        string            `json:"connector_id"`
-	ConnectorStandard  ConnectorStandard `json:"connector_standard" validate:"required"`
-	ConnectorFormat    ConnectorFormat   `json:"connector_format" validate:"required"`
-	ConnectorPowerType PowerType         `json:"connector_power_type" validate:"required"`
+	ID                 string          `json:"id" validate:"required"`
+	Name               *string         `json:"name,omitempty"`
+	Address            string          `json:"address" validate:"required"`
+	City               string          `json:"city" validate:"required"`
+	PostalCode         *string         `json:"postal_code,omitempty"`
+	State              *string         `json:"state,omitempty"`
+	Country            string          `json:"country" validate:"required,len=3"`
+	Coordinates        GeoLocation     `json:"coordinates"`
+	EvseUID            string          `json:"evse_uid" validate:"required,max=36"`
+	EvseID             string          `json:"evse_id" validate:"required,max=48"`
+	ConnectorID        string          `json:"connector_id"`
+	ConnectorType      ConnectorType   `json:"connector_standard" validate:"required"`
+	ConnectorFormat    ConnectorFormat `json:"connector_format" validate:"required"`
+	ConnectorPowerType PowerType       `json:"connector_power_type" validate:"required"`
 }
 
 // GeoLocation defines model for cdrBody_cdr_location_coordinates.
@@ -758,31 +765,19 @@ type CommandResult struct {
 // CommandResultType defines model for CommandResult.Result.
 type CommandResultType string
 
-type ConnectorCapability string
-
 // Connector defines model for connector.
 type Connector struct {
-	Format             ConnectorFormat       `json:"format"`
-	Id                 string                `json:"id"`
-	LastUpdated        ocpi.DateTime         `json:"last_updated"`
-	MaxAmperage        int                   `json:"max_amperage"`
-	MaxElectricPower   *int                  `json:"max_electric_power,omitempty"`
-	MaxVoltage         int                   `json:"max_voltage"`
-	PowerType          PowerType             `json:"power_type"`
-	Standard           ConnectorStandard     `json:"standard"`
-	Capabilities       []ConnectorCapability `json:"capabilities"`
-	TariffIds          []string              `json:"tariff_ids,omitempty"`
-	TermsAndConditions *string               `json:"terms_and_conditions,omitempty"`
+	ID                 string          `json:"id"`
+	Standard           ConnectorType   `json:"standard"`
+	Format             ConnectorFormat `json:"format"`
+	PowerType          PowerType       `json:"power_type"`
+	MaxVoltage         int             `json:"max_voltage"`
+	MaxAmperage        int             `json:"max_amperage"`
+	MaxElectricPower   *int            `json:"max_electric_power,omitempty"`
+	TariffIDs          []string        `json:"tariff_ids,omitempty"`
+	TermsAndConditions *string         `json:"terms_and_conditions,omitempty"`
+	LastUpdated        ocpi.DateTime   `json:"last_updated"`
 }
-
-// ConnectorFormat defines model for Connector.Format.
-type ConnectorFormat string
-
-// PowerType defines model for Connector.PowerType.
-type PowerType string
-
-// ConnectorStandard defines model for Connector.Standard.
-type ConnectorStandard string
 
 // CredentialsData defines model for credentials_data.
 type CredentialsData struct {
@@ -819,39 +814,28 @@ type Image struct {
 // ImageCategory defines model for Image.Category.
 type ImageCategory string
 
-// Details defines model for details.
-type Details struct {
-	Data          *DetailsData `json:"data,omitempty"`
-	StatusCode    float32      `json:"status_code"`
-	StatusMessage *string      `json:"status_message,omitempty"`
-	TimeStamp     *string      `json:"timeStamp,omitempty"`
-}
-
 // DetailsData defines model for details_data.
-type DetailsData struct {
-	Endpoints []DetailsDataEndpoints `json:"endpoints,omitempty"`
-	Version   DetailsDataVersion     `json:"version"`
+type VersionDetails struct {
+	Endpoints []Endpoint         `json:"endpoints"`
+	Version   ocpi.VersionNumber `json:"version"`
 }
 
-// DetailsDataVersion defines model for DetailsData.Version.
-type DetailsDataVersion string
-
-// DetailsDataEndpoints defines model for details_data_endpoints.
-type DetailsDataEndpoints struct {
+// Endpoint defines model for details_data_endpoints.
+type Endpoint struct {
 	// Identifier OCPI 2.2.1 modules
-	Identifier ModuleIdentifier `json:"identifier"`
+	Identifier ModuleID `json:"identifier"`
 
 	// Role Interface role endpoint implements.
-	Role InterfaceRoleType `json:"role"`
+	Role InterfaceRole `json:"role"`
 
 	// Url URL to the endpoint.
-	Url string `json:"url"`
+	URL string `json:"url"`
 }
 
 // EVSE defines model for evse.
 type EVSE struct {
-	Uid                      string               `json:"uid" validate:"required"`
-	EvseId                   *string              `json:"evse_id,omitempty"`
+	UID                      string               `json:"uid" validate:"required"`
+	EvseID                   *string              `json:"evse_id,omitempty"`
 	Status                   EvseStatus           `json:"status" validate:"required"`
 	StatusSchedule           []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities             []Capability         `json:"capabilities,omitempty"`
@@ -901,8 +885,8 @@ type StatusScheduleStatus string
 
 // LocationReferences defines model for locationReferences.
 type LocationReferences struct {
-	EvseUids   *string `json:"evse_uids,omitempty"`
-	LocationId string  `json:"location_id"`
+	EvseUIDs   *string `json:"evse_uids,omitempty"`
+	LocationID string  `json:"location_id"`
 }
 
 // Locations defines model for locations.
@@ -914,7 +898,7 @@ type LocationResponse = ocpi.Response[Location]
 // LocationsData defines model for locations_data.
 type Location struct {
 	CountryCode        string                  `json:"country_code" validate:"required,len=2"`
-	PartyId            string                  `json:"party_id" validate:"required,len=3"`
+	PartyID            string                  `json:"party_id" validate:"required,len=3"`
 	ID                 string                  `json:"id" validate:"required"`
 	Publish            bool                    `json:"publish"`
 	PublishAllowedTo   []PublishTokenType      `json:"publish_allowed_to,omitempty"`
@@ -927,7 +911,7 @@ type Location struct {
 	Coordinates        GeoLocation             `json:"coordinates"`
 	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
 	ParkingType        *ParkingType            `json:"parking_type,omitempty"`
-	Evses              []EVSE                  `json:"evses,omitempty"`
+	EVSEs              []EVSE                  `json:"evses,omitempty"`
 	ParkingPlaces      []Parking               `json:"parking_places,omitempty"`
 	Directions         []DisplayText           `json:"directions,omitempty"`
 	Operator           *BusinessDetails        `json:"operator,omitempty"`
@@ -1335,12 +1319,6 @@ type UnlockConnector struct {
 	EvseUID     string `json:"evse_uid"`
 	LocationID  string `json:"location_id"`
 	ResponseURL string `json:"response_url"`
-}
-
-// VersionsData defines model for versions_data.
-type Version struct {
-	Url     string       `json:"url"`
-	Version ocpi.Version `json:"version"`
 }
 
 // GetOcpiCdrsParams defines parameters for GetOcpiCdrs.
