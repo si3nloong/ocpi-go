@@ -29,6 +29,7 @@ func NewServer() *Server {
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	router := chi.NewRouter()
 
+	router.HandleFunc(s.baseUrl, s.GetOcpiEndpoints)
 	router.HandleFunc(s.baseUrl+"/credentials", s.GetOcpiCredentials)
 
 	router.ServeHTTP(w, r)

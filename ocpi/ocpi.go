@@ -3,7 +3,6 @@ package ocpi
 import (
 	"encoding/json"
 	"reflect"
-	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -85,11 +84,4 @@ func (r *ocpiResult[T]) Data() (T, error) {
 
 func NewResult[T any](resp Response[T]) Result[T] {
 	return &ocpiResult[T]{resp: &resp}
-}
-
-type Response[T any] struct {
-	Data          T          `json:"data,omitempty"`
-	StatusCode    StatusCode `json:"status_code"`
-	StatusMessage string     `json:"status_message"`
-	Timestamp     time.Time  `json:"timestamp"`
 }

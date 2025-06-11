@@ -1,11 +1,9 @@
 package ocpi221
 
 import (
-	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/ocpi"
@@ -76,33 +74,3 @@ func (s *Server) handler() http.Handler {
 // 	}
 // 	return s.httpServer.Shutdown(context.Background())
 // }
-
-func getHostname(r *http.Request) string {
-	hostname := "http://" + r.Host
-	if r.TLS != nil {
-		hostname = "https://" + r.Host
-	}
-	return hostname
-}
-
-func toResponse[T any](value T) ([]byte, error) {
-	return json.Marshal(ocpi.Response[T]{
-		Data:          value,
-		StatusCode:    ocpi.GenericSuccessCode,
-		StatusMessage: ocpi.GenericSuccessCode.String(),
-		Timestamp:     time.Now().UTC(),
-	})
-}
-
-func httpError(w http.ResponseWriter, err error, statusCode ocpi.StatusCode) {
-	b, _ := json.Marshal(ocpi.Response[any]{
-		StatusCode:    statusCode,
-		StatusMessage: err.Error(),
-		Timestamp:     time.Now(),
-	})
-	h := w.Header()
-	h.Del("Content-Length")
-	h.Set("X-Content-Type-Options", "nosniff")
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
-}
