@@ -148,6 +148,6 @@ func (UnimplementedServer) GetTokens(ctx context.Context, params GetOcpiTokensPa
 	return nil, ErrNotImplemented
 }
 
-func (UnimplementedServer) PostToken(ctx context.Context, tokenUid string, tokenType ...TokenType) (*AuthorizationInfo, error) {
+func (UnimplementedServer) PostToken(ctx context.Context, tokenUID string, body ocpi.RawMessage[LocationReferences], tokenType ...TokenType) (*AuthorizationInfo, error) {
 	return nil, ErrNotImplemented
 }

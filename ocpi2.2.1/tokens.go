@@ -38,10 +38,25 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	tokenType := TokenTypeRFID
+	if r.URL.Query().Has("type") {
+		switch r.URL.Query().Get("type") {
+		case string(TokenTypeRFID):
+			tokenType = TokenTypeRFID
+		case string(TokenTypeAdHocUser):
+			tokenType = TokenTypeAdHocUser
+		case string(TokenTypeAppUser):
+			tokenType = TokenTypeAppUser
+		case string(TokenTypeOther):
+			tokenType = TokenTypeOther
+		}
+	}
+
 	authInfo, err := s.tokensSender.PostToken(
 		r.Context(),
 		tokenUid,
 		ocpi.RawMessage[LocationReferences](body),
+		tokenType,
 	)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
