@@ -110,12 +110,11 @@ type CommandsReceiver interface {
 }
 
 type Credentials interface {
-	CredentialsSender
-	CredentialsReceiver
-}
-type CredentialsSender interface {
-}
-type CredentialsReceiver interface {
+	VerifyToken(token string) bool
+	GetCredential(ctx context.Context, tokenA string) (*Credential, error)
+	PostCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error)
+	PutCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error)
+	DeleteCredential(ctx context.Context, tokenA string) (*Credential, error)
 }
 
 type HubClientInfoSender interface {
@@ -175,8 +174,19 @@ type TariffsReceiver interface {
 }
 
 type TokensSender interface {
+	// GetOcpiTokens retrieves a list of tokens based on the provided parameters.
+	// (GET /ocpi/2.2.1/tokens)
+	GetTokens(ctx context.Context, params GetOcpiTokensParams) ([]Token, error)
+	// (POST /ocpi/2.2.1/tokens/{token_uid}/authorize)
+	PostToken(ctx context.Context, tokenUID string, body ocpi.RawMessage[Token]) (*AuthorizationInfo, error)
 }
 type TokensReceiver interface {
+	// (GET /ocpi/2.2.1/tokens/{country_code}/{party_id}/{token_uid}[?type={type}])
+	GetToken(ctx context.Context, countryCode string, partyID string, tokenUID string, tokenType ...TokenType) (*Token, error)
+	// (PUT /ocpi/2.2.1/tokens/{country_code}/{party_id}/{token_uid}[?type={type}])
+	PutToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[Token], tokenType ...TokenType) error
+	// (PATCH /ocpi/2.2.1/tokens/{country_code}/{party_id}/{token_uid}[?type={type}])
+	PatchToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PatchedToken], tokenType ...TokenType) error
 }
 
 type Versions interface {

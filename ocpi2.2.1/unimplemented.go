@@ -11,6 +11,31 @@ var ErrNotImplemented = errors.New("not implemented")
 
 type UnimplementedServer struct{}
 
+// GetCredential implements Credentials.
+func (UnimplementedServer) GetCredential(ctx context.Context, tokenA string) (*Credential, error) {
+	return nil, ErrNotImplemented
+}
+
+// PostCredential implements Credentials.
+func (UnimplementedServer) PostCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error) {
+	return nil, ErrNotImplemented
+}
+
+// PutCredential implements Credentials.
+func (UnimplementedServer) PutCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error) {
+	return nil, ErrNotImplemented
+}
+
+// DeleteCredential implements Credentials.
+func (UnimplementedServer) DeleteCredential(ctx context.Context, tokenA string) (*Credential, error) {
+	return nil, ErrNotImplemented
+}
+
+// VerifyToken implements Credentials.
+func (UnimplementedServer) VerifyToken(token string) bool {
+	return true
+}
+
 func (UnimplementedServer) GetLocation(ctx context.Context, countryCode string, partyId string, locationId string) (*Location, error) {
 	return nil, ErrNotImplemented
 }

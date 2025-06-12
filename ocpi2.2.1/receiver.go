@@ -402,48 +402,6 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	countryCode := chi.URLParam(r, "country_code")
-	partyId := chi.URLParam(r, "party_id")
-	tokenUid := chi.URLParam(r, "token_uid")
-	tokenType := TokenTypeRFID
-	if r.URL.Query().Has("type") {
-		switch r.URL.Query().Get("type") {
-		case string(TokenTypeRFID):
-			tokenType = TokenTypeRFID
-		case string(TokenTypeAdHocUser):
-			tokenType = TokenTypeAdHocUser
-		case string(TokenTypeAppUser):
-			tokenType = TokenTypeAppUser
-		case string(TokenTypeOther):
-			tokenType = TokenTypeOther
-		}
-	}
-
-	token, err := s.receiver.GetToken(
-		r.Context(),
-		countryCode,
-		partyId,
-		tokenUid,
-		tokenType,
-	)
-	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
-		return
-	}
-
-	b, err := json.Marshal(ocpi.NewResponse(token))
-	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
-}
-
 func (s *Server) PostOcpiCdr(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -460,6 +418,26 @@ func (s *Server) PostOcpiCdr(w http.ResponseWriter, r *http.Request) {
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse[any](nil))
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
+func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	commandType := chi.URLParam(r, "command_type")
+
+	resp, err := s.commandsReceiver.PostCommand(r.Context(), CommandType(commandType))
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewResponse(resp))
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
 		return

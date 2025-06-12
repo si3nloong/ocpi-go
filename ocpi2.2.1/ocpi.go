@@ -449,6 +449,19 @@ const (
 	WhitelistTypeNever          WhitelistType = "NEVER"
 )
 
+type Credential struct {
+	Token string            `json:"token"`
+	URL   string            `json:"url"`
+	Roles []CredentialsRole `json:"roles"`
+}
+
+type CredentialsRole struct {
+	Role            Role            `json:"role"`
+	BusinessDetails BusinessDetails `json:"business_details"`
+	PartyID         string          `json:"party_id" validate:"required,len=3"`
+	CountryCode     string          `json:"country_code" validate:"required,len=2"`
+}
+
 // ActiveChargingProfileResult defines model for activeChargingProfileResult.
 type ActiveChargingProfileResult struct {
 	Profile *ActiveChargingProfile    `json:"profile,omitempty"`
@@ -777,28 +790,6 @@ type Connector struct {
 	TariffIDs          []string        `json:"tariff_ids,omitempty"`
 	TermsAndConditions *string         `json:"terms_and_conditions,omitempty"`
 	LastUpdated        ocpi.DateTime   `json:"last_updated"`
-}
-
-// CredentialsData defines model for credentials_data.
-type CredentialsData struct {
-	Roles []CredentialsDataRoles `json:"roles,omitempty"`
-	Token string                 `json:"token"`
-	Url   string                 `json:"url"`
-}
-
-// CredentialsDataRoles defines model for credentials_data_roles.
-type CredentialsDataRoles struct {
-	BusinessDetails CredentialsDataRolesBusinessDetails `json:"business_details"`
-	CountryCode     string                              `json:"country_code"`
-	PartyID         string                              `json:"party_id"`
-	Role            Role                                `json:"role"`
-}
-
-// CredentialsDataRolesBusinessDetails defines model for credentials_data_roles_business_details.
-type CredentialsDataRolesBusinessDetails struct {
-	Logo    *Image  `json:"logo,omitempty"`
-	Name    string  `json:"name"`
-	Website *string `json:"website,omitempty"`
 }
 
 // Image defines model for credentials_data_roles_business_details_logo.

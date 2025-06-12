@@ -37,11 +37,10 @@ type Server struct {
 	tokensSender             TokensSender
 	tokensReceiver           TokensReceiver
 	versions                 Versions
-	sender                   Sender
 	receiver                 Receiver
 }
 
-func NewServer(cfg Config, sender Sender, receiver Receiver) *Server {
+func NewServer(credential Credentials, cfg Config) *Server {
 	s := new(Server)
 	s.baseUrl = "/ocpi/" + string(ocpi.VersionNumber221)
 	if cfg.BaseURL != "" {
@@ -51,8 +50,7 @@ func NewServer(cfg Config, sender Sender, receiver Receiver) *Server {
 		Level: slog.LevelDebug,
 	}))
 	s.roles = make(map[Role]struct{})
-	s.sender = sender
-	s.receiver = receiver
+	s.credentials = credential
 	return s
 }
 
@@ -137,39 +135,53 @@ func (s *Server) Handler() http.Handler {
 	router := chi.NewRouter()
 
 	s.baseUrl = ""
-	router.HandleFunc(s.baseUrl+"/details", s.GetOcpiVersionDetails)
-	router.HandleFunc(s.baseUrl+"/credentials", s.GetOcpiCredentials)
+	router.Get(s.baseUrl+"/details", s.GetOcpiVersionDetails)
+	router.Get(s.baseUrl+"/credentials", s.GetOcpiCredentials)
+	router.Post(s.baseUrl+"/credentials", s.PostOcpiCredentials)
+	router.Put(s.baseUrl+"/credentials", s.PutOcpiCredentials)
+	router.Delete(s.baseUrl+"/credentials", s.DeleteOcpiCredentials)
 
-	if s.sender != nil {
-		router.HandleFunc(s.baseUrl+"/locations", s.GetOcpiLocations)
-		router.HandleFunc(s.baseUrl+"/sessions", s.GetOcpiSessions)
-		router.HandleFunc(s.baseUrl+"/tariffs", s.GetOcpiTariffs)
-		router.HandleFunc(s.baseUrl+"/tokens", s.GetOcpiTokens)
-		router.Post(s.baseUrl+"/tokens/{token_uid}/authorize", s.PostOcpiToken)
+	if s.locationsSender != nil {
+		router.Get(s.baseUrl+"/locations", s.GetOcpiLocations)
+	}
+	if s.locationsReceiver != nil {
+		router.Get(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
+		router.Put(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
+		router.Patch(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
 	}
 
-	router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
-	router.Put(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
-	router.Patch(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
+	if s.sessionsSender != nil {
+		router.Get(s.baseUrl+"/sessions", s.GetOcpiSessions)
+	}
+	if s.sessionsReceiver != nil {
+		router.Get(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.GetOcpiSession)
+		router.Put(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)
+		router.Patch(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
+	}
 
-	router.Get(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.GetOcpiSession)
-	router.Put(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)
-	router.Patch(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
+	// router.HandleFunc(s.baseUrl+"/tariffs", s.GetOcpiTariffs)
+	if s.tokensSender != nil {
+		router.Get(s.baseUrl+"/tokens", s.GetOcpiTokens)
+		router.Post(s.baseUrl+"/tokens/{token_uid}/authorize", s.PostOcpiToken)
+	}
+	if s.tokensReceiver != nil {
+		router.Get(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.GetOcpiToken)
+		router.Put(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PutOcpiToken)
+		router.Patch(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PatchOcpiToken)
+	}
 
-	router.Get(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.GetOcpiToken)
+	if s.cdrsReceiver != nil {
+		router.Get(s.baseUrl+"/cdrs/{id}", s.GetOcpiCDR)
+		router.Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
+	}
 
-	router.Get(s.baseUrl+"/cdrs/{id}", s.GetOcpiCDR)
-	router.Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
-
-	router.Post(s.baseUrl+"/commands/{command_type}/{session_uid}", s.PostOcpiCommandResponse)
+	if s.commandsReceiver != nil {
+		router.Post(s.baseUrl+"/commands/{command_type}", s.PostOcpiCommand)
+	}
+	if s.commandsSender != nil {
+		router.Post(s.baseUrl+"/commands/{command_type}/{uid}", s.PostOcpiCommandResponse)
+	}
 
 	s.baseUrl = fmt.Sprintf("/ocpi/%s", ocpi.VersionNumber221)
 	return router
 }
-
-// func (s *Server) Stop() error {
-// 	if s.httpServer == nil {
-// 		return nil
-// 	}
-// 	return s.httpServer.Shutdown(context.Background())
-// }
