@@ -71,13 +71,62 @@ func (s *Server) GetOcpiEndpoints(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	endpoints := []Endpoint{
-		{Identifier: ModuleIDCredentials, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/credentials"},
-		{Identifier: ModuleIDLocations, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/locations"},
-		{Identifier: ModuleIDSessions, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/sessions"},
-		{Identifier: ModuleIDTokens, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/tokens"},
-		{Identifier: ModuleIDTariffs, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/tariffs"},
-		{Identifier: ModuleIDCdrs, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/cdrs"},
-		{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/chargingprofiles"},
+		{Identifier: ModuleIDCredentials, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/credentials"},
+		{Identifier: ModuleIDCredentials, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/credentials"},
+		// {Identifier: ModuleIDLocations, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/locations"},
+		// {Identifier: ModuleIDSessions, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/sessions"},
+		// {Identifier: ModuleIDTokens, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/tokens"},
+		// {Identifier: ModuleIDTariffs, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/tariffs"},
+		// {Identifier: ModuleIDCdrs, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/cdrs"},
+		// {Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/chargingprofiles"},
+	}
+	if s.cdrsSender != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCdrs, Role: InterfaceRoleSender, URL: httputil.GetHostname(r) + s.baseUrl + "/cdrs"})
+	}
+	if s.cdrsReceiver != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCdrs, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/cdrs"})
+	}
+	if s.chargingProfilesSender != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleSender, URL: httputil.GetHostname(r) + s.baseUrl + "/chargingprofiles"})
+	}
+	if s.chargingProfilesReceiver != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/chargingprofiles"})
+	}
+	if s.commandsSender != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCommands, Role: InterfaceRoleSender, URL: httputil.GetHostname(r) + s.baseUrl + "/commands"})
+	}
+	if s.commandsReceiver != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCommands, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/commands"})
+	}
+	if s.hubClientInfoSender != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDHubClientInfo, Role: InterfaceRoleSender, URL: httputil.GetHostname(r) + s.baseUrl + "/clientinfo"})
+	}
+	if s.hubClientInfoReceiver != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDHubClientInfo, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/clientinfo"})
+	}
+	if s.locationsSender != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDLocations, Role: InterfaceRoleSender, URL: httputil.GetHostname(r) + s.baseUrl + "/locations"})
+	}
+	if s.locationsReceiver != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDLocations, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/locations"})
+	}
+	if s.sessionsSender != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDSessions, Role: InterfaceRoleSender, URL: httputil.GetHostname(r) + s.baseUrl + "/sessions"})
+	}
+	if s.sessionsReceiver != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDSessions, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/sessions"})
+	}
+	if s.tariffsSender != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTariffs, Role: InterfaceRoleSender, URL: httputil.GetHostname(r) + s.baseUrl + "/tariffs"})
+	}
+	if s.tariffsReceiver != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTariffs, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/tariffs"})
+	}
+	if s.tokensSender != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTokens, Role: InterfaceRoleSender, URL: httputil.GetHostname(r) + s.baseUrl + "/tokens"})
+	}
+	if s.tokensReceiver != nil {
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTokens, Role: InterfaceRoleReceiver, URL: httputil.GetHostname(r) + s.baseUrl + "/tokens"})
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse(endpoints))
@@ -428,7 +477,23 @@ func (s *Server) PostOcpiCdr(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	// commandType := chi.URLParam(r, "command_type")
+	commandType := chi.URLParam(r, "command_type")
+	uid := chi.URLParam(r, "uid")
+
+	resp, err := s.commandsSender.PostAsyncCommand(r.Context(), CommandType(commandType), uid)
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewResponse(resp))
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
 }
 
 func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
