@@ -8,17 +8,10 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (s *Server) GetOcpiEndpoints(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	endpoints := []Endpoint{
-		{Identifier: ModuleIDCredentials, URL: httputil.GetHostname(r) + s.baseUrl + "/credentials"},
-		{Identifier: ModuleIDLocations, URL: httputil.GetHostname(r) + s.baseUrl + "/locations"},
-		{Identifier: ModuleIDSessions, URL: httputil.GetHostname(r) + s.baseUrl + "/sessions"},
-		{Identifier: ModuleIDTokens, URL: httputil.GetHostname(r) + s.baseUrl + "/tokens"},
-		{Identifier: ModuleIDTariffs, URL: httputil.GetHostname(r) + s.baseUrl + "/tariffs"},
-		{Identifier: ModuleIDCdrs, URL: httputil.GetHostname(r) + s.baseUrl + "/cdrs"},
-	}
+	endpoints := []Endpoint{}
 
 	b, err := json.Marshal(ocpi.NewResponse(endpoints))
 	if err != nil {

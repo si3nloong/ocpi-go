@@ -138,11 +138,3 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
 }
-
-func getHostname(r *http.Request) string {
-	hostname := "http://" + r.Host
-	if r.TLS != nil {
-		hostname = "https://" + r.Host
-	}
-	return hostname
-}

@@ -78,6 +78,8 @@ type SCSP interface {
 }
 
 type CDRsSender interface {
+	// GetOcpiCDRs retrieves a list of charge detail records based on the provided parameters.
+	// (GET /ocpi/2.2.1/cdrs)
 	GetCDRs(ctx context.Context, params GetOcpiCdrsParams) ([]ChargeDetailRecord, error)
 }
 type CDRsReceiver interface {
@@ -128,23 +130,23 @@ type LocationsSender interface {
 }
 type LocationsReceiver interface {
 	// (GET /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id})
-	GetLocation(ctx context.Context, countryCode string, partyId string, locationId string) (*Location, error)
+	GetLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*Location, error)
 	// (GET /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid})
-	GetLocationEVSE(ctx context.Context, countryCode string, partyId string, locationId string, evseUid string) (*EVSE, error)
+	GetLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string) (*EVSE, error)
 	// (GET /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
-	GetLocationConnector(ctx context.Context, countryCode string, partyId string, locationId string, evseUid string, connectorId string) (*Connector, error)
+	GetLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, connectorID string) (*Connector, error)
 	// (PUT /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id})
-	PutLocation(ctx context.Context, countryCode string, partyId string, locationId string, body ocpi.RawMessage[Location]) error
+	PutLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[Location]) error
 	// (PUT /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid})
-	PutLocationEVSE(ctx context.Context, countryCode string, partyId string, locationId string, evseUid string, body ocpi.RawMessage[Location]) error
+	PutLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, body ocpi.RawMessage[Location]) error
 	// (PUT /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
-	PutLocationConnector(ctx context.Context, countryCode string, partyId string, locationId string, evseUid string, connectorId string, body ocpi.RawMessage[Location]) error
+	PutLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, connectorID string, body ocpi.RawMessage[Location]) error
 	// (PATCH /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id})
-	PatchLocation(ctx context.Context, countryCode string, partyId string, locationId string, body ocpi.RawMessage[PatchedLocation]) error
+	PatchLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PatchedLocation]) error
 	// (PATCH /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid})
-	PatchLocationEVSE(ctx context.Context, countryCode string, partyId string, locationId string, evseUid string, body ocpi.RawMessage[PatchedLocation]) error
+	PatchLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, body ocpi.RawMessage[PatchedLocation]) error
 	// (PATCH /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
-	PatchLocationConnector(ctx context.Context, countryCode string, partyId string, locationId string, evseUid string, connectorId string, body ocpi.RawMessage[PatchedLocation]) error
+	PatchLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, connectorID string, body ocpi.RawMessage[PatchedLocation]) error
 }
 
 type SessionsSender interface {
@@ -154,22 +156,22 @@ type SessionsSender interface {
 }
 type SessionsReceiver interface {
 	// (GET /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
-	GetSession(ctx context.Context, countryCode string, partyId string, sessionId string) (*Session, error)
+	GetSession(ctx context.Context, countryCode string, partyID string, sessionId string) (*Session, error)
 	// (PUT /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
-	PutSession(ctx context.Context, countryCode string, partyId string, sessionId string, body ocpi.RawMessage[Session]) error
+	PutSession(ctx context.Context, countryCode string, partyID string, sessionId string, body ocpi.RawMessage[Session]) error
 	// (PATCH /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
-	PatchSession(ctx context.Context, countryCode string, partyId string, sessionId string, body ocpi.RawMessage[PatchedSession]) error
+	PatchSession(ctx context.Context, countryCode string, partyID string, sessionId string, body ocpi.RawMessage[PatchedSession]) error
 }
 
 type TariffsSender interface {
 }
 type TariffsReceiver interface {
 	// (GET /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
-	GetTariff(ctx context.Context, countryCode string, partyId string, sessionId string) (*Tariff, error)
+	GetTariff(ctx context.Context, countryCode string, partyID string, sessionId string) (*Tariff, error)
 	// (PUT /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
-	PutTariff(ctx context.Context, countryCode string, partyId string, tariffId string, body ocpi.RawMessage[Tariff]) error
+	PutTariff(ctx context.Context, countryCode string, partyID string, tariffId string, body ocpi.RawMessage[Tariff]) error
 	// (PATCH /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
-	PatchTariff(ctx context.Context, countryCode string, partyId string, tariffId string, body ocpi.RawMessage[Tariff]) error
+	PatchTariff(ctx context.Context, countryCode string, partyID string, tariffId string, body ocpi.RawMessage[Tariff]) error
 }
 
 type TokensSender interface {

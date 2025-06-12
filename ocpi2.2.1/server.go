@@ -137,7 +137,7 @@ func (s *Server) Handler() http.Handler {
 	router := chi.NewRouter()
 
 	s.baseUrl = ""
-	router.HandleFunc(s.baseUrl+"/details", s.GetOcpiEndpoints)
+	router.HandleFunc(s.baseUrl+"/details", s.GetOcpiVersionDetails)
 	router.HandleFunc(s.baseUrl+"/credentials", s.GetOcpiCredentials)
 
 	if s.sender != nil {
