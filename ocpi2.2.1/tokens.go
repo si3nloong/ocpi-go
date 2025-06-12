@@ -41,7 +41,7 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 	authInfo, err := s.tokensSender.PostToken(
 		r.Context(),
 		tokenUid,
-		ocpi.RawMessage[Token](body),
+		ocpi.RawMessage[LocationReferences](body),
 	)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)

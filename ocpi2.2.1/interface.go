@@ -178,7 +178,7 @@ type TokensSender interface {
 	// (GET /ocpi/2.2.1/tokens)
 	GetTokens(ctx context.Context, params GetOcpiTokensParams) ([]Token, error)
 	// (POST /ocpi/2.2.1/tokens/{token_uid}/authorize)
-	PostToken(ctx context.Context, tokenUID string, body ocpi.RawMessage[Token]) (*AuthorizationInfo, error)
+	PostToken(ctx context.Context, tokenUID string, body ocpi.RawMessage[LocationReferences]) (*AuthorizationInfo, error)
 }
 type TokensReceiver interface {
 	// (GET /ocpi/2.2.1/tokens/{country_code}/{party_id}/{token_uid}[?type={type}])
