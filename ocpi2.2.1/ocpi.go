@@ -1035,7 +1035,7 @@ type Price struct {
 type ReservationRestrictionType string
 
 // ReserveNow defines model for reserveNow.
-type ReserveNowRequest struct {
+type ReserveNow struct {
 	ResponseURL            string        `json:"response_url" validate:"required"`
 	Token                  Token         `json:"token"`
 	ExpiryDate             ocpi.DateTime `json:"expiry_date" validate:"required"`
@@ -1114,7 +1114,7 @@ type SetChargingProfile struct {
 }
 
 // StartSessionRequest defines model for startSession.
-type StartSessionRequest struct {
+type StartSession struct {
 	AuthorizationReference *string `json:"authorization_reference,omitempty"`
 	ConnectorID            *string `json:"connector_id,omitempty"`
 	EvseUid                *string `json:"evse_uid,omitempty"`
@@ -1123,8 +1123,8 @@ type StartSessionRequest struct {
 	Token                  Token   `json:"token"`
 }
 
-// StopSessionRequest defines model for stopSession.
-type StopSessionRequest struct {
+// StopSession defines model for stopSession.
+type StopSession struct {
 	ResponseURL string `json:"response_url"`
 	SessionID   string `json:"session_id"`
 }

@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (c *Client) StartSession(ctx context.Context, req StartSessionRequest) (*CommandResponse, error) {
+func (c *Client) StartSession(ctx context.Context, req StartSession) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func (c *Client) StartSession(ctx context.Context, req StartSessionRequest) (*Co
 	return &res, nil
 }
 
-func (c *Client) StopSession(ctx context.Context, req StopSessionRequest) (*CommandResponse, error) {
+func (c *Client) StopSession(ctx context.Context, req StopSession) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (c *Client) StopSession(ctx context.Context, req StopSessionRequest) (*Comm
 	return &res, nil
 }
 
-func (c *Client) ReserveNow(ctx context.Context, req ReserveNowRequest) (*CommandResponse, error) {
+func (c *Client) ReserveNow(ctx context.Context, req ReserveNow) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
