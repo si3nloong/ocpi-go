@@ -25,6 +25,10 @@ func (dt *DateTime) UTC() DateTime {
 	return DateTime{dt.Time.UTC()}
 }
 
+func (dt DateTime) MarshalJSON() ([]byte, error) {
+	return dt.Time.MarshalJSON()
+}
+
 func (dt *DateTime) UnmarshalJSON(b []byte) error {
 	str := unsafe.String(unsafe.SliceData(b), len(b))
 	str, err := strconv.Unquote(str)

@@ -40,6 +40,24 @@ func NewClient(versionUrl string, options ...Option) *Client {
 	return c
 }
 
+func (c *Client) CallEndpoint(
+	ctx context.Context,
+	mod ModuleID,
+	role InterfaceRole,
+	endpointResolver func(endpoint string) string,
+	src, dst any,
+) error {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
+	if err != nil {
+		return err
+	}
+
+	if err := c.do(ctx, http.MethodGet, endpointResolver(endpoint), src, dst); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *Client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error) {
 	c.rw.RLock()
 	if c.endpointDict == nil {

@@ -7,7 +7,7 @@ import (
 type Response[T any] struct {
 	Data          T          `json:"data,omitempty"`
 	StatusCode    StatusCode `json:"status_code"`
-	StatusMessage string     `json:"status_message"`
+	StatusMessage string     `json:"status_message,omitempty,omitzero"`
 	Timestamp     time.Time  `json:"timestamp"`
 }
 
@@ -17,5 +17,12 @@ func NewResponse[T any](value T) *Response[T] {
 		StatusCode:    GenericSuccessCode,
 		StatusMessage: GenericSuccessCode.String(),
 		Timestamp:     time.Now().UTC(),
+	}
+}
+
+func NewEmptyResponse() *Response[any] {
+	return &Response[any]{
+		StatusCode: GenericSuccessCode,
+		Timestamp:  time.Now().UTC(),
 	}
 }

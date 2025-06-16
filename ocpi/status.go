@@ -1,6 +1,6 @@
 package ocpi
 
-//go:generate stringer -type StatusCode
+//go:generate stringer -type=StatusCode -linecomment
 type StatusCode uint16
 
 const (

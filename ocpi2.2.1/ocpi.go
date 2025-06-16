@@ -168,6 +168,9 @@ const (
 	CommandTypeUnlockConnector   CommandType = "UNLOCK_CONNECTOR"
 )
 
+// CommandResponseType defines model for CommandResponse.Result.
+type CommandResponseType string
+
 // Defines values for CommandResponseType.
 const (
 	CommandResponseTypeAccepted       CommandResponseType = "ACCEPTED"
@@ -556,8 +559,8 @@ type CdrLocation struct {
 
 // GeoLocation defines model for cdrBody_cdr_location_coordinates.
 type GeoLocation struct {
-	Latitude  json.Number `json:"latitude"`
-	Longitude json.Number `json:"longitude"`
+	Latitude  float64 `json:"latitude,string"`
+	Longitude float64 `json:"longitude,string"`
 }
 
 // CdrToken defines model for cdrBody_cdr_token.
@@ -759,9 +762,6 @@ type CommandResponse struct {
 	Result  CommandResponseType     `json:"result"`
 	Timeout int                     `json:"timeout"`
 }
-
-// CommandResponseType defines model for CommandResponse.Result.
-type CommandResponseType string
 
 // CommandResponseMessage defines model for commandResponse_message.
 type CommandResponseMessage struct {
