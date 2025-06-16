@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (c *Client) StartSessionCommands(ctx context.Context, req StartSessionRequest) (*CommandResponse, error) {
+func (c *Client) StartSession(ctx context.Context, req StartSessionRequest) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func (c *Client) StartSessionCommands(ctx context.Context, req StartSessionReque
 	return &res, nil
 }
 
-func (c *Client) StopSessionCommands(ctx context.Context, req StopSessionRequest) (*CommandResponse, error) {
+func (c *Client) StopSession(ctx context.Context, req StopSessionRequest) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -31,13 +31,37 @@ func (c *Client) StopSessionCommands(ctx context.Context, req StopSessionRequest
 	return &res, nil
 }
 
-func (c *Client) ReserveNowCommands(ctx context.Context, req ReserveNowRequest) (*CommandResponse, error) {
+func (c *Client) ReserveNow(ctx context.Context, req ReserveNowRequest) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
 	var res CommandResponse
 	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeReserveNow), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *Client) CancelReservation(ctx context.Context, req CancelReservation) (*CommandResponse, error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
+	if err != nil {
+		return nil, err
+	}
+	var res CommandResponse
+	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeCancelReservation), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *Client) UnlockConnector(ctx context.Context, req UnlockConnector) (*CommandResponse, error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
+	if err != nil {
+		return nil, err
+	}
+	var res CommandResponse
+	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeUnlockConnector), req, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil

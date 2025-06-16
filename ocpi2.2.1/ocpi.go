@@ -501,8 +501,8 @@ type BusinessDetails struct {
 
 // CancelReservation defines model for cancelReservation.
 type CancelReservation struct {
-	ReservationID string `json:"reservation_id"`
 	ResponseURL   string `json:"response_url"`
+	ReservationID string `json:"reservation_id"`
 }
 
 // CdrBody defines model for cdrBody.
@@ -1036,13 +1036,13 @@ type ReservationRestrictionType string
 
 // ReserveNow defines model for reserveNow.
 type ReserveNowRequest struct {
-	AuthorizationReference *string `json:"authorization_reference,omitempty"`
-	EvseUid                *string `json:"evse_uid,omitempty"`
-	ExpiryDate             string  `json:"expiry_date" validate:"required"`
-	LocationID             string  `json:"location_id" validate:"required"`
-	ReservationID          string  `json:"reservation_id" validate:"required"`
-	ResponseURL            string  `json:"response_url" validate:"required"`
-	Token                  Token   `json:"token"`
+	ResponseURL            string        `json:"response_url" validate:"required"`
+	Token                  Token         `json:"token"`
+	ExpiryDate             ocpi.DateTime `json:"expiry_date" validate:"required"`
+	ReservationID          string        `json:"reservation_id" validate:"required"`
+	LocationID             string        `json:"location_id" validate:"required"`
+	EvseUID                *string       `json:"evse_uid,omitempty"`
+	AuthorizationReference *string       `json:"authorization_reference,omitempty"`
 }
 
 // Session defines model for session.
@@ -1125,8 +1125,8 @@ type StartSessionRequest struct {
 
 // StopSessionRequest defines model for stopSession.
 type StopSessionRequest struct {
-	ResponseURL string  `json:"response_url"`
-	SessionID   *string `json:"session_id,omitempty"`
+	ResponseURL string `json:"response_url"`
+	SessionID   string `json:"session_id"`
 }
 
 // Tariff defines model for tariff.
@@ -1306,10 +1306,10 @@ type TokensResponse struct {
 
 // UnlockConnector defines model for unlockConnector.
 type UnlockConnector struct {
-	ConnectorID string `json:"connector_id"`
-	EvseUID     string `json:"evse_uid"`
-	LocationID  string `json:"location_id"`
 	ResponseURL string `json:"response_url"`
+	LocationID  string `json:"location_id"`
+	EvseUID     string `json:"evse_uid"`
+	ConnectorID string `json:"connector_id"`
 }
 
 // GetOcpiCdrsParams defines parameters for GetOcpiCdrs.
