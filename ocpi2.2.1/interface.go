@@ -102,7 +102,7 @@ type ChargingProfilesReceiver interface {
 
 type CommandsSender interface {
 	// (POST /ocpi/2.2.1/commands/{command}/{uid})
-	PostAsyncCommand(ctx context.Context, commandType CommandType, uid string, body ocpi.RawMessage[CommandResult]) (*CommandResponse, error)
+	PostAsyncCommand(ctx context.Context, commandType CommandType, uid string, body ocpi.RawMessage[CommandResult]) error
 }
 type CommandsReceiver interface {
 	// (POST /ocpi/2.2.1/commands/{command})

@@ -230,7 +230,7 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse[any](nil))
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
 		return
@@ -294,7 +294,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse[any](nil))
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
 		return
@@ -357,7 +357,7 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse[any](nil))
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
 		return
@@ -392,7 +392,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse[any](nil))
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
 		return
@@ -417,7 +417,7 @@ func (s *Server) PostOcpiCdr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse[any](nil))
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
 		return
@@ -458,13 +458,12 @@ func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	resp, err := s.commandsSender.PostAsyncCommand(r.Context(), CommandType(commandType), uid, ocpi.RawMessage[CommandResult](body))
-	if err != nil {
+	if err := s.commandsSender.PostAsyncCommand(r.Context(), CommandType(commandType), uid, ocpi.RawMessage[CommandResult](body)); err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse(resp))
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.GenericServerError)
 		return

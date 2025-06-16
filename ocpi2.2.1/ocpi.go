@@ -380,13 +380,16 @@ const (
 	AuthMethodWhitelist   AuthMethod = "WHITELIST"
 )
 
+// SessionStatus defines model for Session.Status.
+type SessionStatus string
+
 // Defines values for SessionStatus.
 const (
-	ACTIVE      SessionStatus = "ACTIVE"
-	COMPLETED   SessionStatus = "COMPLETED"
-	INVALID     SessionStatus = "INVALID"
-	PENDING     SessionStatus = "PENDING"
-	RESERVATION SessionStatus = "RESERVATION"
+	SessionStatusActive      SessionStatus = "ACTIVE"
+	SessionStatusCompleted   SessionStatus = "COMPLETED"
+	SessionStatusInvalid     SessionStatus = "INVALID"
+	SessionStatusPending     SessionStatus = "PENDING"
+	SessionStatusReservation SessionStatus = "RESERVATION"
 )
 
 // Defines values for TariffType.
@@ -1084,9 +1087,6 @@ type PatchedSession struct {
 	Status                 *SessionStatus  `json:"status,omitempty"`
 	TotalCost              *Price          `json:"total_cost,omitempty"`
 }
-
-// SessionStatus defines model for Session.Status.
-type SessionStatus string
 
 // SessionResponse defines model for sessionResponse.
 type SessionsResponse = ocpi.Response[[]Session]
