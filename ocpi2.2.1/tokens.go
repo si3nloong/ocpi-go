@@ -13,19 +13,13 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	params := GetOcpiTokensParams{}
-	tokens, err := s.tokensSender.GetTokens(r.Context(), params)
+	response, err := s.tokensSender.GetTokens(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse(tokens))
-	if err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	writePaginationResponse(w, r, response)
 }
 
 func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {

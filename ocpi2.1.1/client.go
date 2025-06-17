@@ -1,4 +1,4 @@
-package ocpi221
+package ocpi211
 
 import (
 	"bytes"
@@ -43,11 +43,10 @@ func NewClient(versionUrl string, options ...Option) *Client {
 func (c *Client) CallEndpoint(
 	ctx context.Context,
 	mod ModuleID,
-	role InterfaceRole,
 	endpointResolver func(endpoint string) string,
 	src, dst any,
 ) error {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations)
 	if err != nil {
 		return err
 	}
@@ -58,7 +57,7 @@ func (c *Client) CallEndpoint(
 	return nil
 }
 
-func (c *Client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error) {
+func (c *Client) getEndpoint(ctx context.Context, mod ModuleID) (string, error) {
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
@@ -68,7 +67,7 @@ func (c *Client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRo
 		}
 
 		if len(versions) == 0 {
-			return "", fmt.Errorf("ocpi221: no versions found at %s", c.versionUrl)
+			return "", fmt.Errorf("ocpi211: no versions found at %s", c.versionUrl)
 		}
 
 		version := versions[0]
@@ -80,17 +79,17 @@ func (c *Client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRo
 		c.rw.Lock()
 		c.endpointDict = make(map[string]Endpoint)
 		for _, v := range o.Data.Endpoints {
-			c.endpointDict[string(v.Identifier)+":"+string(v.Role)] = v
+			c.endpointDict[string(v.Identifier)] = v
 		}
 		c.rw.Unlock()
 		c.rw.RLock()
 	}
 	defer c.rw.RUnlock()
-	v, ok := c.endpointDict[string(mod)+":"+string(role)]
+	v, ok := c.endpointDict[string(mod)]
 	if ok {
 		return v.URL, nil
 	}
-	return "", fmt.Errorf(`ocpi221: missing endpoint for module id %q (%s)`, mod, role)
+	return "", fmt.Errorf(`ocpi: missing endpoint for module id %q`, mod)
 }
 
 func (c *Client) newRequest(
@@ -143,7 +142,7 @@ func (c *Client) do(
 
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		b, _ := io.ReadAll(res.Body)
-		return fmt.Errorf(`ocpi221: encounter status code (%d) due to %s`, res.StatusCode, unsafe.String(unsafe.SliceData(b), len(b)))
+		return fmt.Errorf(`ocpi211: encounter status code (%d) due to %s`, res.StatusCode, unsafe.String(unsafe.SliceData(b), len(b)))
 	}
 	return json.NewDecoder(res.Body).Decode(dst)
 }

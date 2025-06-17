@@ -80,7 +80,7 @@ type SCSP interface {
 type CDRsSender interface {
 	// GetOcpiCDRs retrieves a list of charge detail records based on the provided parameters.
 	// (GET /ocpi/2.2.1/cdrs)
-	GetCDRs(ctx context.Context, params GetOcpiCdrsParams) ([]ChargeDetailRecord, error)
+	GetCDRs(ctx context.Context, params GetOcpiCdrsParams) (*ocpi.PaginationResponse[ChargeDetailRecord], error)
 }
 type CDRsReceiver interface {
 	// (GET /ocpi/2.2.1/cdrs/{cdr_id})
@@ -125,7 +125,7 @@ type HubClientInfoReceiver interface {
 type LocationsSender interface {
 	// GetOcpiLocations retrieves a list of locations based on the provided parameters.
 	// (GET /ocpi/2.2.1/locations)
-	GetLocations(ctx context.Context, params GetOcpiLocationsParams) ([]Location, error)
+	GetLocations(ctx context.Context, params GetOcpiLocationsParams) (*ocpi.PaginationResponse[Location], error)
 }
 type LocationsReceiver interface {
 	// (GET /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id})
@@ -151,7 +151,7 @@ type LocationsReceiver interface {
 type SessionsSender interface {
 	// GetOcpiSessions retrieves a list of sessions based on the provided parameters.
 	// (GET /ocpi/2.2.1/sessions)
-	GetSessions(ctx context.Context, params GetOcpiSessionsParams) ([]Session, error)
+	GetSessions(ctx context.Context, params GetOcpiSessionsParams) (*ocpi.PaginationResponse[Session], error)
 }
 type SessionsReceiver interface {
 	// (GET /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
@@ -163,20 +163,24 @@ type SessionsReceiver interface {
 }
 
 type TariffsSender interface {
+	// GetOcpiTariffs retrieves a list of tariffs based on the provided parameters.
+	// (GET /ocpi/2.2.1/tariffs)
+	GetTariffs(ctx context.Context, params GetOcpiTariffsParams) (*ocpi.PaginationResponse[Tariff], error)
 }
+
 type TariffsReceiver interface {
 	// (GET /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
 	GetTariff(ctx context.Context, countryCode string, partyID string, sessionId string) (*Tariff, error)
 	// (PUT /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
 	PutTariff(ctx context.Context, countryCode string, partyID string, tariffId string, body ocpi.RawMessage[Tariff]) error
-	// (PATCH /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
-	PatchTariff(ctx context.Context, countryCode string, partyID string, tariffId string, body ocpi.RawMessage[Tariff]) error
+	// (DELETE /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
+	DeleteTariff(ctx context.Context, countryCode string, partyID string, tariffId string) error
 }
 
 type TokensSender interface {
 	// GetOcpiTokens retrieves a list of tokens based on the provided parameters.
 	// (GET /ocpi/2.2.1/tokens)
-	GetTokens(ctx context.Context, params GetOcpiTokensParams) ([]Token, error)
+	GetTokens(ctx context.Context, params GetOcpiTokensParams) (*ocpi.PaginationResponse[Token], error)
 	// (POST /ocpi/2.2.1/tokens/{token_uid}/authorize[?type={type}])
 	PostToken(ctx context.Context, tokenUID string, body ocpi.RawMessage[LocationReferences], tokenType ...TokenType) (*AuthorizationInfo, error)
 }

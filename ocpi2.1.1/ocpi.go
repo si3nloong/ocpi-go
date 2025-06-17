@@ -1,6 +1,10 @@
 package ocpi211
 
-import "github.com/si3nloong/ocpi-go/ocpi"
+import (
+	"encoding/json"
+
+	"github.com/si3nloong/ocpi-go/ocpi"
+)
 
 // ModuleID OCPI 2.1.1 modules
 type ModuleID string
@@ -14,6 +18,17 @@ const (
 	ModuleIDSessions    ModuleID = "sessions"
 	ModuleIDTariffs     ModuleID = "tariffs"
 	ModuleIDTokens      ModuleID = "tokens"
+)
+
+// Role represents the role a party can have in OCPI
+type Role string
+
+const (
+	// CPO (Charge Point Operator) role
+	RoleCPO Role = "CPO"
+
+	// EMSP (E-Mobility Service Provider) role
+	RoleEMSP Role = "EMSP"
 )
 
 // ImageCategory defines model for Image.Category.
@@ -144,6 +159,7 @@ const (
 	ConnectorTypeTeslaS            ConnectorType = "TESLA_S"
 )
 
+// ConnectorFormat defines model for Connector.Format.
 type ConnectorFormat string
 
 // Defines values for ConnectorFormat.
@@ -151,6 +167,35 @@ const (
 	ConnectorFormatCable  ConnectorFormat = "CABLE"
 	ConnectorFormatSocket ConnectorFormat = "SOCKET"
 )
+
+// EnergySourceCategory defines model for EnergySource.Source.
+type EnergySourceCategory string
+
+// Defines values for EnergySourceCategory.
+const (
+	EnergySourceCategoryNuclear       EnergySourceCategory = "NUCLEAR"
+	EnergySourceCategoryGeneralFossil EnergySourceCategory = "GENERAL_FOSSIL"
+	EnergySourceCategoryCoal          EnergySourceCategory = "COAL"
+	EnergySourceCategoryGas           EnergySourceCategory = "GAS"
+	EnergySourceCategoryGeneralGreen  EnergySourceCategory = "GENERAL_GREEN"
+	EnergySourceCategorySolar         EnergySourceCategory = "SOLAR"
+	EnergySourceCategoryWind          EnergySourceCategory = "WIND"
+	EnergySourceCategoryWater         EnergySourceCategory = "WATER"
+)
+
+// EnvironmentalImpactCategory defines model for EnvironmentalImpact.Category.
+type EnvironmentalImpactCategory string
+
+// Defines values for EnvironmentalImpactCategory.
+const (
+	EnvironmentalImpactCategoryNuclearWaste  EnvironmentalImpactCategory = "NUCLEAR_WASTE"
+	EnvironmentalImpactCategoryCarbonDioxide EnvironmentalImpactCategory = "CARBON_DIOXIDE"
+)
+
+type VersionDetails struct {
+	Endpoints []Endpoint         `json:"endpoints"`
+	Version   ocpi.VersionNumber `json:"version"`
+}
 
 // Endpoint defines model for details_data_endpoints.
 type Endpoint struct {
@@ -162,27 +207,71 @@ type Endpoint struct {
 }
 
 type Location struct {
-	ID               string                  `json:"id" validate:"required"`
-	Type             LocationType            `json:"type" validate:"required"`
-	Name             *string                 `json:"name"`
-	Address          string                  `json:"address" validate:"required"`
-	City             string                  `json:"city" validate:"required"`
-	PostalCode       string                  `json:"postal_code" validate:"required,max=10"`
-	Country          string                  `json:"country" validate:"required,len=3"`
-	Coordinates      GeoLocation             `json:"coordinates"`
-	RelatedLocations []AdditionalGeoLocation `json:"related_locations,omitempty"`
-	EVSEs            []EVSE                  `json:"evses,omitempty"`
-	Directions       []DisplayText           `json:"directions,omitempty"`
-	Operator         *BusinessDetails        `json:"operator,omitempty"`
-	Suboperator      *BusinessDetails        `json:"suboperator,omitempty"`
-	Owner            *BusinessDetails        `json:"owner,omitempty"`
-	Facilities       []Facility              `json:"facilities,omitempty"`
-	TimeZone         string                  `json:"time_zone" validate:"required"`
-	// OpeningTimes       *Hours                  `json:"opening_times,omitempty"`
-	ChargingWhenClosed *bool   `json:"charging_when_closed,omitempty"`
-	Images             []Image `json:"images,omitempty"`
-	// EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
-	LastUpdated ocpi.DateTime `json:"last_updated"`
+	ID                 string                  `json:"id" validate:"required"`
+	Type               LocationType            `json:"type" validate:"required"`
+	Name               *string                 `json:"name"`
+	Address            string                  `json:"address" validate:"required"`
+	City               string                  `json:"city" validate:"required"`
+	PostalCode         string                  `json:"postal_code" validate:"required,max=10"`
+	Country            string                  `json:"country" validate:"required,len=3"`
+	Coordinates        GeoLocation             `json:"coordinates"`
+	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
+	EVSEs              []EVSE                  `json:"evses,omitempty"`
+	Directions         []DisplayText           `json:"directions,omitempty"`
+	Operator           *BusinessDetails        `json:"operator,omitempty"`
+	Suboperator        *BusinessDetails        `json:"suboperator,omitempty"`
+	Owner              *BusinessDetails        `json:"owner,omitempty"`
+	Facilities         []Facility              `json:"facilities,omitempty"`
+	TimeZone           string                  `json:"time_zone" validate:"required"`
+	OpeningTimes       *Hours                  `json:"opening_times,omitempty"`
+	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
+	Images             []Image                 `json:"images,omitempty"`
+	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
+	LastUpdated        ocpi.DateTime           `json:"last_updated"`
+}
+
+type Hours struct {
+	RegularHours        []RegularHours      `json:"regular_hours,omitempty"`
+	Twentyfourseven     bool                `json:"twentyfourseven"`
+	ExceptionalOpenings []ExceptionalPeriod `json:"exceptional_openings,omitempty"`
+	ExceptionalClosings []ExceptionalPeriod `json:"exceptional_closings,omitempty"`
+}
+
+// HoursRegularHours defines model for locations_data_opening_times_regular_hours.
+type RegularHours struct {
+	PeriodBegin string `json:"period_begin"`
+	PeriodEnd   string `json:"period_end"`
+	Weekday     int    `json:"weekday"`
+}
+
+// HoursExceptionalOpenings defines model for locations_data_opening_times_exceptional_openings.
+type ExceptionalPeriod struct {
+	PeriodBegin ocpi.DateTime `json:"period_begin"`
+	PeriodEnd   ocpi.DateTime `json:"period_end"`
+}
+
+type PatchedLocation struct {
+	ID                 *string                 `json:"id" validate:"required"`
+	Type               *LocationType           `json:"type" validate:"required"`
+	Name               *string                 `json:"name"`
+	Address            *string                 `json:"address" validate:"required"`
+	City               *string                 `json:"city" validate:"required"`
+	PostalCode         *string                 `json:"postal_code" validate:"required,max=10"`
+	Country            *string                 `json:"country" validate:"required,len=3"`
+	Coordinates        *GeoLocation            `json:"coordinates"`
+	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
+	EVSEs              []EVSE                  `json:"evses,omitempty"`
+	Directions         []DisplayText           `json:"directions,omitempty"`
+	Operator           *BusinessDetails        `json:"operator,omitempty"`
+	Suboperator        *BusinessDetails        `json:"suboperator,omitempty"`
+	Owner              *BusinessDetails        `json:"owner,omitempty"`
+	Facilities         []Facility              `json:"facilities,omitempty"`
+	TimeZone           *string                 `json:"time_zone" validate:"required"`
+	OpeningTimes       *Hours                  `json:"opening_times,omitempty"`
+	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
+	Images             []Image                 `json:"images,omitempty"`
+	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
+	LastUpdated        *ocpi.DateTime          `json:"last_updated"`
 }
 
 // EVSE defines model for evse.
@@ -213,6 +302,25 @@ type Connector struct {
 	TariffID           *string         `json:"tariff_id,omitempty"`
 	TermsAndConditions *string         `json:"terms_and_conditions,omitempty"`
 	LastUpdated        ocpi.DateTime   `json:"last_updated"`
+}
+
+type EnergyMix struct {
+	IsGreenEnergy     bool                  `json:"is_green_energy"`
+	EnergySources     []EnergySource        `json:"energy_sources,omitempty"`
+	EnvironImpact     []EnvironmentalImpact `json:"environ_impact,omitempty"`
+	SupplierName      *string               `json:"supplier_name,omitempty"`
+	EnergyProductName *string               `json:"energy_product_name,omitempty"`
+}
+
+type EnergySource struct {
+	Percentage json.Number          `json:"percentage"`
+	Source     EnergySourceCategory `json:"source"`
+}
+
+// EnvironmentalImpact defines model for cdrBody_tariffs_energy_mix_environ_impact.
+type EnvironmentalImpact struct {
+	Amount   json.Number                 `json:"amount"`
+	Category EnvironmentalImpactCategory `json:"category"`
 }
 
 // GeoLocation defines model for cdrBody_cdr_location_coordinates.
@@ -250,4 +358,19 @@ type Image struct {
 	Type      string        `json:"type" validate:"required"`
 	Width     *int          `json:"width,omitempty"`
 	Height    *int          `json:"height,omitempty"`
+}
+
+// GetOcpiLocationsParams defines parameters for GetOcpiLocations.
+type GetOcpiLocationsParams struct {
+	// DateFrom Return Locations that have last_updated after or equal to this date time (inclusive).
+	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
+
+	// DateTo Return Locations that have last_updated up to this date time, but not including (exclusive).
+	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
+
+	// Offset The offset of the first object returned. Default is 0.
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Maximum number of objects to GET.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }

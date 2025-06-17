@@ -7,8 +7,22 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
+
+func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	params := GetOcpiLocationsParams{}
+	response, err := s.locationsSender.GetLocations(r.Context(), params)
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	writePaginationResponse(w, r, response)
+}
 
 type GetLocationsParams struct {
 	DateFrom time.Time

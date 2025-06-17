@@ -1,12 +1,15 @@
 package ocpi221
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
@@ -159,7 +162,23 @@ func (s *Server) Handler() http.Handler {
 		router.Patch(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
 	}
 
-	// router.HandleFunc(s.baseUrl+"/tariffs", s.GetOcpiTariffs)
+	if s.cdrsSender != nil {
+		router.Get(s.baseUrl+"/tariffs", s.GetOcpiCDRs)
+	}
+	if s.cdrsReceiver != nil {
+		router.Get(s.baseUrl+"/cdrs/{id}", s.GetOcpiCDR)
+		router.Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
+	}
+
+	if s.tariffsSender != nil {
+		router.Get(s.baseUrl+"/tariffs", s.GetOcpiTariffs)
+	}
+	if s.tariffsReceiver != nil {
+		router.Get(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.GetOcpiTariff)
+		router.Put(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.PutOcpiTariff)
+		router.Delete(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.DeleteOcpiTariff)
+	}
+
 	if s.tokensSender != nil {
 		router.Get(s.baseUrl+"/tokens", s.GetOcpiTokens)
 		router.Post(s.baseUrl+"/tokens/{token_uid}/authorize", s.PostOcpiToken)
@@ -168,11 +187,6 @@ func (s *Server) Handler() http.Handler {
 		router.Get(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.GetOcpiToken)
 		router.Put(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PutOcpiToken)
 		router.Patch(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PatchOcpiToken)
-	}
-
-	if s.cdrsReceiver != nil {
-		router.Get(s.baseUrl+"/cdrs/{id}", s.GetOcpiCDR)
-		router.Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
 	}
 
 	if s.commandsReceiver != nil {
@@ -184,4 +198,18 @@ func (s *Server) Handler() http.Handler {
 
 	s.baseUrl = fmt.Sprintf("/ocpi/%s", ocpi.VersionNumber221)
 	return router
+}
+
+func writePaginationResponse[T any](w http.ResponseWriter, r *http.Request, response *ocpi.PaginationResponse[T]) {
+	b, err := json.Marshal(ocpi.NewResponse(response.Data))
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Link", getHostname(r)+"; rel=\"next\"")
+	w.Header().Set("X-Total-Count", strconv.FormatInt(response.TotalCount, 10))
+	w.Header().Set("X-Limit", strconv.FormatInt(response.Limit, 10))
+	w.Write(b)
 }

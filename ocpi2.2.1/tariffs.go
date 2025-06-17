@@ -8,8 +8,107 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
+
+func (s *Server) GetOcpiTariffs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	params := GetOcpiTariffsParams{}
+	response, err := s.tariffsSender.GetTariffs(r.Context(), params)
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	writePaginationResponse(w, r, response)
+}
+
+func (s *Server) GetOcpiTariff(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	countryCode := chi.URLParam(r, "country_code")
+	partyID := chi.URLParam(r, "party_id")
+	tariffID := chi.URLParam(r, "tariff_id")
+
+	tariff, err := s.tariffsReceiver.GetTariff(r.Context(), countryCode, partyID, tariffID)
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewResponse(tariff))
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
+func (s *Server) PutOcpiTariff(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var body json.RawMessage
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	countryCode := chi.URLParam(r, "country_code")
+	partyID := chi.URLParam(r, "party_id")
+	tariffID := chi.URLParam(r, "tariff_id")
+
+	if err := s.tariffsReceiver.PutTariff(
+		r.Context(),
+		countryCode,
+		partyID,
+		tariffID,
+		ocpi.RawMessage[Tariff](body),
+	); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
+func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	countryCode := chi.URLParam(r, "country_code")
+	partyID := chi.URLParam(r, "party_id")
+	tariffID := chi.URLParam(r, "tariff_id")
+
+	if err := s.tariffsReceiver.DeleteTariff(
+		r.Context(),
+		countryCode,
+		partyID,
+		tariffID,
+	); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
 
 type GetTariffsParams struct {
 	DateFrom time.Time

@@ -10,27 +10,51 @@ import (
 )
 
 type Server struct {
-	baseUrl     string
-	cpo         CPO
-	emsp        EMSP
-	httpHandler http.Handler
-	logger      *slog.Logger
+	baseUrl string
+	roles   map[Role]struct{}
+	cpo     CPO
+	emsp    EMSP
+	logger  *slog.Logger
 }
 
 func NewServer() *Server {
 	s := new(Server)
 	s.baseUrl = "/" + string(ocpi.VersionNumber211)
+	s.roles = make(map[Role]struct{})
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
 	return s
 }
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *Server) SetCPO(cpo CPO) {
+	s.roles[RoleCPO] = struct{}{}
+	s.cpo = cpo
+}
+
+func (s *Server) SetEMSP(emsp EMSP) {
+	s.roles[RoleEMSP] = struct{}{}
+	s.emsp = emsp
+
+}
+
+func (s *Server) Handler() http.Handler {
 	router := chi.NewRouter()
 
-	router.HandleFunc(s.baseUrl, s.GetOcpiVersionDetails)
-	router.HandleFunc(s.baseUrl+"/credentials", s.GetOcpiCredentials)
+	router.Get(s.baseUrl, s.GetOcpiVersionDetails)
+	router.Get(s.baseUrl+"/credentials", s.GetOcpiCredentials)
+	router.Post(s.baseUrl+"/credentials", s.PostOcpiCredentials)
+	router.Put(s.baseUrl+"/credentials", s.PutOcpiCredentials)
+	router.Delete(s.baseUrl+"/credentials", s.DeleteOcpiCredentials)
 
-	router.ServeHTTP(w, r)
+	if s.cpo != nil {
+		router.Get(s.baseUrl+"/locations", s.GetOcpiLocations)
+	}
+	if s.emsp != nil {
+		router.Get(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
+		router.Put(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
+		router.Patch(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
+	}
+
+	return router
 }

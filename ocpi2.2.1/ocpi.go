@@ -86,14 +86,14 @@ const (
 
 // Defines values for EnergySourceCategory.
 const (
+	EnergySourceCategoryNuclear       EnergySourceCategory = "NUCLEAR"
+	EnergySourceCategoryGeneralFossil EnergySourceCategory = "GENERAL_FOSSIL"
 	EnergySourceCategoryCoal          EnergySourceCategory = "COAL"
 	EnergySourceCategoryGas           EnergySourceCategory = "GAS"
-	EnergySourceCategoryGeneralFossil EnergySourceCategory = "GENERAL_FOSSIL"
 	EnergySourceCategoryGeneralGreen  EnergySourceCategory = "GENERAL_GREEN"
-	EnergySourceCategoryNuclear       EnergySourceCategory = "NUCLEAR"
 	EnergySourceCategorySolar         EnergySourceCategory = "SOLAR"
-	EnergySourceCategoryWater         EnergySourceCategory = "WATER"
 	EnergySourceCategoryWind          EnergySourceCategory = "WIND"
+	EnergySourceCategoryWater         EnergySourceCategory = "WATER"
 )
 
 // Defines values for EnvironmentalImpactCategory.

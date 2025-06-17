@@ -26,3 +26,9 @@ func NewEmptyResponse() *Response[any] {
 		Timestamp:  time.Now().UTC(),
 	}
 }
+
+type PaginationResponse[T any] struct {
+	Data       []T
+	TotalCount int64
+	Limit      int64
+}

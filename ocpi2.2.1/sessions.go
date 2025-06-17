@@ -2,11 +2,127 @@ package ocpi221
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/si3nloong/ocpi-go/internal/httputil"
+	"github.com/si3nloong/ocpi-go/ocpi"
 )
+
+func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	params := GetOcpiSessionsParams{}
+	response, err := s.sessionsSender.GetSessions(r.Context(), params)
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	writePaginationResponse(w, r, response)
+}
+
+func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	countryCode := chi.URLParam(r, "country_code")
+	partyId := chi.URLParam(r, "party_id")
+	sessionId := chi.URLParam(r, "session_id")
+
+	session, err := s.receiver.GetSession(
+		r.Context(),
+		countryCode,
+		partyId,
+		sessionId,
+	)
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewResponse(session))
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
+func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var body json.RawMessage
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	ctx := r.Context()
+	countryCode := chi.URLParam(r, "country_code")
+	partyId := chi.URLParam(r, "party_id")
+	sessionId := chi.URLParam(r, "session_id")
+
+	if err := s.receiver.PutSession(
+		ctx,
+		countryCode,
+		partyId,
+		sessionId,
+		ocpi.RawMessage[Session](body),
+	); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
+func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var body json.RawMessage
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	ctx := r.Context()
+	countryCode := chi.URLParam(r, "country_code")
+	partyId := chi.URLParam(r, "party_id")
+	sessionId := chi.URLParam(r, "session_id")
+
+	if err := s.receiver.PatchSession(
+		ctx,
+		countryCode,
+		partyId,
+		sessionId,
+		ocpi.RawMessage[PatchedSession](body),
+	); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
 
 type GetSessionsParams struct {
 	DateTo time.Time
