@@ -12,57 +12,58 @@ import (
 func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	origin := httputil.GetHostname(r) + s.baseUrl
 	endpoints := []Endpoint{
-		{Identifier: ModuleIDCredentials, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/credentials"},
-		{Identifier: ModuleIDCredentials, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/credentials"},
+		{Identifier: ModuleIDCredentials, Role: InterfaceRoleSender, URL: origin + "/credentials"},
+		{Identifier: ModuleIDCredentials, Role: InterfaceRoleReceiver, URL: origin + "/credentials"},
 	}
 	if s.cdrsSender != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCdrs, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/cdrs"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCdrs, Role: InterfaceRoleSender, URL: origin + "/cdrs"})
 	}
 	if s.cdrsReceiver != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCdrs, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/cdrs"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCdrs, Role: InterfaceRoleReceiver, URL: origin + "/cdrs"})
 	}
 	if s.chargingProfilesSender != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/chargingprofiles"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleSender, URL: origin + "/chargingprofiles"})
 	}
 	if s.chargingProfilesReceiver != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/chargingprofiles"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleReceiver, URL: origin + "/chargingprofiles"})
 	}
 	if s.commandsSender != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCommands, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/commands"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCommands, Role: InterfaceRoleSender, URL: origin + "/commands"})
 	}
 	if s.commandsReceiver != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCommands, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/commands"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDCommands, Role: InterfaceRoleReceiver, URL: origin + "/commands"})
 	}
 	if s.hubClientInfoSender != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDHubClientInfo, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/clientinfo"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDHubClientInfo, Role: InterfaceRoleSender, URL: origin + "/clientinfo"})
 	}
 	if s.hubClientInfoReceiver != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDHubClientInfo, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/clientinfo"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDHubClientInfo, Role: InterfaceRoleReceiver, URL: origin + "/clientinfo"})
 	}
 	if s.locationsSender != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDLocations, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/locations"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDLocations, Role: InterfaceRoleSender, URL: origin + "/locations"})
 	}
 	if s.locationsReceiver != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDLocations, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/locations"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDLocations, Role: InterfaceRoleReceiver, URL: origin + "/locations"})
 	}
 	if s.sessionsSender != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDSessions, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/sessions"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDSessions, Role: InterfaceRoleSender, URL: origin + "/sessions"})
 	}
 	if s.sessionsReceiver != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDSessions, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/sessions"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDSessions, Role: InterfaceRoleReceiver, URL: origin + "/sessions"})
 	}
 	if s.tariffsSender != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTariffs, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/tariffs"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTariffs, Role: InterfaceRoleSender, URL: origin + "/tariffs"})
 	}
 	if s.tariffsReceiver != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTariffs, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/tariffs"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTariffs, Role: InterfaceRoleReceiver, URL: origin + "/tariffs"})
 	}
 	if s.tokensSender != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTokens, Role: InterfaceRoleSender, URL: getHostname(r) + s.baseUrl + "/tokens"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTokens, Role: InterfaceRoleSender, URL: origin + "/tokens"})
 	}
 	if s.tokensReceiver != nil {
-		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTokens, Role: InterfaceRoleReceiver, URL: getHostname(r) + s.baseUrl + "/tokens"})
+		endpoints = append(endpoints, Endpoint{Identifier: ModuleIDTokens, Role: InterfaceRoleReceiver, URL: origin + "/tokens"})
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse(endpoints))

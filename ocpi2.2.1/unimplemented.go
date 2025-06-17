@@ -132,11 +132,11 @@ func (UnimplementedServer) PostFinancialAdviceConfirmation(ctx context.Context, 
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) GetLocations(ctx context.Context, params GetOcpiLocationsParams) ([]Location, error) {
+func (UnimplementedServer) GetLocations(ctx context.Context, params GetLocationsParams) ([]Location, error) {
 	return nil, ErrNotImplemented
 }
 
-func (UnimplementedServer) GetTariffs(ctx context.Context, params GetOcpiTariffsParams) ([]Tariff, error) {
+func (UnimplementedServer) GetTariffs(ctx context.Context, params GetTariffsParams) ([]Tariff, error) {
 	return nil, ErrNotImplemented
 }
 
@@ -144,7 +144,7 @@ func (UnimplementedServer) GetSessions(ctx context.Context, params GetOcpiSessio
 	return nil, ErrNotImplemented
 }
 
-func (UnimplementedServer) GetTokens(ctx context.Context, params GetOcpiTokensParams) ([]Token, error) {
+func (UnimplementedServer) GetTokens(ctx context.Context, params GetTokensParams) ([]Token, error) {
 	return nil, ErrNotImplemented
 }
 

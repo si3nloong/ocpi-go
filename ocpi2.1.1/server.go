@@ -49,11 +49,16 @@ func (s *Server) Handler() http.Handler {
 
 	if s.cpo != nil {
 		router.Get(s.baseUrl+"/locations", s.GetOcpiLocations)
+		router.Get(s.baseUrl+"/sessions", s.GetOcpiLocations)
+
+		router.Post(s.baseUrl+"/commands/{command_type}", s.PostOcpiCommandResponse)
 	}
 	if s.emsp != nil {
 		router.Get(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
 		router.Put(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
 		router.Patch(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
+
+		router.Post(s.baseUrl+"/commands/{command_type}/{uid}", s.PostOcpiCommandResponse)
 	}
 
 	return router

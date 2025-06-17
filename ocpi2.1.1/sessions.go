@@ -1,4 +1,4 @@
-package ocpi221
+package ocpi211
 
 import (
 	"context"
@@ -13,11 +13,53 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
+type GetSessionsParams struct {
+	DateFrom ocpi.DateTime
+	DateTo   *ocpi.DateTime
+	Offset   *uint64
+	Limit    *uint16
+}
+
 func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := GetOcpiSessionsParams{}
-	response, err := s.sessionsSender.GetSessions(r.Context(), params)
+	params := GetSessionsParams{}
+	queryString := r.URL.Query()
+	if queryString.Has("date_from") {
+		dt, err := ocpi.ParseDateTime(queryString.Get("date_from"))
+		if err != nil {
+			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+			return
+		}
+		params.DateFrom = dt
+	}
+	if queryString.Has("date_to") {
+		dt, err := ocpi.ParseDateTime(queryString.Get("date_to"))
+		if err != nil {
+			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+			return
+		}
+		params.DateTo = &dt
+	}
+	if queryString.Has("offset") {
+		offset, err := strconv.ParseUint(queryString.Get("offset"), 10, 32)
+		if err != nil {
+			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+			return
+		}
+		params.Offset = &offset
+	}
+	if queryString.Has("limit") {
+		limit, err := strconv.ParseUint(queryString.Get("limit"), 10, 32)
+		if err != nil {
+			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+			return
+		}
+		u16 := uint16(limit)
+		params.Limit = &u16
+	}
+
+	response, err := s.cpo.GetSessions(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -33,7 +75,7 @@ func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyId := chi.URLParam(r, "party_id")
 	sessionId := chi.URLParam(r, "session_id")
 
-	session, err := s.receiver.GetSession(
+	session, err := s.emsp.GetSession(
 		r.Context(),
 		countryCode,
 		partyId,
@@ -68,7 +110,7 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyId := chi.URLParam(r, "party_id")
 	sessionId := chi.URLParam(r, "session_id")
 
-	if err := s.receiver.PutSession(
+	if err := s.emsp.PutSession(
 		ctx,
 		countryCode,
 		partyId,
@@ -103,7 +145,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyId := chi.URLParam(r, "party_id")
 	sessionId := chi.URLParam(r, "session_id")
 
-	if err := s.receiver.PatchSession(
+	if err := s.emsp.PatchSession(
 		ctx,
 		countryCode,
 		partyId,
@@ -124,18 +166,12 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-type GetSessionsParams struct {
-	DateTo time.Time
-	Offset uint32
-	Limit  uint8
-}
-
 func (c *Client) GetSessions(
 	ctx context.Context,
 	dateFrom time.Time,
 	params ...GetSessionsParams,
 ) (*SessionsResponse, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions)
 	if err != nil {
 		return nil, err
 	}
@@ -148,14 +184,14 @@ func (c *Client) GetSessions(
 	query.Add("date_from", dateFrom.Format(time.RFC3339))
 	if len(params) > 0 {
 		p := params[0]
-		if !p.DateTo.IsZero() {
+		if p.DateTo != nil && !p.DateTo.IsZero() {
 			query.Add("date_to", p.DateTo.Format(time.RFC3339))
 		}
-		if p.Offset > 0 {
-			query.Add("offset", strconv.FormatUint(uint64(p.Offset), 10))
+		if p.Offset != nil && *p.Offset > 0 {
+			query.Add("offset", strconv.FormatUint(uint64(*p.Offset), 10))
 		}
-		if p.Limit > 0 {
-			query.Add("limit", strconv.FormatUint(uint64(p.Limit), 10))
+		if p.Limit != nil && *p.Limit > 0 {
+			query.Add("limit", strconv.FormatUint(uint64(*p.Limit), 10))
 		}
 	}
 	u.RawQuery = query.Encode()
@@ -173,26 +209,13 @@ func (c *Client) GetSession(
 	partyId string,
 	sessionId string,
 ) (*SessionResponse, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions)
 	if err != nil {
 		return nil, err
 	}
 
 	var o SessionResponse
 	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyId+"/"+sessionId, nil, &o); err != nil {
-		return nil, err
-	}
-	return &o, nil
-}
-
-func (c *Client) SetSessionChargingPreferences(ctx context.Context, sessionId string) (any, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
-	if err != nil {
-		return nil, err
-	}
-
-	var o SessionResponse
-	if err := c.do(ctx, http.MethodGet, endpoint+"/sessions/"+sessionId+"/charging_preferences", nil, &o); err != nil {
 		return nil, err
 	}
 	return &o, nil

@@ -17,5 +17,5 @@ func (s *Server) GetOcpiCDRs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writePaginationResponse(w, r, response)
+	httputil.ResponsePagination(w, r, response)
 }

@@ -192,6 +192,60 @@ const (
 	EnvironmentalImpactCategoryCarbonDioxide EnvironmentalImpactCategory = "CARBON_DIOXIDE"
 )
 
+type AuthMethod string
+
+const (
+	AuthMethodAuthRequest AuthMethod = "AUTH_REQUEST"
+	AuthMethodWhitelist   AuthMethod = "WHITELIST"
+)
+
+// CdrDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
+type CdrDimensionType string
+
+// Defines values for CdrDimensionType.
+const (
+	CdrDimensionTypeEnergy      CdrDimensionType = "ENERGY"
+	CdrDimensionTypeFlat        CdrDimensionType = "FLAT"
+	CdrDimensionTypeMaxCurrent  CdrDimensionType = "MAX_CURRENT"
+	CdrDimensionTypeMinCurrent  CdrDimensionType = "MIN_CURRENT"
+	CdrDimensionTypeParkingTime CdrDimensionType = "PARKING_TIME"
+	CdrDimensionTypeTime        CdrDimensionType = "TIME"
+)
+
+// SessionStatus defines model for Session.Status.
+type SessionStatus string
+
+// Defines values for SessionStatus.
+const (
+	SessionStatusActive    SessionStatus = "ACTIVE"
+	SessionStatusCompleted SessionStatus = "COMPLETED"
+	SessionStatusInvalid   SessionStatus = "INVALID"
+	SessionStatusPending   SessionStatus = "PENDING"
+)
+
+// CommandType defines parameters for type of commands.
+type CommandType string
+
+// Defines values for PostOcpiCommandsCommandParamsCommand.
+const (
+	CommandTypeReserveNow      CommandType = "RESERVE_NOW"
+	CommandTypeStartSession    CommandType = "START_SESSION"
+	CommandTypeStopSession     CommandType = "STOP_SESSION"
+	CommandTypeUnlockConnector CommandType = "UNLOCK_CONNECTOR"
+)
+
+// CommandResponseType defines model for CommandResponse.Result.
+type CommandResponseType string
+
+// Defines values for CommandResponseType.
+const (
+	CommandResponseTypeNotSupported   CommandResponseType = "NOT_SUPPORTED"
+	CommandResponseTypeRejected       CommandResponseType = "REJECTED"
+	CommandResponseTypeAccepted       CommandResponseType = "ACCEPTED"
+	CommandResponseTypeTimeout        CommandResponseType = "TIMEOUT"
+	CommandResponseTypeUnknownSession CommandResponseType = "UNKNOWN_SESSION"
+)
+
 type VersionDetails struct {
 	Endpoints []Endpoint         `json:"endpoints"`
 	Version   ocpi.VersionNumber `json:"version"`
@@ -251,27 +305,27 @@ type ExceptionalPeriod struct {
 }
 
 type PatchedLocation struct {
-	ID                 *string                 `json:"id" validate:"required"`
-	Type               *LocationType           `json:"type" validate:"required"`
-	Name               *string                 `json:"name"`
-	Address            *string                 `json:"address" validate:"required"`
-	City               *string                 `json:"city" validate:"required"`
-	PostalCode         *string                 `json:"postal_code" validate:"required,max=10"`
-	Country            *string                 `json:"country" validate:"required,len=3"`
-	Coordinates        *GeoLocation            `json:"coordinates"`
-	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
-	EVSEs              []EVSE                  `json:"evses,omitempty"`
-	Directions         []DisplayText           `json:"directions,omitempty"`
-	Operator           *BusinessDetails        `json:"operator,omitempty"`
-	Suboperator        *BusinessDetails        `json:"suboperator,omitempty"`
-	Owner              *BusinessDetails        `json:"owner,omitempty"`
-	Facilities         []Facility              `json:"facilities,omitempty"`
-	TimeZone           *string                 `json:"time_zone" validate:"required"`
-	OpeningTimes       *Hours                  `json:"opening_times,omitempty"`
-	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
-	Images             []Image                 `json:"images,omitempty"`
-	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
-	LastUpdated        *ocpi.DateTime          `json:"last_updated"`
+	ID                 *string                 `json:"id" validate:"omitempty,required"`
+	Type               *LocationType           `json:"type" validate:"omitempty,required"`
+	Name               *string                 `json:"name" validate:"omitempty,required"`
+	Address            *string                 `json:"address" validate:"omitempty,required"`
+	City               *string                 `json:"city" validate:"omitempty,required"`
+	PostalCode         *string                 `json:"postal_code" validate:"omitempty,required,max=10"`
+	Country            *string                 `json:"country" validate:"omitempty,required,len=3"`
+	Coordinates        *GeoLocation            `json:"coordinates" validate:"omitempty,required"`
+	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty" validate:"omitempty,required"`
+	EVSEs              []EVSE                  `json:"evses,omitempty" validate:"omitempty,required"`
+	Directions         []DisplayText           `json:"directions,omitempty" validate:"omitempty,required"`
+	Operator           *BusinessDetails        `json:"operator,omitempty" validate:"omitempty,required"`
+	Suboperator        *BusinessDetails        `json:"suboperator,omitempty" validate:"omitempty,required"`
+	Owner              *BusinessDetails        `json:"owner,omitempty" validate:"omitempty,required"`
+	Facilities         []Facility              `json:"facilities,omitempty" validate:"omitempty,required"`
+	TimeZone           *string                 `json:"time_zone" validate:"omitempty,required"`
+	OpeningTimes       *Hours                  `json:"opening_times,omitempty" validate:"omitempty,required"`
+	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty" validate:"omitempty,required"`
+	Images             []Image                 `json:"images,omitempty" validate:"omitempty,required"`
+	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty" validate:"omitempty,required"`
+	LastUpdated        *ocpi.DateTime          `json:"last_updated" validate:"omitempty,required"`
 }
 
 // EVSE defines model for evse.
@@ -304,6 +358,25 @@ type Connector struct {
 	LastUpdated        ocpi.DateTime   `json:"last_updated"`
 }
 
+type ChargeDetailRecord struct {
+	ID               string           `json:"id" validate:"required"`
+	StartDateTime    ocpi.DateTime    `json:"start_date_time" validate:"required"`
+	StopDateTime     ocpi.DateTime    `json:"stop_date_time" validate:"required"`
+	AuthID           string           `json:"auth_id" validate:"max=36"`
+	AuthMethod       AuthMethod       `json:"auth_method" validate:"required"`
+	Location         Location         `json:"location" validate:"required"`
+	MeterID          *string          `json:"meter_id,omitempty"`
+	Currency         string           `json:"currency" validate:"required,len=3"`
+	Tariffs          []Tariff         `json:"tariffs,omitempty"`
+	ChargingPeriods  []ChargingPeriod `json:"charging_periods"`
+	TotalCost        json.Number      `json:"total_cost" validate:"required"`
+	TotalEnergy      json.Number      `json:"total_energy" validate:"required"`
+	TotalTime        json.Number      `json:"total_time" validate:"required"`
+	TotalParkingTime *json.Number     `json:"total_parking_time,omitempty"`
+	Remark           *string          `json:"remark,omitempty"`
+	LastUpdated      ocpi.DateTime    `json:"last_updated" validate:"required"`
+}
+
 type EnergyMix struct {
 	IsGreenEnergy     bool                  `json:"is_green_energy"`
 	EnergySources     []EnergySource        `json:"energy_sources,omitempty"`
@@ -321,6 +394,82 @@ type EnergySource struct {
 type EnvironmentalImpact struct {
 	Amount   json.Number                 `json:"amount"`
 	Category EnvironmentalImpactCategory `json:"category"`
+}
+
+type Session struct {
+	ID              string           `json:"id" validate:"required"`
+	StartDateTime   ocpi.DateTime    `json:"start_datetime" validate:"required"`
+	EndDateTime     *ocpi.DateTime   `json:"end_datetime"`
+	Kwh             json.Number      `json:"kwh"`
+	AuthID          string           `json:"auth_id" validate:"required"`
+	AuthMethod      AuthMethod       `json:"auth_method" validate:"required"`
+	Location        Location         `json:"location" validate:"required"`
+	MeterID         *string          `json:"meter_id,omitempty"`
+	Currency        string           `json:"currency" validate:"required,len=3"`
+	ChargingPeriods []ChargingPeriod `json:"charging_periods,omitempty"`
+	TotalCost       *json.Number     `json:"total_cost" validate:"required"`
+	Status          SessionStatus    `json:"status" validate:"required"`
+	LastUpdated     ocpi.DateTime    `json:"last_updated" validate:"required"`
+}
+
+type PatchedSession struct {
+	ID              *string          `json:"id" validate:"omitempty,required"`
+	StartDateTime   *ocpi.DateTime   `json:"start_datetime" validate:"omitempty,required"`
+	EndDateTime     *ocpi.DateTime   `json:"end_datetime" validate:"omitempty,required"`
+	Kwh             *json.Number     `json:"kwh" validate:"omitempty,required"`
+	AuthID          *string          `json:"auth_id" validate:"omitempty,required"`
+	AuthMethod      *AuthMethod      `json:"auth_method" validate:"omitempty,required"`
+	Location        *PatchedLocation `json:"location" validate:"omitempty,required"`
+	MeterID         *string          `json:"meter_id,omitempty"`
+	Currency        *string          `json:"currency" validate:"omitempty,required,len=3"`
+	ChargingPeriods []ChargingPeriod `json:"charging_periods,omitempty"`
+	TotalCost       *json.Number     `json:"total_cost" validate:"omitempty,required"`
+	Status          *SessionStatus   `json:"status" validate:"omitempty,required"`
+	LastUpdated     *ocpi.DateTime   `json:"last_updated" validate:"omitempty,required"`
+}
+
+type Tariff struct {
+	ID            string          `json:"id" validate:"required"`
+	Currency      string          `json:"currency" validate:"required,len=3"`
+	TariffAltText []string        `json:"tariff_alt_text,omitempty"`
+	TariffAltURL  *string         `json:"tariff_alt_url,omitempty"`
+	Elements      []TariffElement `json:"elements"`
+	EnergyMix     *EnergyMix      `json:"energy_mix" validate:"required"`
+	LastUpdated   ocpi.DateTime   `json:"last_updated" validate:"required"`
+}
+
+type ChargingPeriod struct {
+	StartDateTime ocpi.DateTime  `json:"start_date_time" validate:"required"`
+	Dimensions    []CdrDimension `json:"dimensions"`
+}
+
+// CdrDimension defines model for session_charging_periods_dimensions.
+type CdrDimension struct {
+	Type   CdrDimensionType `json:"type"`
+	Volume json.Number      `json:"volume"`
+}
+
+type TariffElement struct {
+	PriceComponents []PriceComponent    `json:"price_components"`
+	Restrictions    []TariffRestriction `json:"restrictions,omitempty"`
+}
+
+type PriceComponent struct {
+	Type string `json:"type" validate:"required"`
+}
+
+type TariffRestriction struct {
+	StartTime *ocpi.DateTime `json:"start_time" validate:"required"`
+	EndTime   *ocpi.DateTime `json:"end_time,omitempty"`
+	StartDate *string        `json:"start_date" validate:"required"`
+	EndDate   *string        `json:"end_date,omitempty"`
+	MinKwh    *json.Number   `json:"min_kwh,omitempty"` // Minimum kWh for this restriction.
+	// Type Type of restriction, e.g. "TIME", "ENERGY", "PARKING_TIME".
+}
+
+// CommandResponse defines model for commandResponse.
+type CommandResponse struct {
+	Result CommandResponseType `json:"result"`
 }
 
 // GeoLocation defines model for cdrBody_cdr_location_coordinates.
@@ -360,17 +509,23 @@ type Image struct {
 	Height    *int          `json:"height,omitempty"`
 }
 
-// GetOcpiLocationsParams defines parameters for GetOcpiLocations.
-type GetOcpiLocationsParams struct {
+// GetLocationsParams defines parameters for GetOcpiLocations.
+type GetLocationsParams struct {
 	// DateFrom Return Locations that have last_updated after or equal to this date time (inclusive).
-	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Locations that have last_updated up to this date time, but not including (exclusive).
-	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Limit Maximum number of objects to GET.
-	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
 }
+
+type GetCdrsParams struct {
+}
+
+type SessionsResponse = ocpi.Response[[]Session]
+type SessionResponse = ocpi.Response[Session]

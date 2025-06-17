@@ -3,6 +3,7 @@ package ocpi211
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -13,9 +14,49 @@ import (
 // GetOcpiLocations handles the /locations endpoint.
 func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	// TODO: Implement the logic for handling OCPI locations.
-	w.WriteHeader(http.StatusNotImplemented)
-	w.Write([]byte("GetOcpiLocations not implemented"))
+
+	params := GetLocationsParams{}
+	queryString := r.URL.Query()
+	if queryString.Has("date_from") {
+		dt, err := ocpi.ParseDateTime(queryString.Get("date_from"))
+		if err != nil {
+			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+			return
+		}
+		params.DateFrom = &dt
+	}
+	if queryString.Has("date_to") {
+		dt, err := ocpi.ParseDateTime(queryString.Get("date_to"))
+		if err != nil {
+			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+			return
+		}
+		params.DateTo = &dt
+	}
+	if queryString.Has("offset") {
+		offset, err := strconv.ParseUint(queryString.Get("offset"), 10, 32)
+		if err != nil {
+			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+			return
+		}
+		params.Offset = &offset
+	}
+	if queryString.Has("limit") {
+		limit, err := strconv.ParseUint(queryString.Get("limit"), 10, 32)
+		if err != nil {
+			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+			return
+		}
+		u16 := uint16(limit)
+		params.Limit = &u16
+	}
+	response, err := s.cpo.GetLocations(r.Context(), params)
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	httputil.ResponsePagination(w, r, response)
 }
 
 func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {

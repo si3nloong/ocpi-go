@@ -125,7 +125,7 @@ type HubClientInfoReceiver interface {
 type LocationsSender interface {
 	// GetOcpiLocations retrieves a list of locations based on the provided parameters.
 	// (GET /ocpi/2.2.1/locations)
-	GetLocations(ctx context.Context, params GetOcpiLocationsParams) (*ocpi.PaginationResponse[Location], error)
+	GetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
 }
 type LocationsReceiver interface {
 	// (GET /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id})
@@ -165,7 +165,7 @@ type SessionsReceiver interface {
 type TariffsSender interface {
 	// GetOcpiTariffs retrieves a list of tariffs based on the provided parameters.
 	// (GET /ocpi/2.2.1/tariffs)
-	GetTariffs(ctx context.Context, params GetOcpiTariffsParams) (*ocpi.PaginationResponse[Tariff], error)
+	GetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginationResponse[Tariff], error)
 }
 
 type TariffsReceiver interface {
@@ -180,7 +180,7 @@ type TariffsReceiver interface {
 type TokensSender interface {
 	// GetOcpiTokens retrieves a list of tokens based on the provided parameters.
 	// (GET /ocpi/2.2.1/tokens)
-	GetTokens(ctx context.Context, params GetOcpiTokensParams) (*ocpi.PaginationResponse[Token], error)
+	GetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginationResponse[Token], error)
 	// (POST /ocpi/2.2.1/tokens/{token_uid}/authorize[?type={type}])
 	PostToken(ctx context.Context, tokenUID string, body ocpi.RawMessage[LocationReferences], tokenType ...TokenType) (*AuthorizationInfo, error)
 }

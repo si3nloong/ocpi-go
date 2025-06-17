@@ -1342,13 +1342,13 @@ type GetOcpiHubclientinfoParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// GetOcpiLocationsParams defines parameters for GetOcpiLocations.
-type GetOcpiLocationsParams struct {
+// GetLocationsParams defines parameters for GetOcpiLocations.
+type GetLocationsParams struct {
 	// DateFrom Return Locations that have last_updated after or equal to this date time (inclusive).
-	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Locations that have last_updated up to this date time, but not including (exclusive).
-	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1366,29 +1366,29 @@ type GetOcpiSessionsParams struct {
 	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Limit Maximum number of objects to GET.
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// GetOcpiTariffsParams defines parameters for GetOcpiTariffs.
-type GetOcpiTariffsParams struct {
+// GetTariffsParams defines parameters for GetOcpiTariffs.
+type GetTariffsParams struct {
 	// DateFrom Return Tariffs that have last_updated after or equal to Date/Time (inclusive).
-	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Tariffs that have last_updated up to Date/Time, but not including (exclusive).
-	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Limit Maximum number of objects to GET.
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// GetOcpiTokensParams defines parameters for GetOcpiTokens.
-type GetOcpiTokensParams struct {
+// GetTokensParams defines parameters for GetOcpiTokens.
+type GetTokensParams struct {
 	// DateFrom Return tokens that have last_updated after or equal to this Date/Time (inclusive).
 	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
 
@@ -1396,7 +1396,7 @@ type GetOcpiTokensParams struct {
 	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Limit Maximum number of objects to GET.
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`

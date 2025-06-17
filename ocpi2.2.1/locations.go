@@ -14,21 +14,14 @@ import (
 func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := GetOcpiLocationsParams{}
+	params := GetLocationsParams{}
 	response, err := s.locationsSender.GetLocations(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
-	writePaginationResponse(w, r, response)
-}
-
-type GetLocationsParams struct {
-	DateFrom time.Time
-	DateTo   time.Time
-	Offset   uint32
-	Limit    uint8
+	httputil.ResponsePagination(w, r, response)
 }
 
 func (c *Client) GetLocations(
@@ -48,19 +41,18 @@ func (c *Client) GetLocations(
 	query.Set("limit", "100")
 	if len(params) > 0 {
 		p := params[0]
-		if p.Limit == 0 {
-			p.Limit = 100
-		}
-		if !p.DateFrom.IsZero() {
+		if p.DateFrom != nil && p.DateFrom.IsZero() {
 			query.Set("date_from", p.DateFrom.Format(time.RFC3339))
 		}
-		if !p.DateTo.IsZero() {
+		if p.DateTo != nil && p.DateTo.IsZero() {
 			query.Set("date_to", p.DateTo.Format(time.RFC3339))
 		}
-		if p.Offset > 0 {
-			query.Set("offset", strconv.FormatUint(uint64(p.Offset)*uint64(p.Limit), 10))
+		if p.Offset != nil && *p.Offset > 0 {
+			query.Set("offset", strconv.FormatUint(uint64(*p.Offset), 10))
 		}
-		query.Set("limit", strconv.FormatUint(uint64(p.Limit), 10))
+		if p.Limit != nil && *p.Limit > 0 {
+			query.Set("limit", strconv.FormatUint(uint64(*p.Limit), 10))
+		}
 	}
 	u.RawQuery = query.Encode()
 

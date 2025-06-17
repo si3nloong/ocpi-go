@@ -263,52 +263,6 @@ func (s *Server) PostOcpiCdr(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	commandType := chi.URLParam(r, "command_type")
-
-	resp, err := s.commandsReceiver.PostCommand(r.Context(), CommandType(commandType))
-	if err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	b, err := json.Marshal(ocpi.NewResponse(resp))
-	if err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
-}
-
-func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	commandType := chi.URLParam(r, "command_type")
-	uid := chi.URLParam(r, "uid")
-
-	var body json.RawMessage
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	if err := s.commandsSender.PostAsyncCommand(r.Context(), CommandType(commandType), uid, ocpi.RawMessage[CommandResult](body)); err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	b, err := json.Marshal(ocpi.NewEmptyResponse())
-	if err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
-}
-
 func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

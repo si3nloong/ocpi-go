@@ -1,15 +1,12 @@
 package ocpi221
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
@@ -198,18 +195,4 @@ func (s *Server) Handler() http.Handler {
 
 	s.baseUrl = fmt.Sprintf("/ocpi/%s", ocpi.VersionNumber221)
 	return router
-}
-
-func writePaginationResponse[T any](w http.ResponseWriter, r *http.Request, response *ocpi.PaginationResponse[T]) {
-	b, err := json.Marshal(ocpi.NewResponse(response.Data))
-	if err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Link", getHostname(r)+"; rel=\"next\"")
-	w.Header().Set("X-Total-Count", strconv.FormatInt(response.TotalCount, 10))
-	w.Header().Set("X-Limit", strconv.FormatInt(response.Limit, 10))
-	w.Write(b)
 }
