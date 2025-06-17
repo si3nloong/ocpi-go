@@ -14,15 +14,15 @@ type Response[T any] struct {
 func NewResponse[T any](value T) *Response[T] {
 	return &Response[T]{
 		Data:          value,
-		StatusCode:    GenericSuccessCode,
-		StatusMessage: GenericSuccessCode.String(),
+		StatusCode:    StatusCodeSuccess,
+		StatusMessage: StatusCodeSuccess.String(),
 		Timestamp:     time.Now().UTC(),
 	}
 }
 
 func NewEmptyResponse() *Response[any] {
 	return &Response[any]{
-		StatusCode: GenericSuccessCode,
+		StatusCode: StatusCodeSuccess,
 		Timestamp:  time.Now().UTC(),
 	}
 }

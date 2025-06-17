@@ -14,13 +14,13 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 	params := GetOcpiLocationsParams{}
 	locations, err := s.locationsSender.GetLocations(r.Context(), params)
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse(locations))
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
@@ -34,13 +34,13 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 	params := GetOcpiSessionsParams{}
 	sessions, err := s.sessionsSender.GetSessions(r.Context(), params)
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse(sessions))
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 

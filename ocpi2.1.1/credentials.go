@@ -15,7 +15,7 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.Marshal(ocpi.NewResponse(endpoints))
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 

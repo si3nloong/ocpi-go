@@ -15,13 +15,13 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 	params := GetOcpiTokensParams{}
 	tokens, err := s.tokensSender.GetTokens(r.Context(), params)
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse(tokens))
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -34,7 +34,7 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
@@ -59,13 +59,13 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 		tokenType,
 	)
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse(authInfo))
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -101,13 +101,13 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 		tokenType,
 	)
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse(token))
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
@@ -138,7 +138,7 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
@@ -150,13 +150,13 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 		ocpi.RawMessage[Token](body),
 		tokenType,
 	); err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse[any](nil))
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
@@ -187,7 +187,7 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
@@ -199,13 +199,13 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 		ocpi.RawMessage[PatchedToken](body),
 		tokenType,
 	); err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
 	b, err := json.Marshal(ocpi.NewResponse[any](nil))
 	if err != nil {
-		httputil.ResponseError(w, err, ocpi.GenericServerError)
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 

@@ -8,25 +8,38 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[GenericSuccessCode-1000]
-	_ = x[GenericClientError-2000]
-	_ = x[GenericServerError-3000]
+	_ = x[StatusCodeSuccess-1000]
+	_ = x[StatusCodeClientError-2000]
+	_ = x[StatusCodeClientErrorInvalidOrMissingParameters-2001]
+	_ = x[StatusCodeClientErrorNotEnoughInfo-2002]
+	_ = x[StatusCodeClientErrorUnknownLocation-2003]
+	_ = x[StatusCodeServerError-3000]
+	_ = x[StatusCodeServerErrorUnableToUseClientAPI-3001]
+	_ = x[StatusCodeServerErrorUnsupportedVersion-3002]
+	_ = x[StatusCodeServerErrorNoMatchingEndpoints-3003]
 }
 
 const (
 	_StatusCode_name_0 = "Success"
-	_StatusCode_name_1 = "Client Error"
-	_StatusCode_name_2 = "Server Error"
+	_StatusCode_name_1 = "Client ErrorInvalid or missing parametersNot enough information, for example: Authorization request with too little information.Unknown Location, for example: Command: START_SESSION with unknown location."
+	_StatusCode_name_2 = "Generic Server ErrorUnable to use the client's API. For example during the credentials registration: When the initializing party requests data from the other party during the open POST call to its credentials endpoint. If one of the GETs can not be processed, the party should return this error in the POST response.Unsupported versionNo matching endpoints or expected endpoints missing between parties. Used during the registration process if the two parties do not have any mutual modules or endpoints available, or the minimum expected by the other party implementation."
+)
+
+var (
+	_StatusCode_index_1 = [...]uint8{0, 12, 41, 128, 204}
+	_StatusCode_index_2 = [...]uint16{0, 20, 316, 335, 573}
 )
 
 func (i StatusCode) String() string {
 	switch {
 	case i == 1000:
 		return _StatusCode_name_0
-	case i == 2000:
-		return _StatusCode_name_1
-	case i == 3000:
-		return _StatusCode_name_2
+	case 2000 <= i && i <= 2003:
+		i -= 2000
+		return _StatusCode_name_1[_StatusCode_index_1[i]:_StatusCode_index_1[i+1]]
+	case 3000 <= i && i <= 3003:
+		i -= 3000
+		return _StatusCode_name_2[_StatusCode_index_2[i]:_StatusCode_index_2[i+1]]
 	default:
 		return "StatusCode(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
