@@ -87,7 +87,7 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	token, err := s.receiver.GetToken(
+	token, err := s.tokensReceiver.GetToken(
 		r.Context(),
 		countryCode,
 		partyId,

@@ -37,7 +37,6 @@ type Server struct {
 	tokensSender             TokensSender
 	tokensReceiver           TokensReceiver
 	versions                 Versions
-	receiver                 Receiver
 }
 
 func NewServer(credential Credentials, cfg Config) *Server {

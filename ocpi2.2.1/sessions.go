@@ -33,7 +33,7 @@ func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyId := chi.URLParam(r, "party_id")
 	sessionId := chi.URLParam(r, "session_id")
 
-	session, err := s.receiver.GetSession(
+	session, err := s.sessionsReceiver.GetSession(
 		r.Context(),
 		countryCode,
 		partyId,
@@ -68,7 +68,7 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyId := chi.URLParam(r, "party_id")
 	sessionId := chi.URLParam(r, "session_id")
 
-	if err := s.receiver.PutSession(
+	if err := s.sessionsReceiver.PutSession(
 		ctx,
 		countryCode,
 		partyId,
@@ -103,7 +103,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyId := chi.URLParam(r, "party_id")
 	sessionId := chi.URLParam(r, "session_id")
 
-	if err := s.receiver.PatchSession(
+	if err := s.sessionsReceiver.PatchSession(
 		ctx,
 		countryCode,
 		partyId,
