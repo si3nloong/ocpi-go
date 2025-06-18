@@ -552,7 +552,7 @@ type CdrLocation struct {
 	State              *string         `json:"state,omitempty"`
 	Country            string          `json:"country" validate:"required,len=3"`
 	Coordinates        GeoLocation     `json:"coordinates"`
-	EvseUID            string          `json:"evse_uid" validate:"required,max=36"`
+	EVSEUID            string          `json:"evse_uid" validate:"required,max=36"`
 	EvseID             string          `json:"evse_id" validate:"required,max=48"`
 	ConnectorID        string          `json:"connector_id"`
 	ConnectorType      ConnectorType   `json:"connector_standard" validate:"required"`
@@ -879,7 +879,7 @@ type StatusScheduleStatus string
 
 // LocationReferences defines model for locationReferences.
 type LocationReferences struct {
-	EvseUIDs   *string `json:"evse_uids,omitempty"`
+	EVSEUIDs   *string `json:"evse_uids,omitempty"`
 	LocationID string  `json:"location_id"`
 }
 
@@ -1041,7 +1041,7 @@ type ReserveNow struct {
 	ExpiryDate             ocpi.DateTime `json:"expiry_date" validate:"required"`
 	ReservationID          string        `json:"reservation_id" validate:"required"`
 	LocationID             string        `json:"location_id" validate:"required"`
-	EvseUID                *string       `json:"evse_uid,omitempty"`
+	EVSEUID                *string       `json:"evse_uid,omitempty"`
 	AuthorizationReference *string       `json:"authorization_reference,omitempty"`
 }
 
@@ -1057,7 +1057,7 @@ type Session struct {
 	AuthMethod             AuthMethod       `json:"auth_method" validate:"required"`
 	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
 	LocationID             string           `json:"location_id" validate:"required"`
-	EvseUid                string           `json:"evse_uid" validate:"required"`
+	EVSEUID                string           `json:"evse_uid" validate:"required"`
 	ConnectorID            string           `json:"connector_id" validate:"required"`
 	MeterID                *string          `json:"meter_id,omitempty"`
 	Currency               string           `json:"currency" validate:"required,len=3"`
@@ -1077,7 +1077,7 @@ type PatchedSession struct {
 	CountryCode            *string         `json:"country_code,omitempty"`
 	Currency               *string         `json:"currency,omitempty"`
 	EndDateTime            *ocpi.DateTime  `json:"end_date_time,omitempty"`
-	EvseUid                *string         `json:"evse_uid,omitempty"`
+	EVSEUID                *string         `json:"evse_uid,omitempty"`
 	ID                     *string         `json:"id,omitempty"`
 	Kwh                    *json.Number    `json:"kwh,omitempty"`
 	LocationID             *string         `json:"location_id,omitempty"`
@@ -1117,7 +1117,7 @@ type SetChargingProfile struct {
 type StartSession struct {
 	AuthorizationReference *string `json:"authorization_reference,omitempty"`
 	ConnectorID            *string `json:"connector_id,omitempty"`
-	EvseUid                *string `json:"evse_uid,omitempty"`
+	EVSEUID                *string `json:"evse_uid,omitempty"`
 	LocationID             string  `json:"location_id" validate:"required"`
 	ResponseURL            string  `json:"response_url" validate:"required"`
 	Token                  Token   `json:"token"`
@@ -1224,7 +1224,7 @@ type Terminal struct {
 	InvoiceCreator    *InvoiceCreator `json:"invoice_creator,omitempty"`
 	Reference         *string         `json:"reference,omitempty"`
 	LocationIDs       []string        `json:"location_ids,omitempty"`
-	EvseUids          []string        `json:"evse_uids,omitempty"`
+	EVSEUIDs          []string        `json:"evse_uids,omitempty"`
 	LastUpdated       ocpi.DateTime   `json:"last_updated"`
 }
 
@@ -1259,7 +1259,7 @@ type Token struct {
 	LastUpdated        ocpi.DateTime        `json:"last_updated"`
 	PartyID            string               `json:"party_id"`
 	Type               TokenType            `json:"type"`
-	Uid                string               `json:"uid"`
+	UID                string               `json:"uid"`
 	Valid              bool                 `json:"valid"`
 	VisualNumber       *string              `json:"visual_number,omitempty"`
 	Whitelist          WhitelistType        `json:"whitelist"`
@@ -1276,7 +1276,7 @@ type PatchedToken struct {
 	LastUpdated        ocpi.DateTime        `json:"last_updated"`
 	PartyID            string               `json:"party_id"`
 	Type               TokenType            `json:"type"`
-	Uid                string               `json:"uid"`
+	UID                string               `json:"uid"`
 	Valid              bool                 `json:"valid"`
 	VisualNumber       *string              `json:"visual_number,omitempty"`
 	Whitelist          WhitelistType        `json:"whitelist"`
@@ -1308,7 +1308,7 @@ type TokensResponse struct {
 type UnlockConnector struct {
 	ResponseURL string `json:"response_url"`
 	LocationID  string `json:"location_id"`
-	EvseUID     string `json:"evse_uid"`
+	EVSEUID     string `json:"evse_uid"`
 	ConnectorID string `json:"connector_id"`
 }
 

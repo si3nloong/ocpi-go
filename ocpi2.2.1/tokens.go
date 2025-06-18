@@ -24,7 +24,7 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	tokenUid := chi.URLParam(r, "token_uid")
+	tokenUID := chi.URLParam(r, "token_uid")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -48,7 +48,7 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	authInfo, err := s.tokensSender.PostToken(
 		r.Context(),
-		tokenUid,
+		tokenUID,
 		ocpi.RawMessage[LocationReferences](body),
 		tokenType,
 	)
@@ -71,7 +71,7 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	countryCode := chi.URLParam(r, "country_code")
 	partyID := chi.URLParam(r, "party_id")
-	tokenUid := chi.URLParam(r, "token_uid")
+	tokenUID := chi.URLParam(r, "token_uid")
 
 	tokenType := TokenTypeRFID
 	if r.URL.Query().Has("type") {
@@ -91,7 +91,7 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 		r.Context(),
 		countryCode,
 		partyID,
-		tokenUid,
+		tokenUID,
 		tokenType,
 	)
 	if err != nil {
@@ -114,7 +114,7 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	countryCode := chi.URLParam(r, "country_code")
 	partyID := chi.URLParam(r, "party_id")
-	tokenUid := chi.URLParam(r, "token_uid")
+	tokenUID := chi.URLParam(r, "token_uid")
 
 	tokenType := TokenTypeRFID
 	if r.URL.Query().Has("type") {
@@ -140,7 +140,7 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 		r.Context(),
 		countryCode,
 		partyID,
-		tokenUid,
+		tokenUID,
 		ocpi.RawMessage[Token](body),
 		tokenType,
 	); err != nil {
@@ -163,7 +163,7 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	countryCode := chi.URLParam(r, "country_code")
 	partyID := chi.URLParam(r, "party_id")
-	tokenUid := chi.URLParam(r, "token_uid")
+	tokenUID := chi.URLParam(r, "token_uid")
 
 	tokenType := TokenTypeRFID
 	if r.URL.Query().Has("type") {
@@ -189,7 +189,7 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 		r.Context(),
 		countryCode,
 		partyID,
-		tokenUid,
+		tokenUID,
 		ocpi.RawMessage[PatchedToken](body),
 		tokenType,
 	); err != nil {

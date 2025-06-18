@@ -40,11 +40,11 @@ func (UnimplementedServer) GetLocation(ctx context.Context, countryCode string, 
 	return nil, ErrNotImplemented
 }
 
-func (UnimplementedServer) GetLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string) (*EVSE, error) {
+func (UnimplementedServer) GetLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string) (*EVSE, error) {
 	return nil, ErrNotImplemented
 }
 
-func (UnimplementedServer) GetLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, connectorID string) (*Connector, error) {
+func (UnimplementedServer) GetLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string) (*Connector, error) {
 	return nil, ErrNotImplemented
 }
 
@@ -52,11 +52,11 @@ func (UnimplementedServer) PutLocation(ctx context.Context, countryCode string, 
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PutLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, body ocpi.RawMessage[Location]) error {
+func (UnimplementedServer) PutLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[Location]) error {
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PutLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, connectorID string, body ocpi.RawMessage[Location]) error {
+func (UnimplementedServer) PutLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[Location]) error {
 	return ErrNotImplemented
 }
 
@@ -64,11 +64,11 @@ func (UnimplementedServer) PatchLocation(ctx context.Context, countryCode string
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PatchLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, body ocpi.RawMessage[PatchedLocation]) error {
+func (UnimplementedServer) PatchLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PatchedLocation]) error {
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PatchLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, connectorID string, body ocpi.RawMessage[PatchedLocation]) error {
+func (UnimplementedServer) PatchLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PatchedLocation]) error {
 	return ErrNotImplemented
 }
 
@@ -96,15 +96,15 @@ func (UnimplementedServer) PatchSession(ctx context.Context, countryCode string,
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) GetToken(ctx context.Context, countryCode string, partyID string, tokenUid string, tokenType ...TokenType) (*Token, error) {
+func (UnimplementedServer) GetToken(ctx context.Context, countryCode string, partyID string, tokenUID string, tokenType ...TokenType) (*Token, error) {
 	return nil, ErrNotImplemented
 }
 
-func (UnimplementedServer) PutToken(ctx context.Context, countryCode string, partyID string, tokenUid string, body ocpi.RawMessage[Token]) error {
+func (UnimplementedServer) PutToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[Token]) error {
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PatchToken(ctx context.Context, countryCode string, partyID string, tokenUid string, body ocpi.RawMessage[PatchedToken]) error {
+func (UnimplementedServer) PatchToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PatchedToken]) error {
 	return ErrNotImplemented
 }
 

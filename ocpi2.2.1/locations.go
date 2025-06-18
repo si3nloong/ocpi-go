@@ -34,17 +34,17 @@ func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	countryCode := chi.URLParam(r, "country_code")
 	partyID := chi.URLParam(r, "party_id")
 	locationID := chi.URLParam(r, "location_id")
-	evseUid := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
+	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
 	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
 
 	var (
 		resp any
 		err  error
 	)
-	if evseUid != "" && connectorID != "" {
-		resp, err = s.locationsReceiver.GetLocationConnector(ctx, countryCode, partyID, locationID, evseUid, connectorID)
-	} else if evseUid != "" {
-		resp, err = s.locationsReceiver.GetLocationEVSE(ctx, countryCode, partyID, locationID, evseUid)
+	if evseUID != "" && connectorID != "" {
+		resp, err = s.locationsReceiver.GetLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID)
+	} else if evseUID != "" {
+		resp, err = s.locationsReceiver.GetLocationEVSE(ctx, countryCode, partyID, locationID, evseUID)
 	} else {
 		resp, err = s.locationsReceiver.GetLocation(ctx, countryCode, partyID, locationID)
 	}
@@ -76,36 +76,36 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	countryCode := chi.URLParam(r, "country_code")
 	partyID := chi.URLParam(r, "party_id")
 	locationID := chi.URLParam(r, "location_id")
-	evseUid := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
+	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
 	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
 
 	s.logger.DebugContext(ctx, "PutOcpiLocation",
 		"country_code", countryCode,
 		"party_id", partyID,
 		"location_id", locationID,
-		"evse_uid", evseUid,
+		"evse_uid", evseUID,
 		"connector_id", connectorID)
 
-	if evseUid != "" && connectorID != "" {
+	if evseUID != "" && connectorID != "" {
 		if err := s.locationsReceiver.PutLocationConnector(
 			ctx,
 			countryCode,
 			partyID,
 			locationID,
-			evseUid,
+			evseUID,
 			connectorID,
 			ocpi.RawMessage[Location](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
 		}
-	} else if evseUid != "" {
+	} else if evseUID != "" {
 		if err := s.locationsReceiver.PutLocationEVSE(
 			ctx,
 			countryCode,
 			partyID,
 			locationID,
-			evseUid,
+			evseUID,
 			ocpi.RawMessage[Location](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
@@ -147,29 +147,29 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	countryCode := chi.URLParam(r, "country_code")
 	partyID := chi.URLParam(r, "party_id")
 	locationID := chi.URLParam(r, "location_id")
-	evseUid := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
+	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
 	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
 
-	if evseUid != "" && connectorID != "" {
+	if evseUID != "" && connectorID != "" {
 		if err := s.locationsReceiver.PatchLocationConnector(
 			ctx,
 			countryCode,
 			partyID,
 			locationID,
-			evseUid,
+			evseUID,
 			connectorID,
 			ocpi.RawMessage[PatchedLocation](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
 		}
-	} else if evseUid != "" {
+	} else if evseUID != "" {
 		if err := s.locationsReceiver.PatchLocationEVSE(
 			ctx,
 			countryCode,
 			partyID,
 			locationID,
-			evseUid,
+			evseUID,
 			ocpi.RawMessage[PatchedLocation](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
