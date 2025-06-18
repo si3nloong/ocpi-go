@@ -102,21 +102,13 @@ const (
 	EnvironmentalImpactCategoryNuclearWaste  EnvironmentalImpactCategory = "NUCLEAR_WASTE"
 )
 
-// Defines values for ChargingPreferencesProfileType.
-const (
-	ChargingPreferencesProfileTypeCHEAP   ChargingPreferencesProfileType = "CHEAP"
-	ChargingPreferencesProfileTypeFAST    ChargingPreferencesProfileType = "FAST"
-	ChargingPreferencesProfileTypeGREEN   ChargingPreferencesProfileType = "GREEN"
-	ChargingPreferencesProfileTypeREGULAR ChargingPreferencesProfileType = "REGULAR"
-)
-
 // Defines values for ChargingPreferencesResponseChargingPreferences.
 const (
-	ChargingPreferencesResponseChargingPreferencesACCEPTED                ChargingPreferencesResponseChargingPreferences = "ACCEPTED"
-	ChargingPreferencesResponseChargingPreferencesDEPARTUREREQUIRED       ChargingPreferencesResponseChargingPreferences = "DEPARTURE_REQUIRED"
-	ChargingPreferencesResponseChargingPreferencesENERGYNEEDREQUIRED      ChargingPreferencesResponseChargingPreferences = "ENERGY_NEED_REQUIRED"
-	ChargingPreferencesResponseChargingPreferencesNotPossible             ChargingPreferencesResponseChargingPreferences = "NOT_POSSIBLE"
-	ChargingPreferencesResponseChargingPreferencesPROFILETYPENOTSUPPORTED ChargingPreferencesResponseChargingPreferences = "PROFILE_TYPE_NOT_SUPPORTED"
+	ChargingPreferencesResponseChargingPreferencesACCEPTED           ChargingPreferencesResponseChargingPreferences = "ACCEPTED"
+	ChargingPreferencesResponseChargingPreferencesDEPARTUREREQUIRED  ChargingPreferencesResponseChargingPreferences = "DEPARTURE_REQUIRED"
+	ChargingPreferencesResponseChargingPreferencesENERGYNEEDREQUIRED ChargingPreferencesResponseChargingPreferences = "ENERGY_NEED_REQUIRED"
+	ChargingPreferencesResponseChargingPreferencesNotPossible        ChargingPreferencesResponseChargingPreferences = "NOT_POSSIBLE"
+	ChargingPreferencesResponseProfileTypeNOTSUPPORTED               ChargingPreferencesResponseChargingPreferences = "PROFILE_TYPE_NOT_SUPPORTED"
 )
 
 // Defines values for ChargingRateUnit.
@@ -351,26 +343,18 @@ const (
 
 // Defines values for ParkingType.
 const (
-	ParkingTypeALONGMOTORWAY     ParkingType = "ALONG_MOTORWAY"
-	ParkingTypeONDRIVEWAY        ParkingType = "ON_DRIVEWAY"
+	ParkingTypeAlongMotorway     ParkingType = "ALONG_MOTORWAY"
+	ParkingTypeOnDriveway        ParkingType = "ON_DRIVEWAY"
 	ParkingTypeOnStreet          ParkingType = "ON_STREET"
-	ParkingTypePARKINGGARAGE     ParkingType = "PARKING_GARAGE"
+	ParkingTypeParkingGarage     ParkingType = "PARKING_GARAGE"
 	ParkingTypeParkingLot        ParkingType = "PARKING_LOT"
-	ParkingTypeUNDERGROUNDGARAGE ParkingType = "UNDERGROUND_GARAGE"
-)
-
-// Defines values for PublishTokenTypeType.
-const (
-	PublishTokenTypeTypeAdhocUser PublishTokenTypeType = "AD_HOC_USER"
-	PublishTokenTypeTypeAppUser   PublishTokenTypeType = "APP_USER"
-	PublishTokenTypeTypeOther     PublishTokenTypeType = "OTHER"
-	PublishTokenTypeTypeRFID      PublishTokenTypeType = "RFID"
+	ParkingTypeUndergroundGarage ParkingType = "UNDERGROUND_GARAGE"
 )
 
 // Defines values for ReservationRestrictionType.
 const (
-	ReservationRestrictionTypeRESERVATION        ReservationRestrictionType = "RESERVATION"
-	ReservationRestrictionTypeRESERVATIONEXPIRES ReservationRestrictionType = "RESERVATION_EXPIRES"
+	ReservationRestrictionTypeReservation        ReservationRestrictionType = "RESERVATION"
+	ReservationRestrictionTypeReservationExpires ReservationRestrictionType = "RESERVATION_EXPIRES"
 )
 
 // Defines values for AuthMethod.
@@ -660,13 +644,11 @@ type CdrsResponse struct {
 
 // ChargingPreferences defines model for chargingPreferences.
 type ChargingPreferences struct {
-	DepartureTime *string                        `json:"departure_time,omitempty"`
-	EnergyNeed    *float32                       `json:"energy_need,omitempty"`
-	ProfileType   ChargingPreferencesProfileType `json:"profile_type"`
+	ProfileType      ProfileType    `json:"profile_type"`
+	DepartureTime    *ocpi.DateTime `json:"departure_time,omitempty"`
+	EnergyNeed       *json.Number   `json:"energy_need,omitempty"`
+	DischargeAllowed *bool          `json:"discharged_allowed"`
 }
-
-// ChargingPreferencesProfileType defines model for ChargingPreferences.ProfileType.
-type ChargingPreferencesProfileType string
 
 // ChargingPreferencesResponse defines model for chargingPreferencesResponse.
 type ChargingPreferencesResponse struct {
@@ -1008,15 +990,12 @@ type RegularHours struct {
 
 // PublishTokenType defines model for locations_data_publish_allowed_to.
 type PublishTokenType struct {
-	GroupID      *string               `json:"group_id,omitempty"`
-	Issuer       *string               `json:"issuer,omitempty"`
-	Type         *PublishTokenTypeType `json:"type,omitempty"`
-	UID          *string               `json:"uid,omitempty"`
-	VisualNumber *string               `json:"visual_number,omitempty"`
+	UID          *string    `json:"uid,omitempty"`
+	Type         *TokenType `json:"type,omitempty"`
+	VisualNumber *string    `json:"visual_number,omitempty"`
+	Issuer       *string    `json:"issuer,omitempty"`
+	GroupID      *string    `json:"group_id,omitempty"`
 }
-
-// PublishTokenTypeType defines model for PublishTokenType.Type.
-type PublishTokenTypeType string
 
 // AdditionalGeoLocation defines model for locations_data_related_locations.
 type AdditionalGeoLocation struct {

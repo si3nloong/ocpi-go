@@ -1,6 +1,7 @@
 package ocpi211
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -53,4 +54,54 @@ func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
+}
+
+func (c *Client) StartSession(ctx context.Context, req StartSession) (*CommandResponse, error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Token.LastUpdated = req.Token.LastUpdated.UTC()
+	var res CommandResponse
+	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeStartSession), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *Client) StopSession(ctx context.Context, req StopSession) (*CommandResponse, error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands)
+	if err != nil {
+		return nil, err
+	}
+	var res CommandResponse
+	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeStopSession), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *Client) ReserveNow(ctx context.Context, req ReserveNow) (*CommandResponse, error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands)
+	if err != nil {
+		return nil, err
+	}
+	var res CommandResponse
+	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeReserveNow), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *Client) UnlockConnector(ctx context.Context, req UnlockConnector) (*CommandResponse, error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands)
+	if err != nil {
+		return nil, err
+	}
+	var res CommandResponse
+	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeUnlockConnector), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }

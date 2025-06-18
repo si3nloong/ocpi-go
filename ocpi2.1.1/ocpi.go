@@ -246,6 +246,25 @@ const (
 	CommandResponseTypeUnknownSession CommandResponseType = "UNKNOWN_SESSION"
 )
 
+// TokenType defines model for Token.Type.
+type TokenType string
+
+// Defines values for TokenType.
+const (
+	TokenTypeOther TokenType = "OTHER"
+	TokenTypeRFID  TokenType = "RFID"
+)
+
+type WhitelistType string
+
+// Defines values for WhitelistType.
+const (
+	WhitelistTypeAlways         WhitelistType = "ALWAYS"
+	WhitelistTypeAllowed        WhitelistType = "ALLOWED"
+	WhitelistTypeAllowedOffline WhitelistType = "ALLOWED_OFFLINE"
+	WhitelistTypeNever          WhitelistType = "NEVER"
+)
+
 type VersionDetails struct {
 	Endpoints []Endpoint         `json:"endpoints"`
 	Version   ocpi.VersionNumber `json:"version"`
@@ -546,3 +565,43 @@ type GetTariffsParams struct {
 }
 
 type TariffsResponse = ocpi.Response[[]Tariff]
+
+type StartSession struct {
+	ResponseURL string  `json:"response_url" validate:"required"`
+	Token       Token   `json:"token" validate:"required"`
+	LocationID  string  `json:"location_id" validate:"required,max=39"`
+	EVSEUID     *string `json:"evse_uid,omitempty" validate:"omitempty,required,max=39"`
+}
+
+type StopSession struct {
+	ResponseURL string `json:"response_url" validate:"required"`
+	SessionID   string `json:"session_id" validate:"required,max=36"`
+}
+
+type ReserveNow struct {
+	ResponseURL   string        `json:"response_url" validate:"required"`
+	Token         Token         `json:"token" validate:"required"`
+	ExpiryDate    ocpi.DateTime `json:"expiry_date" validate:"required"`
+	ReservationID int           `json:"reservation_id" validate:"required"`
+	LocationID    string        `json:"location_id" validate:"required,max=39"`
+	EVSEUID       *string       `json:"evse_uid,omitempty" validate:"omitempty,required,max=39"`
+}
+
+type UnlockConnector struct {
+	ResponseURL string `json:"response_url" validate:"required"`
+	LocationID  string `json:"location_id" validate:"required,max=39"`
+	EVSEUID     string `json:"evse_uid" validate:"required,max=39"`
+	ConnectorID string `json:"connector_id" validate:"required,max=36"`
+}
+
+type Token struct {
+	UID          string        `json:"uid" validate:"required"`
+	Type         TokenType     `json:"type"`
+	AuthID       string        `json:"auth_id" validate:"required"`
+	VisualNumber *string       `json:"visual_number"`
+	Issuer       string        `json:"issuer"`
+	Valid        bool          `json:"valid"`
+	Whitelist    WhitelistType `json:"whitelist"`
+	Language     string        `json:"language" validate:"required,max=2"`
+	LastUpdated  ocpi.DateTime `json:"last_updated"`
+}
