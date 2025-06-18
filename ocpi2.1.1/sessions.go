@@ -72,14 +72,14 @@ func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	countryCode := chi.URLParam(r, "country_code")
-	partyId := chi.URLParam(r, "party_id")
-	sessionId := chi.URLParam(r, "session_id")
+	partyID := chi.URLParam(r, "party_id")
+	sessionID := chi.URLParam(r, "session_id")
 
 	session, err := s.emsp.GetSession(
 		r.Context(),
 		countryCode,
-		partyId,
-		sessionId,
+		partyID,
+		sessionID,
 	)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
@@ -107,14 +107,14 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	countryCode := chi.URLParam(r, "country_code")
-	partyId := chi.URLParam(r, "party_id")
-	sessionId := chi.URLParam(r, "session_id")
+	partyID := chi.URLParam(r, "party_id")
+	sessionID := chi.URLParam(r, "session_id")
 
 	if err := s.emsp.PutSession(
 		ctx,
 		countryCode,
-		partyId,
-		sessionId,
+		partyID,
+		sessionID,
 		ocpi.RawMessage[Session](body),
 	); err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
@@ -142,14 +142,14 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	countryCode := chi.URLParam(r, "country_code")
-	partyId := chi.URLParam(r, "party_id")
-	sessionId := chi.URLParam(r, "session_id")
+	partyID := chi.URLParam(r, "party_id")
+	sessionID := chi.URLParam(r, "session_id")
 
 	if err := s.emsp.PatchSession(
 		ctx,
 		countryCode,
-		partyId,
-		sessionId,
+		partyID,
+		sessionID,
 		ocpi.RawMessage[PatchedSession](body),
 	); err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
@@ -206,8 +206,8 @@ func (c *Client) GetSessions(
 func (c *Client) GetSession(
 	ctx context.Context,
 	countryCode string,
-	partyId string,
-	sessionId string,
+	partyID string,
+	sessionID string,
 ) (*SessionResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions)
 	if err != nil {
@@ -215,7 +215,7 @@ func (c *Client) GetSession(
 	}
 
 	var o SessionResponse
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyId+"/"+sessionId, nil, &o); err != nil {
+	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, nil, &o); err != nil {
 		return nil, err
 	}
 	return &o, nil

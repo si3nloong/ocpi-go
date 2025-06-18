@@ -1,4 +1,4 @@
-package ocpi221
+package ocpi211
 
 import (
 	"context"
@@ -17,7 +17,7 @@ func (s *Server) GetOcpiTariffs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	params := GetTariffsParams{}
-	response, err := s.tariffsSender.GetTariffs(r.Context(), params)
+	response, err := s.cpo.GetTariffs(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -33,7 +33,7 @@ func (s *Server) GetOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	tariff, err := s.tariffsReceiver.GetTariff(r.Context(), countryCode, partyID, tariffID)
+	tariff, err := s.emsp.GetTariff(r.Context(), countryCode, partyID, tariffID)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -62,7 +62,41 @@ func (s *Server) PutOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	if err := s.tariffsReceiver.PutTariff(
+	if err := s.emsp.PutTariff(
+		r.Context(),
+		countryCode,
+		partyID,
+		tariffID,
+		ocpi.RawMessage[Tariff](body),
+	); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
+func (s *Server) PatchOcpiTariff(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var body json.RawMessage
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	countryCode := chi.URLParam(r, "country_code")
+	partyID := chi.URLParam(r, "party_id")
+	tariffID := chi.URLParam(r, "tariff_id")
+
+	if err := s.emsp.PatchTariff(
 		r.Context(),
 		countryCode,
 		partyID,
@@ -90,7 +124,7 @@ func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	if err := s.tariffsReceiver.DeleteTariff(
+	if err := s.emsp.DeleteTariff(
 		r.Context(),
 		countryCode,
 		partyID,
@@ -114,7 +148,7 @@ func (c *Client) GetTariffs(
 	ctx context.Context,
 	params ...GetTariffsParams,
 ) (ocpi.Result[[]Tariff], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +183,7 @@ func (c *Client) GetTariffs(
 }
 
 func (c *Client) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (any, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
+	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs)
 	if err != nil {
 		return nil, err
 	}

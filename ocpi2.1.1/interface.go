@@ -13,6 +13,8 @@ type CPO interface {
 	GetCDRs(ctx context.Context, params GetCdrsParams) (*ocpi.PaginationResponse[ChargeDetailRecord], error)
 	// (GET /ocpi/2.1.1/sessions)
 	GetSessions(ctx context.Context, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
+	// (GET /ocpi/2.1.1/tariffs)
+	GetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginationResponse[Session], error)
 	// (POST /ocpi/2.1.1/commands/{command})
 	PostCommand(ctx context.Context, commandType CommandType) (*CommandResponse, error)
 }
@@ -38,11 +40,20 @@ type EMSP interface {
 	PatchLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUid string, connectorID string, body ocpi.RawMessage[PatchedLocation]) error
 
 	// (GET /ocpi/2.1.1/sessions/{country_code}/{party_id}/{session_id})
-	GetSession(ctx context.Context, countryCode string, partyID string, sessionId string) (*Session, error)
+	GetSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*Session, error)
 	// (PUT /ocpi/2.1.1/sessions/{country_code}/{party_id}/{session_id})
-	PutSession(ctx context.Context, countryCode string, partyID string, sessionId string, body ocpi.RawMessage[Session]) error
+	PutSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[Session]) error
 	// (PATCH /ocpi/2.1.1/sessions/{country_code}/{party_id}/{session_id})
-	PatchSession(ctx context.Context, countryCode string, partyID string, sessionId string, body ocpi.RawMessage[PatchedSession]) error
+	PatchSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PatchedSession]) error
+
+	// (GET /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
+	GetTariff(ctx context.Context, countryCode string, partyID string, sessionID string) (*Tariff, error)
+	// (PUT /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
+	PutTariff(ctx context.Context, countryCode string, partyID string, tariffID string, body ocpi.RawMessage[Tariff]) error
+	// (PATCH /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
+	PatchTariff(ctx context.Context, countryCode string, partyID string, tariffID string, body ocpi.RawMessage[Tariff]) error
+	// (DELETE /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
+	DeleteTariff(ctx context.Context, countryCode string, partyID string, tariffID string) error
 
 	// (POST /ocpi/2.1.1/commands/{command}/{uid})
 	PostAsyncCommand(ctx context.Context, commandType CommandType, uid string, body ocpi.RawMessage[CommandResponse]) error

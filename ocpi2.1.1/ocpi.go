@@ -529,3 +529,20 @@ type GetCdrsParams struct {
 
 type SessionsResponse = ocpi.Response[[]Session]
 type SessionResponse = ocpi.Response[Session]
+
+// GetTariffsParams defines parameters for GetOcpiTariffs.
+type GetTariffsParams struct {
+	// DateFrom Return Tariffs that have last_updated after or equal to Date/Time (inclusive).
+	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
+
+	// DateTo Return Tariffs that have last_updated up to Date/Time, but not including (exclusive).
+	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+
+	// Offset The offset of the first object returned. Default is 0.
+	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Maximum number of objects to GET.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+type TariffsResponse = ocpi.Response[[]Tariff]

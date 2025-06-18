@@ -84,7 +84,7 @@ type CDRsSender interface {
 }
 type CDRsReceiver interface {
 	// (GET /ocpi/2.2.1/cdrs/{cdr_id})
-	GetCDR(ctx context.Context, cdrId string) (*ChargeDetailRecord, error)
+	GetCDR(ctx context.Context, cdrID string) (*ChargeDetailRecord, error)
 	// (POST /ocpi/2.2.1/cdrs)
 	PostCDR(ctx context.Context, body ocpi.RawMessage[ChargeDetailRecord]) error
 }
@@ -155,11 +155,11 @@ type SessionsSender interface {
 }
 type SessionsReceiver interface {
 	// (GET /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
-	GetSession(ctx context.Context, countryCode string, partyID string, sessionId string) (*Session, error)
+	GetSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*Session, error)
 	// (PUT /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
-	PutSession(ctx context.Context, countryCode string, partyID string, sessionId string, body ocpi.RawMessage[Session]) error
+	PutSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[Session]) error
 	// (PATCH /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
-	PatchSession(ctx context.Context, countryCode string, partyID string, sessionId string, body ocpi.RawMessage[PatchedSession]) error
+	PatchSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PatchedSession]) error
 }
 
 type TariffsSender interface {
@@ -170,11 +170,11 @@ type TariffsSender interface {
 
 type TariffsReceiver interface {
 	// (GET /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
-	GetTariff(ctx context.Context, countryCode string, partyID string, sessionId string) (*Tariff, error)
+	GetTariff(ctx context.Context, countryCode string, partyID string, sessionID string) (*Tariff, error)
 	// (PUT /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
-	PutTariff(ctx context.Context, countryCode string, partyID string, tariffId string, body ocpi.RawMessage[Tariff]) error
+	PutTariff(ctx context.Context, countryCode string, partyID string, tariffID string, body ocpi.RawMessage[Tariff]) error
 	// (DELETE /ocpi/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id})
-	DeleteTariff(ctx context.Context, countryCode string, partyID string, tariffId string) error
+	DeleteTariff(ctx context.Context, countryCode string, partyID string, tariffID string) error
 }
 
 type TokensSender interface {

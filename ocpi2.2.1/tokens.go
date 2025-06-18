@@ -70,7 +70,7 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	countryCode := chi.URLParam(r, "country_code")
-	partyId := chi.URLParam(r, "party_id")
+	partyID := chi.URLParam(r, "party_id")
 	tokenUid := chi.URLParam(r, "token_uid")
 
 	tokenType := TokenTypeRFID
@@ -90,7 +90,7 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 	token, err := s.tokensReceiver.GetToken(
 		r.Context(),
 		countryCode,
-		partyId,
+		partyID,
 		tokenUid,
 		tokenType,
 	)
@@ -113,7 +113,7 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	countryCode := chi.URLParam(r, "country_code")
-	partyId := chi.URLParam(r, "party_id")
+	partyID := chi.URLParam(r, "party_id")
 	tokenUid := chi.URLParam(r, "token_uid")
 
 	tokenType := TokenTypeRFID
@@ -139,7 +139,7 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 	if err := s.tokensReceiver.PutToken(
 		r.Context(),
 		countryCode,
-		partyId,
+		partyID,
 		tokenUid,
 		ocpi.RawMessage[Token](body),
 		tokenType,
@@ -162,7 +162,7 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	countryCode := chi.URLParam(r, "country_code")
-	partyId := chi.URLParam(r, "party_id")
+	partyID := chi.URLParam(r, "party_id")
 	tokenUid := chi.URLParam(r, "token_uid")
 
 	tokenType := TokenTypeRFID
@@ -188,7 +188,7 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 	if err := s.tokensReceiver.PatchToken(
 		r.Context(),
 		countryCode,
-		partyId,
+		partyID,
 		tokenUid,
 		ocpi.RawMessage[PatchedToken](body),
 		tokenType,

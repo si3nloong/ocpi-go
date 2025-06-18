@@ -950,7 +950,7 @@ const (
 
 type PatchedLocation struct {
 	CountryCode        *string                 `json:"country_code,omitempty"`
-	PartyId            *string                 `json:"party_id,omitempty"`
+	PartyID            *string                 `json:"party_id,omitempty"`
 	ID                 *string                 `json:"id,omitempty"`
 	Publish            *bool                   `json:"publish,omitempty"`
 	PublishAllowedTo   []PublishTokenType      `json:"publish_allowed_to,omitempty"`
@@ -1210,9 +1210,9 @@ const (
 )
 
 type Terminal struct {
-	TerminalId        string          `json:"terminal_id"`
+	TerminalID        string          `json:"terminal_id"`
 	CustomerReference *string         `json:"customer_reference,omitempty"`
-	PartyId           *string         `json:"party_id,omitempty"`
+	PartyID           *string         `json:"party_id,omitempty"`
 	CountryCode       *string         `json:"country_code,omitempty"`
 	Address           *string         `json:"address,omitempty"`
 	City              *string         `json:"city,omitempty"`
@@ -1223,7 +1223,7 @@ type Terminal struct {
 	InvoiceBaseUrl    *url.URL        `json:"invoice_base_url,omitempty"`
 	InvoiceCreator    *InvoiceCreator `json:"invoice_creator,omitempty"`
 	Reference         *string         `json:"reference,omitempty"`
-	LocationIds       []string        `json:"location_ids,omitempty"`
+	LocationIDs       []string        `json:"location_ids,omitempty"`
 	EvseUids          []string        `json:"evse_uids,omitempty"`
 	LastUpdated       ocpi.DateTime   `json:"last_updated"`
 }
@@ -1249,15 +1249,15 @@ type FinancialAdviceConfirmation struct {
 
 // Token defines model for token.
 type Token struct {
-	ContractId         string               `json:"contract_id"`
+	ContractID         string               `json:"contract_id"`
 	CountryCode        string               `json:"country_code"`
 	DefaultProfileType *ProfileType         `json:"default_profile_type,omitempty"`
 	EnergyContract     *TokenEnergyContract `json:"energy_contract,omitempty"`
-	GroupId            *string              `json:"group_id,omitempty"`
+	GroupID            *string              `json:"group_id,omitempty"`
 	Issuer             string               `json:"issuer"`
 	Language           *string              `json:"language,omitempty"`
 	LastUpdated        ocpi.DateTime        `json:"last_updated"`
-	PartyId            string               `json:"party_id"`
+	PartyID            string               `json:"party_id"`
 	Type               TokenType            `json:"type"`
 	Uid                string               `json:"uid"`
 	Valid              bool                 `json:"valid"`
@@ -1266,15 +1266,15 @@ type Token struct {
 }
 
 type PatchedToken struct {
-	ContractId         string               `json:"contract_id"`
+	ContractID         string               `json:"contract_id"`
 	CountryCode        string               `json:"country_code"`
 	DefaultProfileType *ProfileType         `json:"default_profile_type,omitempty"`
 	EnergyContract     *TokenEnergyContract `json:"energy_contract,omitempty"`
-	GroupId            *string              `json:"group_id,omitempty"`
+	GroupID            *string              `json:"group_id,omitempty"`
 	Issuer             string               `json:"issuer"`
 	Language           *string              `json:"language,omitempty"`
 	LastUpdated        ocpi.DateTime        `json:"last_updated"`
-	PartyId            string               `json:"party_id"`
+	PartyID            string               `json:"party_id"`
 	Type               TokenType            `json:"type"`
 	Uid                string               `json:"uid"`
 	Valid              bool                 `json:"valid"`
@@ -1292,7 +1292,7 @@ type TokenResponse struct {
 
 // TokenEnergyContract defines model for token_energy_contract.
 type TokenEnergyContract struct {
-	ContractId   *string `json:"contract_id,omitempty"`
+	ContractID   *string `json:"contract_id,omitempty"`
 	SupplierName string  `json:"supplier_name"`
 }
 
