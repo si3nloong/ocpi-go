@@ -350,7 +350,7 @@ type PatchedLocation struct {
 // EVSE defines model for evse.
 type EVSE struct {
 	UID                 string               `json:"uid" validate:"required"`
-	EvseID              *string              `json:"evse_id,omitempty"`
+	EVSEID              *string              `json:"evse_id,omitempty"`
 	Status              Status               `json:"status" validate:"required"`
 	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities        []Capability         `json:"capabilities,omitempty"`
@@ -605,3 +605,5 @@ type Token struct {
 	Language     string        `json:"language" validate:"required,max=2"`
 	LastUpdated  ocpi.DateTime `json:"last_updated"`
 }
+
+type LocationResponse = ocpi.Response[Location]

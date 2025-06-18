@@ -1,6 +1,7 @@
 package ocpi211
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -228,4 +229,20 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
+}
+
+func (c *Client) GetLocation(
+	ctx context.Context,
+	locationID string,
+) (*LocationResponse, error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations)
+	if err != nil {
+		return nil, err
+	}
+
+	var o LocationResponse
+	if err := c.do(ctx, http.MethodGet, endpoint+"/"+locationID, nil, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
 }

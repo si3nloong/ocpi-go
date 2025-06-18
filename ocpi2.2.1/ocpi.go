@@ -280,30 +280,20 @@ const (
 	ParkingRestrictionTenants     ParkingRestriction = "TENANTS"
 )
 
-// Defines values for EvseStatus.
-const (
-	EvseStatusAvailable   EvseStatus = "AVAILABLE"
-	EvseStatusBlocked     EvseStatus = "BLOCKED"
-	EvseStatusCharging    EvseStatus = "CHARGING"
-	EvseStatusInOperative EvseStatus = "INOPERATIVE"
-	EvseStatusOutOfOrder  EvseStatus = "OUTOFORDER"
-	EvseStatusPlanned     EvseStatus = "PLANNED"
-	EvseStatusRemoved     EvseStatus = "REMOVED"
-	EvseStatusReserved    EvseStatus = "RESERVED"
-	EvseStatusUnknown     EvseStatus = "UNKNOWN"
-)
+// Status defines model for Evse.Status.
+type Status string
 
-// Defines values for StatusScheduleStatus.
+// Defines values for Status.
 const (
-	StatusScheduleStatusAvailable   StatusScheduleStatus = "AVAILABLE"
-	StatusScheduleStatusBlocked     StatusScheduleStatus = "BLOCKED"
-	StatusScheduleStatusCharging    StatusScheduleStatus = "CHARGING"
-	StatusScheduleStatusInOperative StatusScheduleStatus = "INOPERATIVE"
-	StatusScheduleStatusOutOfOrder  StatusScheduleStatus = "OUTOFORDER"
-	StatusScheduleStatusPlanned     StatusScheduleStatus = "PLANNED"
-	StatusScheduleStatusRemoved     StatusScheduleStatus = "REMOVED"
-	StatusScheduleStatusReserved    StatusScheduleStatus = "RESERVED"
-	StatusScheduleStatusUnknown     StatusScheduleStatus = "UNKNOWN"
+	StatusAvailable   Status = "AVAILABLE"
+	StatusBlocked     Status = "BLOCKED"
+	StatusCharging    Status = "CHARGING"
+	StatusInOperative Status = "INOPERATIVE"
+	StatusOutOfOrder  Status = "OUTOFORDER"
+	StatusPlanned     Status = "PLANNED"
+	StatusRemoved     Status = "REMOVED"
+	StatusReserved    Status = "RESERVED"
+	StatusUnknown     Status = "UNKNOWN"
 )
 
 // Defines values for ImageCategory.
@@ -537,7 +527,7 @@ type CdrLocation struct {
 	Country            string          `json:"country" validate:"required,len=3"`
 	Coordinates        GeoLocation     `json:"coordinates"`
 	EVSEUID            string          `json:"evse_uid" validate:"required,max=36"`
-	EvseID             string          `json:"evse_id" validate:"required,max=48"`
+	EVSEID             string          `json:"evse_id" validate:"required,max=48"`
 	ConnectorID        string          `json:"connector_id"`
 	ConnectorType      ConnectorType   `json:"connector_standard" validate:"required"`
 	ConnectorFormat    ConnectorFormat `json:"connector_format" validate:"required"`
@@ -811,8 +801,8 @@ type Endpoint struct {
 // EVSE defines model for evse.
 type EVSE struct {
 	UID                      string               `json:"uid" validate:"required"`
-	EvseID                   *string              `json:"evse_id,omitempty"`
-	Status                   EvseStatus           `json:"status" validate:"required"`
+	EVSEID                   *string              `json:"evse_id,omitempty"`
+	Status                   Status               `json:"status" validate:"required"`
 	StatusSchedule           []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities             []Capability         `json:"capabilities,omitempty"`
 	Connectors               []Connector          `json:"connectors" validate:"required"`
@@ -845,9 +835,6 @@ type Capability string
 
 // ParkingRestriction defines model for Evse.ParkingRestriction.
 type ParkingRestriction string
-
-// EvseStatus defines model for Evse.Status.
-type EvseStatus string
 
 // StatusSchedule defines model for evse_status_schedule.
 type StatusSchedule struct {
