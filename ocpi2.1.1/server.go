@@ -75,6 +75,7 @@ func (s *Server) Handler() http.Handler {
 		router.Delete(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.DeleteOcpiTariff)
 
 		router.Get(s.baseUrl+"/tokens", s.GetOcpiTokens)
+		router.Post(s.baseUrl+"/tokens/{token_uid}/authorize", s.PostOcpiToken)
 
 		router.Post(s.baseUrl+"/commands/{command_type}/{uid}", s.PostOcpiCommandResponse)
 	}

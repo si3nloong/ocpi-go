@@ -53,6 +53,9 @@ type RawMessage[T any] json.RawMessage
 
 func (r RawMessage[T]) Data() (T, error) {
 	var o T
+	if any(o) == nil && r == nil {
+		return o, nil
+	}
 	if err := json.Unmarshal((json.RawMessage)(r), &o); err != nil {
 		return o, err
 	}

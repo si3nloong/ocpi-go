@@ -68,8 +68,8 @@ type EMSP interface {
 
 	// (GET /ocpi/2.1.1/tokens)
 	OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginationResponse[Token], error)
-	// (POST /ocpi/2.1.1/tokens/{country_code}/authorize?{type=token_type})
-	OnPostToken(ctx context.Context, params GetTokensParams) (*AuthorizationInfo, error)
+	// (POST /ocpi/2.1.1/tokens/{token_uid}/authorize?{type=token_type})
+	OnPostToken(ctx context.Context, tokenUID string, tokenType TokenType, body ocpi.RawMessage[*LocationReferences]) (*AuthorizationInfo, error)
 
 	// (POST /ocpi/2.1.1/commands/{command}/{uid})
 	OnPostAsyncCommand(ctx context.Context, commandType CommandType, uid string, body ocpi.RawMessage[CommandResponse]) error

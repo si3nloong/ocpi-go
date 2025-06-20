@@ -22,6 +22,46 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 	httputil.ResponsePagination(w, r, response)
 }
 
+func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	tokenUID := chi.URLParam(r, "token_uid")
+
+	var body json.RawMessage
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	tokenType := TokenTypeRFID
+	if r.URL.Query().Has("type") {
+		switch r.URL.Query().Get("type") {
+		case string(TokenTypeRFID):
+			tokenType = TokenTypeRFID
+		case string(TokenTypeOther):
+			tokenType = TokenTypeOther
+		}
+	}
+
+	authInfo, err := s.emsp.OnPostToken(
+		r.Context(),
+		tokenUID,
+		tokenType,
+		ocpi.RawMessage[*LocationReferences](body),
+	)
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+
+	b, err := json.Marshal(ocpi.NewResponse(authInfo))
+	if err != nil {
+		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
 func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
