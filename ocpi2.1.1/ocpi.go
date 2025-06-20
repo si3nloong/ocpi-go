@@ -2,6 +2,7 @@ package ocpi211
 
 import (
 	"encoding/json"
+	"net/url"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -263,6 +264,18 @@ const (
 	WhitelistTypeAllowed        WhitelistType = "ALLOWED"
 	WhitelistTypeAllowedOffline WhitelistType = "ALLOWED_OFFLINE"
 	WhitelistTypeNever          WhitelistType = "NEVER"
+)
+
+// Allowed defines model for Authorization.Allowed.
+type Allowed string
+
+// Defines values for Allowed.
+const (
+	AllowedAllowed    Allowed = "ALLOWED"
+	AllowedBlocked    Allowed = "BLOCKED"
+	AllowedExpired    Allowed = "EXPIRED"
+	AllowedNoCredit   Allowed = "NO_CREDIT"
+	AllowedNotAllowed Allowed = "NOT_ALLOWED"
 )
 
 type VersionDetails struct {
@@ -607,3 +620,47 @@ type Token struct {
 }
 
 type LocationResponse = ocpi.Response[Location]
+
+type GetTokensParams struct {
+	// DateFrom Return Tokens that have last_updated after or equal to this date time (inclusive).
+	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
+
+	// DateTo Return Tokens that have last_updated up to this date time, but not including (exclusive).
+	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+
+	// Offset The offset of the first object returned. Default is 0.
+	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Maximum number of objects to GET.
+	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// Authorization Changed name of the object from official docs due to colliding naming of info property
+type AuthorizationInfo struct {
+	Allowed  Allowed             `json:"allowed"`
+	Location *LocationReferences `json:"location,omitempty"`
+	Info     *DisplayText        `json:"info,omitempty"`
+}
+
+// LocationReferences defines model for locationReferences.
+type LocationReferences struct {
+	LocationID   string  `json:"location_id"`
+	EVSEUIDs     *string `json:"evse_uids,omitempty"`
+	ConnectorIDs *string `json:"connector_ids,omitempty"`
+}
+
+type ChargeDetailRecordResponse struct {
+	Location url.URL
+}
+
+type PatchedToken struct {
+	UID          *string        `json:"uid,omitempty" validate:"omitempty,required"`
+	Type         *TokenType     `json:"type,omitempty"`
+	AuthID       *string        `json:"auth_id,omitempty" validate:"omitempty,required"`
+	VisualNumber *string        `json:"visual_number,omitempty"`
+	Issuer       *string        `json:"issuer,omitempty"`
+	Valid        *bool          `json:"valid,omitempty"`
+	Whitelist    *WhitelistType `json:"whitelist,omitempty"`
+	Language     *string        `json:"language,omitempty" validate:"omitempty,required,max=2"`
+	LastUpdated  ocpi.DateTime  `json:"last_updated" validate:"required"` // LastUpdated is required for PATCH request
+}

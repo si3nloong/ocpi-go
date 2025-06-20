@@ -12,8 +12,8 @@ import (
 func (s *Server) GetOcpiCDRs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	params := GetOcpiCdrsParams{}
-	response, err := s.cdrsSender.GetCDRs(r.Context(), params)
+	params := GetCdrsParams{}
+	response, err := s.cdrsSender.OnGetCDRs(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -22,36 +22,11 @@ func (s *Server) GetOcpiCDRs(w http.ResponseWriter, r *http.Request) {
 	httputil.ResponsePagination(w, r, response)
 }
 
-func (s *Server) PostOcpiCdr(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	var body json.RawMessage
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	ctx := r.Context()
-	if err := s.cdrsReceiver.PostCDR(ctx, ocpi.RawMessage[ChargeDetailRecord](body)); err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	b, err := json.Marshal(ocpi.NewEmptyResponse())
-	if err != nil {
-		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
-}
-
 func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	id := chi.URLParam(r, "id")
-	cdr, err := s.cdrsReceiver.GetCDR(r.Context(), id)
+	cdrID := chi.URLParam(r, "cdr_id")
+	cdr, err := s.cdrsReceiver.OnGetCDR(r.Context(), cdrID)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -76,7 +51,8 @@ func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.cdrsReceiver.PostCDR(r.Context(), ocpi.RawMessage[ChargeDetailRecord](body)); err != nil {
+	resp, err := s.cdrsReceiver.OnPostCDR(r.Context(), ocpi.RawMessage[ChargeDetailRecord](body))
+	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
@@ -88,5 +64,6 @@ func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Location", resp.Location.String())
 	w.Write(b)
 }

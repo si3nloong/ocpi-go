@@ -140,7 +140,7 @@ func (UnimplementedServer) GetTariffs(ctx context.Context, params GetTariffsPara
 	return nil, ErrNotImplemented
 }
 
-func (UnimplementedServer) GetSessions(ctx context.Context, params GetOcpiSessionsParams) ([]Session, error) {
+func (UnimplementedServer) GetSessions(ctx context.Context, params GetSessionsParams) ([]Session, error) {
 	return nil, ErrNotImplemented
 }
 

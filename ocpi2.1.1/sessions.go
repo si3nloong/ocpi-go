@@ -59,7 +59,7 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 		params.Limit = &u16
 	}
 
-	response, err := s.cpo.GetSessions(r.Context(), params)
+	response, err := s.cpo.OnGetSessions(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -75,7 +75,7 @@ func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	sessionID := chi.URLParam(r, "session_id")
 
-	session, err := s.emsp.GetSession(
+	session, err := s.emsp.OnGetClientOwnedSession(
 		r.Context(),
 		countryCode,
 		partyID,
@@ -110,7 +110,7 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	sessionID := chi.URLParam(r, "session_id")
 
-	if err := s.emsp.PutSession(
+	if err := s.emsp.OnPutClientOwnedSession(
 		ctx,
 		countryCode,
 		partyID,
@@ -145,7 +145,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	sessionID := chi.URLParam(r, "session_id")
 
-	if err := s.emsp.PatchSession(
+	if err := s.emsp.OnPatchClientOwnedSession(
 		ctx,
 		countryCode,
 		partyID,

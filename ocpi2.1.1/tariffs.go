@@ -17,7 +17,7 @@ func (s *Server) GetOcpiTariffs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	params := GetTariffsParams{}
-	response, err := s.cpo.GetTariffs(r.Context(), params)
+	response, err := s.cpo.OnGetTariffs(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -33,7 +33,7 @@ func (s *Server) GetOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	tariff, err := s.emsp.GetTariff(r.Context(), countryCode, partyID, tariffID)
+	tariff, err := s.emsp.OnGetClientOwnedTariff(r.Context(), countryCode, partyID, tariffID)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -62,7 +62,7 @@ func (s *Server) PutOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	if err := s.emsp.PutTariff(
+	if err := s.emsp.OnPutClientOwnedTariff(
 		r.Context(),
 		countryCode,
 		partyID,
@@ -96,7 +96,7 @@ func (s *Server) PatchOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	if err := s.emsp.PatchTariff(
+	if err := s.emsp.OnPatchClientOwnedTariff(
 		r.Context(),
 		countryCode,
 		partyID,
@@ -124,7 +124,7 @@ func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	if err := s.emsp.DeleteTariff(
+	if err := s.emsp.OnDeleteClientOwnedTariff(
 		r.Context(),
 		countryCode,
 		partyID,

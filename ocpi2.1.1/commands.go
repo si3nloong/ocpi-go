@@ -14,7 +14,7 @@ func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	commandType := chi.URLParam(r, "command_type")
 
-	resp, err := s.cpo.PostCommand(r.Context(), CommandType(commandType))
+	resp, err := s.cpo.OnPostCommand(r.Context(), CommandType(commandType))
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -41,7 +41,7 @@ func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := s.emsp.PostAsyncCommand(r.Context(), CommandType(commandType), uid, ocpi.RawMessage[CommandResponse](body)); err != nil {
+	if err := s.emsp.OnPostAsyncCommand(r.Context(), CommandType(commandType), uid, ocpi.RawMessage[CommandResponse](body)); err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}

@@ -50,7 +50,11 @@ func (s *Server) Handler() http.Handler {
 	if s.cpo != nil {
 		router.Get(s.baseUrl+"/locations", s.GetOcpiLocations)
 		router.Get(s.baseUrl+"/sessions", s.GetOcpiLocations)
+		router.Get(s.baseUrl+"/cdrs", s.GetOcpiCDRs)
 		router.Get(s.baseUrl+"/tariffs", s.GetOcpiTariffs)
+		router.Get(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.GetOcpiToken)
+		router.Put(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PutOcpiToken)
+		router.Patch(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PatchOcpiToken)
 		router.Post(s.baseUrl+"/commands/{command_type}", s.PostOcpiCommandResponse)
 	}
 	if s.emsp != nil {
@@ -62,10 +66,15 @@ func (s *Server) Handler() http.Handler {
 		router.Put(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)
 		router.Patch(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
 
+		router.Get(s.baseUrl+"/cdrs/{cdr_id}", s.GetOcpiCDR)
+		router.Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
+
 		router.Get(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.GetOcpiTariff)
 		router.Put(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.PutOcpiTariff)
 		router.Patch(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.PatchOcpiTariff)
 		router.Delete(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.DeleteOcpiTariff)
+
+		router.Get(s.baseUrl+"/tokens", s.GetOcpiTokens)
 
 		router.Post(s.baseUrl+"/commands/{command_type}/{uid}", s.PostOcpiCommandResponse)
 	}

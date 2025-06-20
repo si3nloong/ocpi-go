@@ -17,7 +17,7 @@ func (s *Server) GetOcpiTariffs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	params := GetTariffsParams{}
-	response, err := s.tariffsSender.GetTariffs(r.Context(), params)
+	response, err := s.tariffsSender.OnGetTariffs(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -33,7 +33,7 @@ func (s *Server) GetOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	tariff, err := s.tariffsReceiver.GetTariff(r.Context(), countryCode, partyID, tariffID)
+	tariff, err := s.tariffsReceiver.OnGetClientOwnedTariff(r.Context(), countryCode, partyID, tariffID)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -62,7 +62,7 @@ func (s *Server) PutOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	if err := s.tariffsReceiver.PutTariff(
+	if err := s.tariffsReceiver.OnPutClientOwnedTariff(
 		r.Context(),
 		countryCode,
 		partyID,
@@ -90,7 +90,7 @@ func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := chi.URLParam(r, "party_id")
 	tariffID := chi.URLParam(r, "tariff_id")
 
-	if err := s.tariffsReceiver.DeleteTariff(
+	if err := s.tariffsReceiver.OnDeleteClientOwnedTariff(
 		r.Context(),
 		countryCode,
 		partyID,

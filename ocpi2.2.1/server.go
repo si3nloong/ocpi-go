@@ -142,15 +142,17 @@ func (s *Server) Handler() http.Handler {
 
 	if s.locationsSender != nil {
 		router.Get(s.baseUrl+"/locations", s.GetOcpiLocations)
+		router.Get(s.baseUrl+"/locations/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
 	}
 	if s.locationsReceiver != nil {
-		router.Get(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
+		router.Get(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiClientOwnedLocation)
 		router.Put(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
 		router.Patch(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
 	}
 
 	if s.sessionsSender != nil {
 		router.Get(s.baseUrl+"/sessions", s.GetOcpiSessions)
+		router.Put(s.baseUrl+"/sessions/{session_id}/charging_preferences", s.PutOcpiSesionChargingPreferences)
 	}
 	if s.sessionsReceiver != nil {
 		router.Get(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.GetOcpiSession)
@@ -162,7 +164,7 @@ func (s *Server) Handler() http.Handler {
 		router.Get(s.baseUrl+"/tariffs", s.GetOcpiCDRs)
 	}
 	if s.cdrsReceiver != nil {
-		router.Get(s.baseUrl+"/cdrs/{id}", s.GetOcpiCDR)
+		router.Get(s.baseUrl+"/cdrs/{cdr_id}", s.GetOcpiCDR)
 		router.Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
 	}
 

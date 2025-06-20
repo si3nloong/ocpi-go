@@ -51,7 +51,7 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 		u16 := uint16(limit)
 		params.Limit = &u16
 	}
-	response, err := s.cpo.GetLocations(r.Context(), params)
+	response, err := s.cpo.OnGetLocations(r.Context(), params)
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -75,11 +75,11 @@ func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
 		err  error
 	)
 	if evseUID != "" && connectorID != "" {
-		resp, err = s.emsp.GetLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID)
+		resp, err = s.emsp.OnGetClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID)
 	} else if evseUID != "" {
-		resp, err = s.emsp.GetLocationEVSE(ctx, countryCode, partyID, locationID, evseUID)
+		resp, err = s.emsp.OnGetClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID)
 	} else {
-		resp, err = s.emsp.GetLocation(ctx, countryCode, partyID, locationID)
+		resp, err = s.emsp.OnGetClientOwnedLocation(ctx, countryCode, partyID, locationID)
 	}
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
@@ -120,7 +120,7 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 		"connector_id", connectorID)
 
 	if evseUID != "" && connectorID != "" {
-		if err := s.emsp.PutLocationConnector(
+		if err := s.emsp.OnPutClientOwnedLocationConnector(
 			ctx,
 			countryCode,
 			partyID,
@@ -133,7 +133,7 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else if evseUID != "" {
-		if err := s.emsp.PutLocationEVSE(
+		if err := s.emsp.OnPutClientOwnedLocationEVSE(
 			ctx,
 			countryCode,
 			partyID,
@@ -145,7 +145,7 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		if err := s.emsp.PutLocation(
+		if err := s.emsp.OnPutClientOwnedLocation(
 			ctx,
 			countryCode,
 			partyID,
@@ -184,7 +184,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
 
 	if evseUID != "" && connectorID != "" {
-		if err := s.emsp.PatchLocationConnector(
+		if err := s.emsp.OnPatchClientOwnedLocationConnector(
 			ctx,
 			countryCode,
 			partyID,
@@ -197,7 +197,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else if evseUID != "" {
-		if err := s.emsp.PatchLocationEVSE(
+		if err := s.emsp.OnPatchClientOwnedLocationEVSE(
 			ctx,
 			countryCode,
 			partyID,
@@ -209,7 +209,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		if err := s.emsp.PatchLocation(
+		if err := s.emsp.OnPatchClientOwnedLocation(
 			ctx,
 			countryCode,
 			partyID,

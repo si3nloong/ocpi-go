@@ -55,6 +55,9 @@ const (
 	ChargingProfileResultTypeUknown   ChargingProfileResultType = "UNKNOWN"
 )
 
+// AuthorizationAllowed defines model for Authorization.Allowed.
+type AuthorizationAllowed string
+
 // Defines values for AuthorizationAllowed.
 const (
 	AuthorizationAllowedAllowed    AuthorizationAllowed = "ALLOWED"
@@ -84,6 +87,9 @@ const (
 	CdrDimensionTypeTime            CdrDimensionType = "TIME"
 )
 
+// EnergySourceCategory defines model for EnergySource.Source.
+type EnergySourceCategory string
+
 // Defines values for EnergySourceCategory.
 const (
 	EnergySourceCategoryNuclear       EnergySourceCategory = "NUCLEAR"
@@ -96,20 +102,17 @@ const (
 	EnergySourceCategoryWater         EnergySourceCategory = "WATER"
 )
 
+// EnvironmentalImpactCategory defines model for EnvironmentalImpact.Category.
+type EnvironmentalImpactCategory string
+
 // Defines values for EnvironmentalImpactCategory.
 const (
 	EnvironmentalImpactCategoryCarbonDioxide EnvironmentalImpactCategory = "CARBON_DIOXIDE"
 	EnvironmentalImpactCategoryNuclearWaste  EnvironmentalImpactCategory = "NUCLEAR_WASTE"
 )
 
-// Defines values for ChargingPreferencesResponseChargingPreferences.
-const (
-	ChargingPreferencesResponseChargingPreferencesACCEPTED           ChargingPreferencesResponseChargingPreferences = "ACCEPTED"
-	ChargingPreferencesResponseChargingPreferencesDEPARTUREREQUIRED  ChargingPreferencesResponseChargingPreferences = "DEPARTURE_REQUIRED"
-	ChargingPreferencesResponseChargingPreferencesENERGYNEEDREQUIRED ChargingPreferencesResponseChargingPreferences = "ENERGY_NEED_REQUIRED"
-	ChargingPreferencesResponseChargingPreferencesNotPossible        ChargingPreferencesResponseChargingPreferences = "NOT_POSSIBLE"
-	ChargingPreferencesResponseProfileTypeNOTSUPPORTED               ChargingPreferencesResponseChargingPreferences = "PROFILE_TYPE_NOT_SUPPORTED"
-)
+// ChargingRateUnit defines model for ChargingProfile.ChargingRateUnit.
+type ChargingRateUnit string
 
 // Defines values for ChargingRateUnit.
 const (
@@ -139,6 +142,9 @@ const (
 	ClearProfileResultResultRejected ClearProfileResultResult = "REJECTED"
 	ClearProfileResultResultUnknown  ClearProfileResultResult = "UNKNOWN"
 )
+
+// ConnectionStatus defines model for ClientInfo.Status.
+type ConnectionStatus string
 
 // Defines values for ConnectionStatus.
 const (
@@ -296,6 +302,9 @@ const (
 	StatusUnknown     Status = "UNKNOWN"
 )
 
+// ImageCategory defines model for Image.Category.
+type ImageCategory string
+
 // Defines values for ImageCategory.
 const (
 	ImageCategoryCharger  ImageCategory = "CHARGER"
@@ -306,6 +315,9 @@ const (
 	ImageCategoryOther    ImageCategory = "OTHER"
 	ImageCategoryOwner    ImageCategory = "OWNER"
 )
+
+// LocationsDataFacilities defines model for LocationsData.Facilities.
+type Facility string
 
 // Defines values for LocationsDataFacilities.
 const (
@@ -331,6 +343,9 @@ const (
 	FacilityWiFi           Facility = "WIFI"
 )
 
+// ParkingType defines model for LocationsData.ParkingType.
+type ParkingType string
+
 // Defines values for ParkingType.
 const (
 	ParkingTypeAlongMotorway     ParkingType = "ALONG_MOTORWAY"
@@ -341,11 +356,17 @@ const (
 	ParkingTypeUndergroundGarage ParkingType = "UNDERGROUND_GARAGE"
 )
 
+// ReservationRestrictionType defines model for reservationRestrictionType.
+type ReservationRestrictionType string
+
 // Defines values for ReservationRestrictionType.
 const (
 	ReservationRestrictionTypeReservation        ReservationRestrictionType = "RESERVATION"
 	ReservationRestrictionTypeReservationExpires ReservationRestrictionType = "RESERVATION_EXPIRES"
 )
+
+// AuthMethod defines model for CdrBody.AuthMethod.
+type AuthMethod string
 
 // Defines values for AuthMethod.
 const (
@@ -366,6 +387,9 @@ const (
 	SessionStatusReservation SessionStatus = "RESERVATION"
 )
 
+// TariffType defines model for Tariff.Type.
+type TariffType string
+
 // Defines values for TariffType.
 const (
 	TariffTypeAdHocPayment TariffType = "AD_HOC_PAYMENT"
@@ -384,6 +408,9 @@ const (
 	PriceComponentTypeParkingTime PriceComponentType = "PARKING_TIME"
 	PriceComponentTypeTime        PriceComponentType = "TIME"
 )
+
+// DayOfWeek defines model for TariffRestrictions.DayOfWeek.
+type DayOfWeek string
 
 // Defines values for DayOfWeek.
 const (
@@ -429,6 +456,17 @@ const (
 	WhitelistTypeNever          WhitelistType = "NEVER"
 )
 
+// ChargingPreferencesResponse defines model for ChargingPreferencesResponse.ChargingPreferences.
+type ChargingPreferencesResponse string
+
+const (
+	ChargingPreferencesResponseAccepted                ChargingPreferencesResponse = "ACCEPTED"
+	ChargingPreferencesResponseDepartureRequired       ChargingPreferencesResponse = "DEPARTURE_REQUIRED"
+	ChargingPreferencesResponseEnergyNeedRequired      ChargingPreferencesResponse = "ENERGY_NEED_REQUIRED"
+	ChargingPreferencesResponseNotPossible             ChargingPreferencesResponse = "NOT_POSSIBLE"
+	ChargingPreferencesResponseProfileTypeNotSupported ChargingPreferencesResponse = "PROFILE_TYPE_NOT_SUPPORTED"
+)
+
 type Credential struct {
 	Token string            `json:"token"`
 	URL   string            `json:"url"`
@@ -462,9 +500,6 @@ type AuthorizationInfo struct {
 	Location               *LocationReferences     `json:"location,omitempty"`
 	Token                  Token                   `json:"token"`
 }
-
-// AuthorizationAllowed defines model for Authorization.Allowed.
-type AuthorizationAllowed string
 
 // BusinessDetails defines model for businessDetails.
 type BusinessDetails struct {
@@ -512,9 +547,6 @@ type ChargeDetailRecord struct {
 	HomeChargingCompensation *bool            `json:"home_charging_compensation,omitempty"`
 	LastUpdated              ocpi.DateTime    `json:"last_updated" validate:"required"`
 }
-
-// AuthMethod defines model for CdrBody.AuthMethod.
-type AuthMethod string
 
 // CdrLocation defines model for cdrBody_cdr_location.
 type CdrLocation struct {
@@ -570,14 +602,14 @@ type CdrBodyTariffsElementsRestrictions struct {
 	DayOfWeek   *DayOfWeek                  `json:"day_of_week,omitempty"`
 	EndDate     *string                     `json:"end_date,omitempty"`
 	EndTime     *string                     `json:"end_time,omitempty"`
-	MaxCurrent  *float32                    `json:"max_current,omitempty"`
+	MaxCurrent  *json.Number                `json:"max_current,omitempty"`
 	MaxDuration *int                        `json:"max_duration,omitempty"`
-	MaxKwh      *float32                    `json:"max_kwh,omitempty"`
-	MaxPower    *float32                    `json:"max_power,omitempty"`
-	MinCurrent  *float32                    `json:"min_current,omitempty"`
+	MaxKwh      *json.Number                `json:"max_kwh,omitempty"`
+	MaxPower    *json.Number                `json:"max_power,omitempty"`
+	MinCurrent  *json.Number                `json:"min_current,omitempty"`
 	MinDuration *int                        `json:"min_duration,omitempty"`
-	MinKwh      *float32                    `json:"min_kwh,omitempty"`
-	MinPower    *float32                    `json:"min_power,omitempty"`
+	MinKwh      *json.Number                `json:"min_kwh,omitempty"`
+	MinPower    *json.Number                `json:"min_power,omitempty"`
 	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
 	StartDate   *string                     `json:"start_date,omitempty"`
 	StartTime   *string                     `json:"start_time,omitempty"`
@@ -598,17 +630,11 @@ type EnergySource struct {
 	Source     EnergySourceCategory `json:"source"`
 }
 
-// EnergySourceCategory defines model for EnergySource.Source.
-type EnergySourceCategory string
-
 // EnvironmentalImpact defines model for cdrBody_tariffs_energy_mix_environ_impact.
 type EnvironmentalImpact struct {
 	Amount   json.Number                 `json:"amount"`
 	Category EnvironmentalImpactCategory `json:"category"`
 }
-
-// EnvironmentalImpactCategory defines model for EnvironmentalImpact.Category.
-type EnvironmentalImpactCategory string
 
 // DisplayText defines model for cdrBody_tariffs_tariff_alt_text.
 type DisplayText struct {
@@ -640,17 +666,6 @@ type ChargingPreferences struct {
 	DischargeAllowed *bool          `json:"discharged_allowed"`
 }
 
-// ChargingPreferencesResponse defines model for chargingPreferencesResponse.
-type ChargingPreferencesResponse struct {
-	ChargingPreferences ChargingPreferencesResponseChargingPreferences `json:"charging_preferences"`
-	StatusCode          float32                                        `json:"status_code"`
-	StatusMessage       *string                                        `json:"status_message,omitempty"`
-	TimeStamp           *string                                        `json:"timeStamp,omitempty"`
-}
-
-// ChargingPreferencesResponseChargingPreferences defines model for ChargingPreferencesResponse.ChargingPreferences.
-type ChargingPreferencesResponseChargingPreferences string
-
 // ChargingProfile defines model for chargingProfile.
 type ChargingProfile struct {
 	ChargingProfilePeriod []ChargingProfilePeriod `json:"charging_profile_period,omitempty"`
@@ -659,9 +674,6 @@ type ChargingProfile struct {
 	MinChargingRate       *json.Number            `json:"min_charging_rate,omitempty"`
 	StartDateTime         *ocpi.DateTime          `json:"start_date_time,omitempty"`
 }
-
-// ChargingRateUnit defines model for ChargingProfile.ChargingRateUnit.
-type ChargingRateUnit string
 
 // ChargingProfileResponse defines model for chargingProfileResponse.
 type ChargingProfileResponse struct {
@@ -705,15 +717,12 @@ type ClearProfileResultResult string
 
 // ClientInfo defines model for clientInfo.
 type ClientInfo struct {
-	PartyID     string           `json:"party_id"`
-	CountryCode string           `json:"country_code"`
+	PartyID     string           `json:"party_id" validate:"required,len=3"`
+	CountryCode string           `json:"country_code" validate:"required,len=2"`
 	Role        Role             `json:"role"`
 	Status      ConnectionStatus `json:"status"`
-	LastUpdated ocpi.DateTime    `json:"last_updated"`
+	LastUpdated ocpi.DateTime    `json:"last_updated" valdate:"required"`
 }
-
-// ConnectionStatus defines model for ClientInfo.Status.
-type ConnectionStatus string
 
 // ClientInfoResponse defines model for clientInfoResponse.
 type ClientInfoResponse struct {
@@ -776,9 +785,6 @@ type Image struct {
 	Width     *int          `json:"width,omitempty"`
 	Height    *int          `json:"height,omitempty"`
 }
-
-// ImageCategory defines model for Image.Category.
-type ImageCategory string
 
 // DetailsData defines model for details_data.
 type VersionDetails struct {
@@ -948,12 +954,6 @@ type PatchedLocation struct {
 	LastUpdated        ocpi.DateTime           `json:"last_updated"`
 }
 
-// LocationsDataFacilities defines model for LocationsData.Facilities.
-type Facility string
-
-// ParkingType defines model for LocationsData.ParkingType.
-type ParkingType string
-
 // Hours defines model for locations_data_opening_times.
 type Hours struct {
 	ExceptionalClosings []ExceptionalPeriod `json:"exceptional_closings,omitempty"`
@@ -996,9 +996,6 @@ type Price struct {
 	ExclVat json.Number  `json:"excl_vat"`
 	InclVat *json.Number `json:"incl_vat,omitempty"`
 }
-
-// ReservationRestrictionType defines model for reservationRestrictionType.
-type ReservationRestrictionType string
 
 // ReserveNow defines model for reserveNow.
 type ReserveNow struct {
@@ -1113,9 +1110,6 @@ type Tariff struct {
 	LastUpdated   ocpi.DateTime   `json:"last_updated" validate:"required"`
 }
 
-// TariffType defines model for Tariff.Type.
-type TariffType string
-
 // TariffDeleteResponse defines model for tariffDeleteResponse.
 type TariffDeleteResponse struct {
 	StatusCode    float32 `json:"status_code"`
@@ -1161,9 +1155,6 @@ type TariffRestrictions struct {
 	DayOfWeek   []DayOfWeek                 `json:"day_of_week,omitempty"`
 	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
 }
-
-// DayOfWeek defines model for TariffRestrictions.DayOfWeek.
-type DayOfWeek string
 
 // TariffsResponse defines model for tariffsResponse.
 type TariffsResponse = ocpi.Response[[]Tariff]
@@ -1278,8 +1269,8 @@ type UnlockConnector struct {
 	ConnectorID string `json:"connector_id"`
 }
 
-// GetOcpiCdrsParams defines parameters for GetOcpiCdrs.
-type GetOcpiCdrsParams struct {
+// GetCdrsParams defines parameters for GetOcpiCdrs.
+type GetCdrsParams struct {
 	// DateFrom Return CDRs that have last_updated after or equal to this Date/Time (inclusive).
 	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
 
@@ -1293,8 +1284,8 @@ type GetOcpiCdrsParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// GetOcpiHubclientinfoParams defines parameters for GetOcpiHubclientinfo.
-type GetOcpiHubclientinfoParams struct {
+// GetHubClientInfoParams defines parameters for GetOcpiHubclientinfo.
+type GetHubClientInfoParams struct {
 	// DateFrom Return ClientInfo that have last_updated after or equal to Date/Time (inclusive).
 	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
 
@@ -1323,13 +1314,13 @@ type GetLocationsParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// GetOcpiSessionsParams defines parameters for GetOcpiSessions.
-type GetOcpiSessionsParams struct {
+// GetSessionsParams defines parameters for GetOcpiSessions.
+type GetSessionsParams struct {
 	// DateFrom Return Sessions that have last_updated after or equal to this date time (inclusive).
-	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Sessions that have last_updated up to this date time, but not including (exclusive).
-	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1366,4 +1357,8 @@ type GetTokensParams struct {
 
 	// Limit Maximum number of objects to GET.
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+type ChargeDetailRecordResponse struct {
+	Location url.URL
 }
