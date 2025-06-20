@@ -19,7 +19,7 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 	params := GetLocationsParams{}
 	queryString := r.URL.Query()
 	if queryString.Has("date_from") {
-		dt, err := ocpi.ParseDateTime(queryString.Get("date_from"))
+		dt, err := ParseDateTime(queryString.Get("date_from"))
 		if err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -27,7 +27,7 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 		params.DateFrom = &dt
 	}
 	if queryString.Has("date_to") {
-		dt, err := ocpi.ParseDateTime(queryString.Get("date_to"))
+		dt, err := ParseDateTime(queryString.Get("date_to"))
 		if err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return

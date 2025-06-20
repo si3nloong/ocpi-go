@@ -14,8 +14,8 @@ import (
 )
 
 type GetSessionsParams struct {
-	DateFrom ocpi.DateTime
-	DateTo   *ocpi.DateTime
+	DateFrom DateTime
+	DateTo   *DateTime
 	Offset   *uint64
 	Limit    *uint16
 }
@@ -26,7 +26,7 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 	params := GetSessionsParams{}
 	queryString := r.URL.Query()
 	if queryString.Has("date_from") {
-		dt, err := ocpi.ParseDateTime(queryString.Get("date_from"))
+		dt, err := ParseDateTime(queryString.Get("date_from"))
 		if err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -34,7 +34,7 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 		params.DateFrom = dt
 	}
 	if queryString.Has("date_to") {
-		dt, err := ocpi.ParseDateTime(queryString.Get("date_to"))
+		dt, err := ParseDateTime(queryString.Get("date_to"))
 		if err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return

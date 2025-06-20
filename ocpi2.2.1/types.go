@@ -1,4 +1,4 @@
-package ocpi
+package ocpi221
 
 import (
 	"fmt"
@@ -83,4 +83,10 @@ func (dt *DateTime) UnmarshalJSON(b []byte) error {
 		*dt = DateTime{t}
 	}
 	return nil
+}
+
+// DisplayText defines model for cdrBody_tariffs_tariff_alt_text.
+type DisplayText struct {
+	Language string `json:"language"`
+	Text     string `json:"text"`
 }
