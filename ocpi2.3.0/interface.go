@@ -95,7 +95,7 @@ type PTP interface {
 }
 
 type BookingsSender interface {
-	OnGetBooking(ctx context.Context) (*ocpi.Booking, error)
+	OnGetBooking(ctx context.Context) (*ocpi.PaginationResponse[BookingLocation], error)
 }
 type BookingsReceiver interface {
 }
