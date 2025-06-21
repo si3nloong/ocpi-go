@@ -35,7 +35,6 @@ func (s *Server) SetCPO(cpo CPO) {
 func (s *Server) SetEMSP(emsp EMSP) {
 	s.roles[RoleEMSP] = struct{}{}
 	s.emsp = emsp
-
 }
 
 func (s *Server) Handler() http.Handler {

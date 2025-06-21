@@ -18,6 +18,7 @@ const (
 	VersionNumber211 VersionNumber = "2.1.1"
 	VersionNumber22  VersionNumber = "2.2"
 	VersionNumber221 VersionNumber = "2.2.1"
+	VersionNumber230 VersionNumber = "2.3.0"
 )
 
 func init() {

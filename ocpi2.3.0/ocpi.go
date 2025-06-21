@@ -105,6 +105,43 @@ const (
 	EnvironmentalImpactCategoryNuclearWaste  EnvironmentalImpactCategory = "NUCLEAR_WASTE"
 )
 
+type BookingLocation struct {
+	CountryCode            string                   `json:"country_code" validate:"required,len=2"`
+	PartyID                string                   `json:"party_id" validate:"required"`
+	ID                     string                   `json:"id" validate:"required"`
+	LocationID             string                   `json:"location_id" validate:"required"`
+	EVSEUID                *string                  `json:"evse_uid,omitempty"`
+	ConnectorID            *string                  `json:"connector_id,omitempty"`
+	BookableParkingOptions []BookableParkingOptions `json:"bookable_parking_options,omitempty"`
+	Bookable               *Bookable                `json:"bookable,omitempty"`
+	TariffID               []string                 `json:"tariff_id,omitempty"`
+	BookingTerms           []BookingTerms           `json:"booking_terms,omitempty"`
+	Calendars              []Calendar               `json:"calendars,omitempty"`
+	LastUpdated            DateTime                 `json:"last_updated" validate:"required"`
+}
+
+type BookableParkingOptions struct {
+}
+
+type BookingTerms struct {
+}
+
+type Calendar struct {
+}
+
+type Timeslot struct {
+	StartFrom          DateTime     `json:"start_from" validate:"required"`
+	EndBefore          DateTime     `json:"end_before" validate:"required"`
+	MinPower           *json.Number `json:"min_power,omitempty"`
+	MaxPower           *json.Number `json:"max_power,omitempty"`
+	GreenEnergySupport *bool        `json:"green_energy_support,omitempty"`
+}
+
+type Bookable struct {
+	ReservationRequired bool         `json:"reservation_required"`
+	AdHoc               *json.Number `json:"ad_hoc,omitempty"`
+}
+
 type Location struct {
 	CountryCode        string                  `json:"country_code" validate:"required"`
 	PartyID            string                  `json:"party_id" validate:"required"`
