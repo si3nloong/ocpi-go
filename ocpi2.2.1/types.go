@@ -10,42 +10,19 @@ import (
 
 var (
 	yyyymmddthhmmssRegexp     = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}$`)
-	yyyymmddthhmmssnanoRegexp = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+$`)
+	yyyymmddthhmmssnanoRegexp = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}Z$`)
 )
 
 type DateTime struct {
 	Time time.Time
 }
 
-func ParseDateTime(value string) (DateTime, error) {
-	switch {
-	case yyyymmddthhmmssnanoRegexp.MatchString(value):
-		t, err := time.Parse("2006-01-02T15:04:05.999999999", value)
-		if err != nil {
-			return DateTime{}, err
-		}
-		return DateTime{Time: t}, nil
-	case yyyymmddthhmmssRegexp.MatchString(value):
-		t, err := time.Parse("2006-01-02T15:04:05", value)
-		if err != nil {
-			return DateTime{}, err
-		}
-		return DateTime{Time: t}, nil
-	default:
-		t, err := time.Parse(time.RFC3339, value)
-		if err != nil {
-			return DateTime{}, err
-		}
-		return DateTime{Time: t}, nil
-	}
-}
-
 func (dt *DateTime) IsZero() bool {
 	return dt.Time.IsZero()
 }
 
-func (dt *DateTime) UTC() DateTime {
-	return DateTime{dt.Time.UTC()}
+func (dt *DateTime) UTC() time.Time {
+	return dt.Time.UTC()
 }
 
 func (dt *DateTime) Format(layout string) string {
@@ -70,7 +47,7 @@ func (dt *DateTime) UnmarshalJSON(b []byte) error {
 		}
 		*dt = DateTime{t}
 	case yyyymmddthhmmssRegexp.MatchString(str):
-		t, err := time.Parse("2006-01-02T15:04:05", str)
+		t, err := time.Parse("2006-01-02T15:04:05Z", str)
 		if err != nil {
 			return err
 		}

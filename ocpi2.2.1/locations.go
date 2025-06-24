@@ -316,7 +316,6 @@ func (c *client) PutClientOwnedLocation(
 		return err
 	}
 
-	loc.LastUpdated = loc.LastUpdated.UTC()
 	if err := c.do(ctx, http.MethodPut, endpoint+"/"+countryCode+"/"+partyID+"/"+locationID, loc, nil); err != nil {
 		return err
 	}
@@ -335,7 +334,6 @@ func (c *client) PatchClientOwnedLocation(
 		return err
 	}
 
-	loc.LastUpdated = loc.LastUpdated.UTC()
 	if err := c.do(ctx, http.MethodPatch, endpoint+"/"+countryCode+"/"+partyID+"/"+locationID, loc, nil); err != nil {
 		return err
 	}
