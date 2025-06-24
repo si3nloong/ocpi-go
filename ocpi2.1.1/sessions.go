@@ -8,14 +8,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
 type GetSessionsParams struct {
-	DateFrom ocpi.DateTime
-	DateTo   *ocpi.DateTime
+	DateFrom DateTime
+	DateTo   *DateTime
 	Offset   *uint64
 	Limit    *uint16
 }
@@ -26,7 +25,7 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 	params := GetSessionsParams{}
 	queryString := r.URL.Query()
 	if queryString.Has("date_from") {
-		dt, err := ocpi.ParseDateTime(queryString.Get("date_from"))
+		dt, err := ParseDateTime(queryString.Get("date_from"))
 		if err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -34,7 +33,7 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 		params.DateFrom = dt
 	}
 	if queryString.Has("date_to") {
-		dt, err := ocpi.ParseDateTime(queryString.Get("date_to"))
+		dt, err := ParseDateTime(queryString.Get("date_to"))
 		if err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -71,9 +70,9 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	sessionID := chi.URLParam(r, "session_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	sessionID := r.PathValue("session_id")
 
 	session, err := s.emsp.OnGetClientOwnedSession(
 		r.Context(),
@@ -106,9 +105,9 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	sessionID := chi.URLParam(r, "session_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	sessionID := r.PathValue("session_id")
 
 	if err := s.emsp.OnPutClientOwnedSession(
 		ctx,
@@ -141,9 +140,9 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	sessionID := chi.URLParam(r, "session_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	sessionID := r.PathValue("session_id")
 
 	if err := s.emsp.OnPatchClientOwnedSession(
 		ctx,
@@ -166,7 +165,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *Client) GetSessions(
+func (c *client) GetSessions(
 	ctx context.Context,
 	dateFrom time.Time,
 	params ...GetSessionsParams,
@@ -203,7 +202,7 @@ func (c *Client) GetSessions(
 	return &o, nil
 }
 
-func (c *Client) GetSession(
+func (c *client) GetSession(
 	ctx context.Context,
 	countryCode string,
 	partyID string,

@@ -13,9 +13,29 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-type Option func(*Client)
+type EndpointResolver func(endpoint string) string
 
-type Client struct {
+type Client interface {
+	CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, endpointResolver EndpointResolver, src, dst any) error
+	GetTariffs(ctx context.Context, params ...GetTariffsParams) (ocpi.Result[[]Tariff], error)
+	GetLocations(ctx context.Context, params ...GetLocationsParams) (ocpi.Result[[]Location], error)
+	GetLocation(ctx context.Context, locationID string) (*LocationResponse, error)
+	GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*LocationResponse, error)
+	PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, loc Location) error
+	PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, loc PatchedLocation) error
+	GetSessions(ctx context.Context, params ...GetSessionsParams) (*SessionsResponse, error)
+	GetSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*SessionResponse, error)
+	StartSession(ctx context.Context, req StartSession) (*CommandResponse, error)
+	StopSession(ctx context.Context, req StopSession) (*CommandResponse, error)
+	ReserveNow(ctx context.Context, req ReserveNow) (*CommandResponse, error)
+	CancelReservation(ctx context.Context, req CancelReservation) (*CommandResponse, error)
+	UnlockConnector(ctx context.Context, req UnlockConnector) (*CommandResponse, error)
+	SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error)
+}
+
+type Option func(*client)
+
+type client struct {
 	rw           sync.RWMutex
 	tokenA       string
 	tokenC       string
@@ -25,13 +45,13 @@ type Client struct {
 }
 
 func WithTokenC(tokenC string) Option {
-	return func(c *Client) {
+	return func(c *client) {
 		c.tokenC = tokenC
 	}
 }
 
-func NewClient(versionUrl string, options ...Option) *Client {
-	c := new(Client)
+func NewClient(versionUrl string, options ...Option) Client {
+	c := new(client)
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}
 	for _, opt := range options {
@@ -40,11 +60,11 @@ func NewClient(versionUrl string, options ...Option) *Client {
 	return c
 }
 
-func (c *Client) CallEndpoint(
+func (c *client) CallEndpoint(
 	ctx context.Context,
 	mod ModuleID,
 	role InterfaceRole,
-	endpointResolver func(endpoint string) string,
+	endpointResolver EndpointResolver,
 	src, dst any,
 ) error {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
@@ -58,7 +78,7 @@ func (c *Client) CallEndpoint(
 	return nil
 }
 
-func (c *Client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error) {
+func (c *client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error) {
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
@@ -93,7 +113,7 @@ func (c *Client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRo
 	return "", fmt.Errorf(`ocpi221: missing endpoint for module id %q (%s)`, mod, role)
 }
 
-func (c *Client) newRequest(
+func (c *client) newRequest(
 	ctx context.Context,
 	method, endpoint string,
 	src any,
@@ -125,7 +145,7 @@ func (c *Client) newRequest(
 	return req, nil
 }
 
-func (c *Client) do(
+func (c *client) do(
 	ctx context.Context,
 	method, endpoint string,
 	src, dst any,

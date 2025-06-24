@@ -9,6 +9,11 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
+const (
+	HttpHeaderXRequestID     = "X-Request-ID"
+	HttpHeaderXCorrelationID = "X-Correlation-ID"
+)
+
 func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -72,11 +77,10 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	writeOkResponse(w, r, b)
 }
 
-func (c *Client) Versions(ctx context.Context) ([]ocpi.Version, error) {
+func (c *client) Versions(ctx context.Context) ([]ocpi.Version, error) {
 	var o ocpi.Response[[]ocpi.Version]
 	if err := c.do(ctx, http.MethodGet, c.versionUrl, nil, &o); err != nil {
 		return nil, err

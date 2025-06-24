@@ -5,14 +5,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
 func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	commandType := chi.URLParam(r, "command_type")
+	commandType := r.PathValue("command_type")
 
 	resp, err := s.cpo.OnPostCommand(r.Context(), CommandType(commandType))
 	if err != nil {
@@ -32,8 +31,8 @@ func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	commandType := chi.URLParam(r, "command_type")
-	uid := chi.URLParam(r, "uid")
+	commandType := r.PathValue("command_type")
+	uid := r.PathValue("uid")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -56,7 +55,7 @@ func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request)
 	w.Write(b)
 }
 
-func (c *Client) StartSession(ctx context.Context, req StartSession) (*CommandResponse, error) {
+func (c *client) StartSession(ctx context.Context, req StartSession) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands)
 	if err != nil {
 		return nil, err
@@ -70,7 +69,7 @@ func (c *Client) StartSession(ctx context.Context, req StartSession) (*CommandRe
 	return &res, nil
 }
 
-func (c *Client) StopSession(ctx context.Context, req StopSession) (*CommandResponse, error) {
+func (c *client) StopSession(ctx context.Context, req StopSession) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands)
 	if err != nil {
 		return nil, err
@@ -82,7 +81,7 @@ func (c *Client) StopSession(ctx context.Context, req StopSession) (*CommandResp
 	return &res, nil
 }
 
-func (c *Client) ReserveNow(ctx context.Context, req ReserveNow) (*CommandResponse, error) {
+func (c *client) ReserveNow(ctx context.Context, req ReserveNow) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands)
 	if err != nil {
 		return nil, err
@@ -94,7 +93,7 @@ func (c *Client) ReserveNow(ctx context.Context, req ReserveNow) (*CommandRespon
 	return &res, nil
 }
 
-func (c *Client) UnlockConnector(ctx context.Context, req UnlockConnector) (*CommandResponse, error) {
+func (c *client) UnlockConnector(ctx context.Context, req UnlockConnector) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands)
 	if err != nil {
 		return nil, err

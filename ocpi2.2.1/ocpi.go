@@ -16,7 +16,7 @@ const (
 	RoleHUB   Role = "HUB"
 	RoleNAP   Role = "NAP"
 	RoleNSP   Role = "NSP"
-	RoleOTHER Role = "OTHER"
+	RoleOther Role = "OTHER"
 	RoleSCSP  Role = "SCSP"
 )
 
@@ -519,8 +519,8 @@ type ChargeDetailRecord struct {
 	CountryCode              string           `json:"country_code" validate:"required,len=2"`
 	PartyID                  string           `json:"party_id" validate:"required,len=3"`
 	ID                       string           `json:"id" validate:"required"`
-	StartDateTime            ocpi.DateTime    `json:"start_date_time" validate:"required"`
-	EndDateTime              ocpi.DateTime    `json:"end_date_time" validate:"required"`
+	StartDateTime            DateTime         `json:"start_date_time" validate:"required"`
+	EndDateTime              DateTime         `json:"end_date_time" validate:"required"`
 	SessionID                *string          `json:"session_id,omitempty"`
 	CdrToken                 CdrToken         `json:"cdr_token" validate:"required"`
 	AuthMethod               AuthMethod       `json:"auth_method" validate:"required"`
@@ -545,7 +545,7 @@ type ChargeDetailRecord struct {
 	Credit                   *bool            `json:"credit,omitempty"`
 	CreditReferenceID        *string          `json:"credit_reference_id,omitempty"`
 	HomeChargingCompensation *bool            `json:"home_charging_compensation,omitempty"`
-	LastUpdated              ocpi.DateTime    `json:"last_updated" validate:"required"`
+	LastUpdated              DateTime         `json:"last_updated" validate:"required"`
 }
 
 // CdrLocation defines model for cdrBody_cdr_location.
@@ -636,12 +636,6 @@ type EnvironmentalImpact struct {
 	Category EnvironmentalImpactCategory `json:"category"`
 }
 
-// DisplayText defines model for cdrBody_tariffs_tariff_alt_text.
-type DisplayText struct {
-	Language string `json:"language"`
-	Text     string `json:"text"`
-}
-
 // CdrResponse defines model for cdrResponse.
 type CdrResponse struct {
 	StatusCode    float32 `json:"status_code"`
@@ -660,10 +654,10 @@ type CdrsResponse struct {
 
 // ChargingPreferences defines model for chargingPreferences.
 type ChargingPreferences struct {
-	ProfileType      ProfileType    `json:"profile_type"`
-	DepartureTime    *ocpi.DateTime `json:"departure_time,omitempty"`
-	EnergyNeed       *json.Number   `json:"energy_need,omitempty"`
-	DischargeAllowed *bool          `json:"discharged_allowed"`
+	ProfileType      ProfileType  `json:"profile_type"`
+	DepartureTime    *DateTime    `json:"departure_time,omitempty"`
+	EnergyNeed       *json.Number `json:"energy_need,omitempty"`
+	DischargeAllowed *bool        `json:"discharged_allowed"`
 }
 
 // ChargingProfile defines model for chargingProfile.
@@ -672,7 +666,7 @@ type ChargingProfile struct {
 	ChargingRateUnit      ChargingRateUnit        `json:"charging_rate_unit"`
 	Duration              *int                    `json:"duration,omitempty"`
 	MinChargingRate       *json.Number            `json:"min_charging_rate,omitempty"`
-	StartDateTime         *ocpi.DateTime          `json:"start_date_time,omitempty"`
+	StartDateTime         *DateTime               `json:"start_date_time,omitempty"`
 }
 
 // ChargingProfileResponse defines model for chargingProfileResponse.
@@ -721,7 +715,7 @@ type ClientInfo struct {
 	CountryCode string           `json:"country_code" validate:"required,len=2"`
 	Role        Role             `json:"role"`
 	Status      ConnectionStatus `json:"status"`
-	LastUpdated ocpi.DateTime    `json:"last_updated" valdate:"required"`
+	LastUpdated DateTime         `json:"last_updated" valdate:"required"`
 }
 
 // ClientInfoResponse defines model for clientInfoResponse.
@@ -773,7 +767,7 @@ type Connector struct {
 	MaxElectricPower   *int            `json:"max_electric_power,omitempty"`
 	TariffIDs          []string        `json:"tariff_ids,omitempty"`
 	TermsAndConditions *string         `json:"terms_and_conditions,omitempty"`
-	LastUpdated        ocpi.DateTime   `json:"last_updated"`
+	LastUpdated        DateTime        `json:"last_updated"`
 }
 
 // Image defines model for credentials_data_roles_business_details_logo.
@@ -820,7 +814,7 @@ type EVSE struct {
 	Parking                  []EVSEParking        `json:"parking,omitempty"`
 	Images                   []Image              `json:"images,omitempty"`
 	AcceptedServiceProviders *string              `json:"accepted_service_providers,omitempty"`
-	LastUpdated              ocpi.DateTime        `json:"last_updated"`
+	LastUpdated              DateTime             `json:"last_updated"`
 }
 
 type EVSEParking struct {
@@ -893,7 +887,7 @@ type Location struct {
 	Images             []Image                 `json:"images,omitempty"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
 	HelpPhone          *string                 `json:"help_phone,omitempty"`
-	LastUpdated        ocpi.DateTime           `json:"last_updated" validate:"required"`
+	LastUpdated        DateTime                `json:"last_updated" validate:"required"`
 }
 
 type Parking struct {
@@ -951,7 +945,7 @@ type PatchedLocation struct {
 	Images             []Image                 `json:"images,omitempty"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
 	HelpPhone          *string                 `json:"help_phone,omitempty"`
-	LastUpdated        ocpi.DateTime           `json:"last_updated"`
+	LastUpdated        DateTime                `json:"last_updated"`
 }
 
 // Hours defines model for locations_data_opening_times.
@@ -964,8 +958,8 @@ type Hours struct {
 
 // HoursExceptionalOpenings defines model for locations_data_opening_times_exceptional_openings.
 type ExceptionalPeriod struct {
-	PeriodBegin ocpi.DateTime `json:"period_begin"`
-	PeriodEnd   ocpi.DateTime `json:"period_end"`
+	PeriodBegin DateTime `json:"period_begin"`
+	PeriodEnd   DateTime `json:"period_end"`
 }
 
 // HoursRegularHours defines model for locations_data_opening_times_regular_hours.
@@ -999,13 +993,13 @@ type Price struct {
 
 // ReserveNow defines model for reserveNow.
 type ReserveNow struct {
-	ResponseURL            string        `json:"response_url" validate:"required"`
-	Token                  Token         `json:"token"`
-	ExpiryDate             ocpi.DateTime `json:"expiry_date" validate:"required"`
-	ReservationID          string        `json:"reservation_id" validate:"required"`
-	LocationID             string        `json:"location_id" validate:"required"`
-	EVSEUID                *string       `json:"evse_uid,omitempty"`
-	AuthorizationReference *string       `json:"authorization_reference,omitempty"`
+	ResponseURL            string   `json:"response_url" validate:"required"`
+	Token                  Token    `json:"token"`
+	ExpiryDate             DateTime `json:"expiry_date" validate:"required"`
+	ReservationID          string   `json:"reservation_id" validate:"required"`
+	LocationID             string   `json:"location_id" validate:"required"`
+	EVSEUID                *string  `json:"evse_uid,omitempty"`
+	AuthorizationReference *string  `json:"authorization_reference,omitempty"`
 }
 
 // Session defines model for session.
@@ -1013,8 +1007,8 @@ type Session struct {
 	CountryCode            string           `json:"country_code" validate:"required,len=2"`
 	PartyID                string           `json:"party_id" validate:"required,len=3"`
 	ID                     string           `json:"id" validate:"required"`
-	StartDateTime          ocpi.DateTime    `json:"start_date_time" validate:"required"`
-	EndDateTime            *ocpi.DateTime   `json:"end_date_time,omitempty"`
+	StartDateTime          DateTime         `json:"start_date_time" validate:"required"`
+	EndDateTime            *DateTime        `json:"end_date_time,omitempty"`
 	Kwh                    json.Number      `json:"kwh" validate:"required"`
 	CdrToken               CdrToken         `json:"cdr_token"`
 	AuthMethod             AuthMethod       `json:"auth_method" validate:"required"`
@@ -1027,11 +1021,11 @@ type Session struct {
 	ChargingPeriods        []ChargingPeriod `json:"charging_periods,omitempty"`
 	TotalCost              *Price           `json:"total_cost,omitempty"`
 	Status                 SessionStatus    `json:"status" validate:"required"`
-	LastUpdated            ocpi.DateTime    `json:"last_updated" validate:"required"`
+	LastUpdated            DateTime         `json:"last_updated" validate:"required"`
 }
 
 type PatchedSession struct {
-	LastUpdated            ocpi.DateTime   `json:"last_updated" validate:"required"`
+	LastUpdated            DateTime        `json:"last_updated" validate:"required"`
 	AuthMethod             *AuthMethod     `json:"auth_method,omitempty"`
 	AuthorizationReference *string         `json:"authorization_reference,omitempty"`
 	CdrToken               *CdrToken       `json:"cdr_token,omitempty"`
@@ -1039,14 +1033,14 @@ type PatchedSession struct {
 	ConnectorID            *string         `json:"connector_id,omitempty"`
 	CountryCode            *string         `json:"country_code,omitempty"`
 	Currency               *string         `json:"currency,omitempty"`
-	EndDateTime            *ocpi.DateTime  `json:"end_date_time,omitempty"`
+	EndDateTime            *DateTime       `json:"end_date_time,omitempty"`
 	EVSEUID                *string         `json:"evse_uid,omitempty"`
 	ID                     *string         `json:"id,omitempty"`
 	Kwh                    *json.Number    `json:"kwh,omitempty"`
 	LocationID             *string         `json:"location_id,omitempty"`
 	MeterID                *string         `json:"meter_id,omitempty"`
 	PartyID                *string         `json:"party_id,omitempty"`
-	StartDateTime          *ocpi.DateTime  `json:"start_date_time,omitempty"`
+	StartDateTime          *DateTime       `json:"start_date_time,omitempty"`
 	Status                 *SessionStatus  `json:"status,omitempty"`
 	TotalCost              *Price          `json:"total_cost,omitempty"`
 }
@@ -1059,7 +1053,7 @@ type SessionResponse = ocpi.Response[Session]
 
 // ChargingPeriod defines model for session_charging_periods.
 type ChargingPeriod struct {
-	StartDateTime ocpi.DateTime  `json:"start_date_time" validate:"required"`
+	StartDateTime DateTime       `json:"start_date_time" validate:"required"`
 	Dimensions    []CdrDimension `json:"dimensions"`
 	TariffID      *string        `json:"tariff_id,omitempty"`
 }
@@ -1104,10 +1098,10 @@ type Tariff struct {
 	MinPrice      *Price          `json:"min_price,omitempty"`
 	MaxPrice      *Price          `json:"max_price,omitempty"`
 	Elements      []TariffElement `json:"elements"`
-	StartDateTime *ocpi.DateTime  `json:"start_date_time,omitempty"`
-	EndDateTime   *ocpi.DateTime  `json:"end_date_time,omitempty"`
+	StartDateTime *DateTime       `json:"start_date_time,omitempty"`
+	EndDateTime   *DateTime       `json:"end_date_time,omitempty"`
 	EnergyMix     *EnergyMix      `json:"energy_mix,omitempty"`
-	LastUpdated   ocpi.DateTime   `json:"last_updated" validate:"required"`
+	LastUpdated   DateTime        `json:"last_updated" validate:"required"`
 }
 
 // TariffDeleteResponse defines model for tariffDeleteResponse.
@@ -1182,7 +1176,7 @@ type Terminal struct {
 	Reference         *string         `json:"reference,omitempty"`
 	LocationIDs       []string        `json:"location_ids,omitempty"`
 	EVSEUIDs          []string        `json:"evse_uids,omitempty"`
-	LastUpdated       ocpi.DateTime   `json:"last_updated"`
+	LastUpdated       DateTime        `json:"last_updated"`
 }
 
 type CaptureStatusCode string
@@ -1201,7 +1195,7 @@ type FinancialAdviceConfirmation struct {
 	EftData                string            `json:"eft_data"`
 	CaptureStatusCode      CaptureStatusCode `json:"capture_status_code"`
 	CaptureStatusMessage   *string           `json:"capture_status_message,omitempty"`
-	LastUpdated            ocpi.DateTime     `json:"last_updated"`
+	LastUpdated            DateTime          `json:"last_updated"`
 }
 
 // Token defines model for token.
@@ -1213,7 +1207,7 @@ type Token struct {
 	GroupID            *string              `json:"group_id,omitempty"`
 	Issuer             string               `json:"issuer"`
 	Language           *string              `json:"language,omitempty"`
-	LastUpdated        ocpi.DateTime        `json:"last_updated"`
+	LastUpdated        DateTime             `json:"last_updated"`
 	PartyID            string               `json:"party_id"`
 	Type               TokenType            `json:"type"`
 	UID                string               `json:"uid"`
@@ -1230,7 +1224,7 @@ type PatchedToken struct {
 	GroupID            *string              `json:"group_id,omitempty"`
 	Issuer             string               `json:"issuer"`
 	Language           *string              `json:"language,omitempty"`
-	LastUpdated        ocpi.DateTime        `json:"last_updated"`
+	LastUpdated        DateTime             `json:"last_updated"`
 	PartyID            string               `json:"party_id"`
 	Type               TokenType            `json:"type"`
 	UID                string               `json:"uid"`
@@ -1302,10 +1296,10 @@ type GetHubClientInfoParams struct {
 // GetLocationsParams defines parameters for GetOcpiLocations.
 type GetLocationsParams struct {
 	// DateFrom Return Locations that have last_updated after or equal to this date time (inclusive).
-	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Locations that have last_updated up to this date time, but not including (exclusive).
-	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1317,10 +1311,10 @@ type GetLocationsParams struct {
 // GetSessionsParams defines parameters for GetOcpiSessions.
 type GetSessionsParams struct {
 	// DateFrom Return Sessions that have last_updated after or equal to this date time (inclusive).
-	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Sessions that have last_updated up to this date time, but not including (exclusive).
-	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1332,10 +1326,10 @@ type GetSessionsParams struct {
 // GetTariffsParams defines parameters for GetOcpiTariffs.
 type GetTariffsParams struct {
 	// DateFrom Return Tariffs that have last_updated after or equal to Date/Time (inclusive).
-	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Tariffs that have last_updated up to Date/Time, but not including (exclusive).
-	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`

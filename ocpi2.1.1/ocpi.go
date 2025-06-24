@@ -313,7 +313,7 @@ type Location struct {
 	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
 	Images             []Image                 `json:"images,omitempty"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
-	LastUpdated        ocpi.DateTime           `json:"last_updated"`
+	LastUpdated        DateTime                `json:"last_updated"`
 }
 
 type Hours struct {
@@ -332,8 +332,8 @@ type RegularHours struct {
 
 // HoursExceptionalOpenings defines model for locations_data_opening_times_exceptional_openings.
 type ExceptionalPeriod struct {
-	PeriodBegin ocpi.DateTime `json:"period_begin"`
-	PeriodEnd   ocpi.DateTime `json:"period_end"`
+	PeriodBegin DateTime `json:"period_begin"`
+	PeriodEnd   DateTime `json:"period_end"`
 }
 
 type PatchedLocation struct {
@@ -357,7 +357,7 @@ type PatchedLocation struct {
 	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty" validate:"omitempty,required"`
 	Images             []Image                 `json:"images,omitempty" validate:"omitempty,required"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty" validate:"omitempty,required"`
-	LastUpdated        *ocpi.DateTime          `json:"last_updated" validate:"omitempty,required"`
+	LastUpdated        *DateTime               `json:"last_updated" validate:"omitempty,required"`
 }
 
 // EVSE defines model for evse.
@@ -374,7 +374,7 @@ type EVSE struct {
 	Directions          []DisplayText        `json:"directions,omitempty"`
 	ParkingRestrictions []ParkingRestriction `json:"parking_restrictions,omitempty"`
 	Images              []Image              `json:"images,omitempty"`
-	LastUpdated         ocpi.DateTime        `json:"last_updated"`
+	LastUpdated         DateTime             `json:"last_updated"`
 }
 
 // Connector defines model for connector.
@@ -387,13 +387,13 @@ type Connector struct {
 	Amperage           int             `json:"amperage"`
 	TariffID           *string         `json:"tariff_id,omitempty"`
 	TermsAndConditions *string         `json:"terms_and_conditions,omitempty"`
-	LastUpdated        ocpi.DateTime   `json:"last_updated"`
+	LastUpdated        DateTime        `json:"last_updated"`
 }
 
 type ChargeDetailRecord struct {
 	ID               string           `json:"id" validate:"required"`
-	StartDateTime    ocpi.DateTime    `json:"start_date_time" validate:"required"`
-	StopDateTime     ocpi.DateTime    `json:"stop_date_time" validate:"required"`
+	StartDateTime    DateTime         `json:"start_date_time" validate:"required"`
+	StopDateTime     DateTime         `json:"stop_date_time" validate:"required"`
 	AuthID           string           `json:"auth_id" validate:"max=36"`
 	AuthMethod       AuthMethod       `json:"auth_method" validate:"required"`
 	Location         Location         `json:"location" validate:"required"`
@@ -406,7 +406,7 @@ type ChargeDetailRecord struct {
 	TotalTime        json.Number      `json:"total_time" validate:"required"`
 	TotalParkingTime *json.Number     `json:"total_parking_time,omitempty"`
 	Remark           *string          `json:"remark,omitempty"`
-	LastUpdated      ocpi.DateTime    `json:"last_updated" validate:"required"`
+	LastUpdated      DateTime         `json:"last_updated" validate:"required"`
 }
 
 type EnergyMix struct {
@@ -430,8 +430,8 @@ type EnvironmentalImpact struct {
 
 type Session struct {
 	ID              string           `json:"id" validate:"required"`
-	StartDateTime   ocpi.DateTime    `json:"start_datetime" validate:"required"`
-	EndDateTime     *ocpi.DateTime   `json:"end_datetime"`
+	StartDateTime   DateTime         `json:"start_datetime" validate:"required"`
+	EndDateTime     *DateTime        `json:"end_datetime"`
 	Kwh             json.Number      `json:"kwh"`
 	AuthID          string           `json:"auth_id" validate:"required"`
 	AuthMethod      AuthMethod       `json:"auth_method" validate:"required"`
@@ -441,13 +441,13 @@ type Session struct {
 	ChargingPeriods []ChargingPeriod `json:"charging_periods,omitempty"`
 	TotalCost       *json.Number     `json:"total_cost" validate:"required"`
 	Status          SessionStatus    `json:"status" validate:"required"`
-	LastUpdated     ocpi.DateTime    `json:"last_updated" validate:"required"`
+	LastUpdated     DateTime         `json:"last_updated" validate:"required"`
 }
 
 type PatchedSession struct {
 	ID              *string          `json:"id" validate:"omitempty,required"`
-	StartDateTime   *ocpi.DateTime   `json:"start_datetime" validate:"omitempty,required"`
-	EndDateTime     *ocpi.DateTime   `json:"end_datetime" validate:"omitempty,required"`
+	StartDateTime   *DateTime        `json:"start_datetime" validate:"omitempty,required"`
+	EndDateTime     *DateTime        `json:"end_datetime" validate:"omitempty,required"`
 	Kwh             *json.Number     `json:"kwh" validate:"omitempty,required"`
 	AuthID          *string          `json:"auth_id" validate:"omitempty,required"`
 	AuthMethod      *AuthMethod      `json:"auth_method" validate:"omitempty,required"`
@@ -457,7 +457,7 @@ type PatchedSession struct {
 	ChargingPeriods []ChargingPeriod `json:"charging_periods,omitempty"`
 	TotalCost       *json.Number     `json:"total_cost" validate:"omitempty,required"`
 	Status          *SessionStatus   `json:"status" validate:"omitempty,required"`
-	LastUpdated     *ocpi.DateTime   `json:"last_updated" validate:"omitempty,required"`
+	LastUpdated     *DateTime        `json:"last_updated" validate:"omitempty,required"`
 }
 
 type Tariff struct {
@@ -467,11 +467,11 @@ type Tariff struct {
 	TariffAltURL  *string         `json:"tariff_alt_url,omitempty"`
 	Elements      []TariffElement `json:"elements"`
 	EnergyMix     *EnergyMix      `json:"energy_mix" validate:"required"`
-	LastUpdated   ocpi.DateTime   `json:"last_updated" validate:"required"`
+	LastUpdated   DateTime        `json:"last_updated" validate:"required"`
 }
 
 type ChargingPeriod struct {
-	StartDateTime ocpi.DateTime  `json:"start_date_time" validate:"required"`
+	StartDateTime DateTime       `json:"start_date_time" validate:"required"`
 	Dimensions    []CdrDimension `json:"dimensions"`
 }
 
@@ -491,11 +491,11 @@ type PriceComponent struct {
 }
 
 type TariffRestriction struct {
-	StartTime *ocpi.DateTime `json:"start_time" validate:"required"`
-	EndTime   *ocpi.DateTime `json:"end_time,omitempty"`
-	StartDate *string        `json:"start_date" validate:"required"`
-	EndDate   *string        `json:"end_date,omitempty"`
-	MinKwh    *json.Number   `json:"min_kwh,omitempty"` // Minimum kWh for this restriction.
+	StartTime *DateTime    `json:"start_time" validate:"required"`
+	EndTime   *DateTime    `json:"end_time,omitempty"`
+	StartDate *string      `json:"start_date" validate:"required"`
+	EndDate   *string      `json:"end_date,omitempty"`
+	MinKwh    *json.Number `json:"min_kwh,omitempty"` // Minimum kWh for this restriction.
 	// Type Type of restriction, e.g. "TIME", "ENERGY", "PARKING_TIME".
 }
 
@@ -512,9 +512,9 @@ type GeoLocation struct {
 
 // StatusSchedule defines model for evse_status_schedule.
 type StatusSchedule struct {
-	PeriodBegin ocpi.DateTime  `json:"period_begin"`
-	PeriodEnd   *ocpi.DateTime `json:"period_end,omitempty"`
-	Status      Status         `json:"status"`
+	PeriodBegin DateTime  `json:"period_begin"`
+	PeriodEnd   *DateTime `json:"period_end,omitempty"`
+	Status      Status    `json:"status"`
 }
 
 // AdditionalGeoLocation defines model for locations_data_related_locations.
@@ -544,10 +544,10 @@ type Image struct {
 // GetLocationsParams defines parameters for GetOcpiLocations.
 type GetLocationsParams struct {
 	// DateFrom Return Locations that have last_updated after or equal to this date time (inclusive).
-	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Locations that have last_updated up to this date time, but not including (exclusive).
-	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
@@ -565,10 +565,10 @@ type SessionResponse = ocpi.Response[Session]
 // GetTariffsParams defines parameters for GetOcpiTariffs.
 type GetTariffsParams struct {
 	// DateFrom Return Tariffs that have last_updated after or equal to Date/Time (inclusive).
-	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Tariffs that have last_updated up to Date/Time, but not including (exclusive).
-	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
@@ -592,12 +592,12 @@ type StopSession struct {
 }
 
 type ReserveNow struct {
-	ResponseURL   string        `json:"response_url" validate:"required"`
-	Token         Token         `json:"token" validate:"required"`
-	ExpiryDate    ocpi.DateTime `json:"expiry_date" validate:"required"`
-	ReservationID int           `json:"reservation_id" validate:"required"`
-	LocationID    string        `json:"location_id" validate:"required,max=39"`
-	EVSEUID       *string       `json:"evse_uid,omitempty" validate:"omitempty,required,max=39"`
+	ResponseURL   string   `json:"response_url" validate:"required"`
+	Token         Token    `json:"token" validate:"required"`
+	ExpiryDate    DateTime `json:"expiry_date" validate:"required"`
+	ReservationID int      `json:"reservation_id" validate:"required"`
+	LocationID    string   `json:"location_id" validate:"required,max=39"`
+	EVSEUID       *string  `json:"evse_uid,omitempty" validate:"omitempty,required,max=39"`
 }
 
 type UnlockConnector struct {
@@ -616,17 +616,17 @@ type Token struct {
 	Valid        bool          `json:"valid"`
 	Whitelist    WhitelistType `json:"whitelist"`
 	Language     string        `json:"language" validate:"required,max=2"`
-	LastUpdated  ocpi.DateTime `json:"last_updated"`
+	LastUpdated  DateTime      `json:"last_updated"`
 }
 
 type LocationResponse = ocpi.Response[Location]
 
 type GetTokensParams struct {
 	// DateFrom Return Tokens that have last_updated after or equal to this date time (inclusive).
-	DateFrom *ocpi.DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return Tokens that have last_updated up to this date time, but not including (exclusive).
-	DateTo *ocpi.DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
@@ -662,5 +662,5 @@ type PatchedToken struct {
 	Valid        *bool          `json:"valid,omitempty"`
 	Whitelist    *WhitelistType `json:"whitelist,omitempty"`
 	Language     *string        `json:"language,omitempty" validate:"omitempty,required,max=2"`
-	LastUpdated  ocpi.DateTime  `json:"last_updated" validate:"required"` // LastUpdated is required for PATCH request
+	LastUpdated  DateTime       `json:"last_updated" validate:"required"` // LastUpdated is required for PATCH request
 }

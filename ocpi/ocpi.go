@@ -2,7 +2,6 @@ package ocpi
 
 import (
 	"encoding/json"
-	"reflect"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -19,16 +18,11 @@ const (
 	VersionNumber211 VersionNumber = "2.1.1"
 	VersionNumber22  VersionNumber = "2.2"
 	VersionNumber221 VersionNumber = "2.2.1"
+	VersionNumber230 VersionNumber = "2.3.0"
 )
 
 func init() {
 	validate = validator.New()
-	validate.RegisterCustomTypeFunc(func(field reflect.Value) any {
-		if value, ok := field.Interface().(DateTime); ok {
-			return value.Time
-		}
-		return nil
-	}, DateTime{})
 	if err := validate.RegisterValidation("version", func(fl validator.FieldLevel) bool {
 		v, ok := fl.Field().Interface().(VersionNumber)
 		if !ok {
