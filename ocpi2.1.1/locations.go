@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -64,11 +63,11 @@ func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	locationID := chi.URLParam(r, "location_id")
-	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
-	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	locationID := r.PathValue("location_id")
+	evseUID := strings.TrimSpace(r.PathValue("evse_uid"))
+	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	var (
 		resp any
@@ -106,11 +105,11 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	locationID := chi.URLParam(r, "location_id")
-	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
-	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	locationID := r.PathValue("location_id")
+	evseUID := strings.TrimSpace(r.PathValue("evse_uid"))
+	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	s.logger.DebugContext(ctx, "PutOcpiLocation",
 		"country_code", countryCode,
@@ -177,11 +176,11 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	locationID := chi.URLParam(r, "location_id")
-	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
-	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	locationID := r.PathValue("location_id")
+	evseUID := strings.TrimSpace(r.PathValue("evse_uid"))
+	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	if evseUID != "" && connectorID != "" {
 		if err := s.emsp.OnPatchClientOwnedLocationConnector(
@@ -231,7 +230,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *Client) GetLocation(
+func (c *client) GetLocation(
 	ctx context.Context,
 	locationID string,
 ) (*LocationResponse, error) {

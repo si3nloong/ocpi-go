@@ -13,9 +13,15 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-type Option func(*Client)
+type EndpointResolver func(endpoint string) string
 
-type Client struct {
+type Client interface {
+	CallEndpoint(ctx context.Context, mod ModuleID, endpointResolver EndpointResolver, src, dst any) error
+}
+
+type Option func(*client)
+
+type client struct {
 	rw           sync.RWMutex
 	tokenA       string
 	tokenC       string
@@ -25,13 +31,13 @@ type Client struct {
 }
 
 func WithTokenC(tokenC string) Option {
-	return func(c *Client) {
+	return func(c *client) {
 		c.tokenC = tokenC
 	}
 }
 
-func NewClient(versionUrl string, options ...Option) *Client {
-	c := new(Client)
+func NewClient(versionUrl string, options ...Option) Client {
+	c := new(client)
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}
 	for _, opt := range options {
@@ -40,10 +46,10 @@ func NewClient(versionUrl string, options ...Option) *Client {
 	return c
 }
 
-func (c *Client) CallEndpoint(
+func (c *client) CallEndpoint(
 	ctx context.Context,
 	mod ModuleID,
-	endpointResolver func(endpoint string) string,
+	endpointResolver EndpointResolver,
 	src, dst any,
 ) error {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations)
@@ -57,7 +63,7 @@ func (c *Client) CallEndpoint(
 	return nil
 }
 
-func (c *Client) getEndpoint(ctx context.Context, mod ModuleID) (string, error) {
+func (c *client) getEndpoint(ctx context.Context, mod ModuleID) (string, error) {
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
@@ -92,7 +98,7 @@ func (c *Client) getEndpoint(ctx context.Context, mod ModuleID) (string, error) 
 	return "", fmt.Errorf(`ocpi: missing endpoint for module id %q`, mod)
 }
 
-func (c *Client) newRequest(
+func (c *client) newRequest(
 	ctx context.Context,
 	method, endpoint string,
 	src any,
@@ -124,7 +130,7 @@ func (c *Client) newRequest(
 	return req, nil
 }
 
-func (c *Client) do(
+func (c *client) do(
 	ctx context.Context,
 	method, endpoint string,
 	src, dst any,

@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -31,9 +30,9 @@ func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
-	locationID := chi.URLParam(r, "location_id")
-	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
-	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
+	locationID := r.PathValue("location_id")
+	evseUID := strings.TrimSpace(r.PathValue("evse_uid"))
+	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	var (
 		resp any
@@ -65,11 +64,11 @@ func (s *Server) GetOcpiClientOwnedLocation(w http.ResponseWriter, r *http.Reque
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	locationID := chi.URLParam(r, "location_id")
-	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
-	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	locationID := r.PathValue("location_id")
+	evseUID := strings.TrimSpace(r.PathValue("evse_uid"))
+	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	var (
 		resp any
@@ -107,11 +106,11 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	locationID := chi.URLParam(r, "location_id")
-	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
-	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	locationID := r.PathValue("location_id")
+	evseUID := strings.TrimSpace(r.PathValue("evse_uid"))
+	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	s.logger.DebugContext(ctx, "PutOcpiLocation",
 		"country_code", countryCode,
@@ -178,11 +177,11 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	locationID := chi.URLParam(r, "location_id")
-	evseUID := strings.TrimSpace(chi.URLParam(r, "evse_uid"))
-	connectorID := strings.TrimSpace(chi.URLParam(r, "connector_id"))
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	locationID := r.PathValue("location_id")
+	evseUID := strings.TrimSpace(r.PathValue("evse_uid"))
+	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	if evseUID != "" && connectorID != "" {
 		if err := s.locationsReceiver.OnPatchClientOwnedLocationConnector(
@@ -232,7 +231,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *Client) GetLocations(
+func (c *client) GetLocations(
 	ctx context.Context,
 	params ...GetLocationsParams,
 ) (ocpi.Result[[]Location], error) {
@@ -271,7 +270,7 @@ func (c *Client) GetLocations(
 	return ocpi.NewResult(o), nil
 }
 
-func (c *Client) GetLocation(
+func (c *client) GetLocation(
 	ctx context.Context,
 	locationID string,
 ) (*LocationResponse, error) {
@@ -287,7 +286,7 @@ func (c *Client) GetLocation(
 	return &o, nil
 }
 
-func (c *Client) GetClientOwnedLocation(
+func (c *client) GetClientOwnedLocation(
 	ctx context.Context,
 	countryCode string,
 	partyID string,
@@ -305,7 +304,7 @@ func (c *Client) GetClientOwnedLocation(
 	return &o, nil
 }
 
-func (c *Client) PutClientOwnedLocation(
+func (c *client) PutClientOwnedLocation(
 	ctx context.Context,
 	countryCode string,
 	partyID string,
@@ -324,7 +323,7 @@ func (c *Client) PutClientOwnedLocation(
 	return nil
 }
 
-func (c *Client) PatchClientOwnedLocation(
+func (c *client) PatchClientOwnedLocation(
 	ctx context.Context,
 	countryCode string,
 	partyID string,

@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -29,7 +28,7 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PutOcpiSesionChargingPreferences(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	sessionID := chi.URLParam(r, "session_id")
+	sessionID := r.PathValue("session_id")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -61,9 +60,9 @@ func (s *Server) PutOcpiSesionChargingPreferences(w http.ResponseWriter, r *http
 func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	sessionID := chi.URLParam(r, "session_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	sessionID := r.PathValue("session_id")
 
 	session, err := s.sessionsReceiver.OnGetClientOwnedSession(
 		r.Context(),
@@ -96,9 +95,9 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	sessionID := chi.URLParam(r, "session_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	sessionID := r.PathValue("session_id")
 
 	if err := s.sessionsReceiver.OnPutClientOwnedSession(
 		ctx,
@@ -131,9 +130,9 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	sessionID := chi.URLParam(r, "session_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	sessionID := r.PathValue("session_id")
 
 	if err := s.sessionsReceiver.OnPatchClientOwnedSession(
 		ctx,
@@ -156,9 +155,8 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *Client) GetSessions(
+func (c *client) GetSessions(
 	ctx context.Context,
-	dateFrom time.Time,
 	params ...GetSessionsParams,
 ) (*SessionsResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
@@ -171,7 +169,6 @@ func (c *Client) GetSessions(
 		return nil, err
 	}
 	query := u.Query()
-	query.Add("date_from", dateFrom.Format(time.RFC3339))
 	if len(params) > 0 {
 		p := params[0]
 		if p.DateFrom != nil && p.DateFrom.IsZero() {
@@ -196,7 +193,7 @@ func (c *Client) GetSessions(
 	return &o, nil
 }
 
-func (c *Client) GetSession(
+func (c *client) GetSession(
 	ctx context.Context,
 	countryCode string,
 	partyID string,
@@ -214,13 +211,13 @@ func (c *Client) GetSession(
 	return &o, nil
 }
 
-func (c *Client) SetSessionChargingPreferences(ctx context.Context, sessionID string) (any, error) {
+func (c *client) SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
 
-	var o SessionResponse
+	var o ocpi.Response[ChargingPreferencesResponse]
 	if err := c.do(ctx, http.MethodGet, endpoint+"/sessions/"+sessionID+"/charging_preferences", nil, &o); err != nil {
 		return nil, err
 	}

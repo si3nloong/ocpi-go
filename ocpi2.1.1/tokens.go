@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -24,7 +23,7 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	tokenUID := chi.URLParam(r, "token_uid")
+	tokenUID := r.PathValue("token_uid")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -65,9 +64,9 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	tokenUID := chi.URLParam(r, "token_uid")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	tokenUID := r.PathValue("token_uid")
 
 	tokenType := TokenTypeRFID
 	if r.URL.Query().Has("type") {
@@ -104,9 +103,9 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	tokenUID := chi.URLParam(r, "token_uid")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	tokenUID := r.PathValue("token_uid")
 
 	tokenType := TokenTypeRFID
 	if r.URL.Query().Has("type") {
@@ -149,9 +148,9 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	tokenUID := chi.URLParam(r, "token_uid")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	tokenUID := r.PathValue("token_uid")
 
 	tokenType := TokenTypeRFID
 	if r.URL.Query().Has("type") {

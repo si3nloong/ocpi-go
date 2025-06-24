@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -29,9 +28,9 @@ func (s *Server) GetOcpiTariffs(w http.ResponseWriter, r *http.Request) {
 func (s *Server) GetOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	tariffID := chi.URLParam(r, "tariff_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	tariffID := r.PathValue("tariff_id")
 
 	tariff, err := s.tariffsReceiver.OnGetClientOwnedTariff(r.Context(), countryCode, partyID, tariffID)
 	if err != nil {
@@ -58,9 +57,9 @@ func (s *Server) PutOcpiTariff(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	tariffID := chi.URLParam(r, "tariff_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	tariffID := r.PathValue("tariff_id")
 
 	if err := s.tariffsReceiver.OnPutClientOwnedTariff(
 		r.Context(),
@@ -86,9 +85,9 @@ func (s *Server) PutOcpiTariff(w http.ResponseWriter, r *http.Request) {
 func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	countryCode := chi.URLParam(r, "country_code")
-	partyID := chi.URLParam(r, "party_id")
-	tariffID := chi.URLParam(r, "tariff_id")
+	countryCode := r.PathValue("country_code")
+	partyID := r.PathValue("party_id")
+	tariffID := r.PathValue("tariff_id")
 
 	if err := s.tariffsReceiver.OnDeleteClientOwnedTariff(
 		r.Context(),
@@ -110,7 +109,7 @@ func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *Client) GetTariffs(
+func (c *client) GetTariffs(
 	ctx context.Context,
 	params ...GetTariffsParams,
 ) (ocpi.Result[[]Tariff], error) {
@@ -148,7 +147,7 @@ func (c *Client) GetTariffs(
 	return ocpi.NewResult(o), nil
 }
 
-func (c *Client) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (any, error) {
+func (c *client) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (any, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
 	if err != nil {
 		return nil, err

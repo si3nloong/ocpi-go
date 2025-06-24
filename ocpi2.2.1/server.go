@@ -1,23 +1,24 @@
 package ocpi221
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/si3nloong/ocpi-go/ocpi"
+	"github.com/gofrs/uuid/v5"
 )
 
-type Config struct {
-	BaseURL string
+type ServerOption interface {
+	apply(*serverOptions)
+}
+
+type serverOptions struct {
+	baseUrl string
+	logger  *slog.Logger
 }
 
 type Server struct {
-	baseUrl                  string
-	logger                   *slog.Logger
-	httpHandler              http.Handler
+	serverOptions
 	roles                    map[Role]struct{}
 	cdrsSender               CDRsSender
 	cdrsReceiver             CDRsReceiver
@@ -39,15 +40,15 @@ type Server struct {
 	versions                 Versions
 }
 
-func NewServer(credential Credentials, cfg Config) *Server {
+func NewServer(credential Credentials, options ...ServerOption) *Server {
 	s := new(Server)
-	s.baseUrl = "/ocpi/" + string(ocpi.VersionNumber221)
-	if cfg.BaseURL != "" {
-		s.baseUrl = cfg.BaseURL
-	}
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
+	// s.baseUrl = fmt.Sprintf("/ocpi/%s", ocpi.VersionNumber221)
+	for _, opt := range options {
+		opt.apply(&s.serverOptions)
+	}
 	s.roles = make(map[Role]struct{})
 	s.credentials = credential
 	return s
@@ -131,69 +132,73 @@ func (s *Server) SetSCSP(scsp SCSP) {
 }
 
 func (s *Server) Handler() http.Handler {
-	router := chi.NewRouter()
+	router := http.NewServeMux()
 
-	s.baseUrl = ""
-	router.Get(s.baseUrl+"/details", s.GetOcpiVersionDetails)
-	router.Get(s.baseUrl+"/credentials", s.GetOcpiCredentials)
-	router.Post(s.baseUrl+"/credentials", s.PostOcpiCredentials)
-	router.Put(s.baseUrl+"/credentials", s.PutOcpiCredentials)
-	router.Delete(s.baseUrl+"/credentials", s.DeleteOcpiCredentials)
+	router.HandleFunc(s.baseUrl+"/details", s.GetOcpiVersionDetails)
+	router.HandleFunc(s.baseUrl+"/credentials", s.GetOcpiCredentials)
+	router.HandleFunc("POST "+s.baseUrl+"/credentials", s.PostOcpiCredentials)
+	router.HandleFunc("PUT "+s.baseUrl+"/credentials", s.PutOcpiCredentials)
+	router.HandleFunc("DELETE "+s.baseUrl+"/credentials", s.DeleteOcpiCredentials)
 
 	if s.locationsSender != nil {
-		router.Get(s.baseUrl+"/locations", s.GetOcpiLocations)
-		router.Get(s.baseUrl+"/locations/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations", s.GetOcpiLocations)
+		router.HandleFunc(s.baseUrl+"/locations/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
 	}
 	if s.locationsReceiver != nil {
-		router.Get(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiClientOwnedLocation)
-		router.Put(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
-		router.Patch(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiClientOwnedLocation)
+		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
+		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
 	}
 
 	if s.sessionsSender != nil {
-		router.Get(s.baseUrl+"/sessions", s.GetOcpiSessions)
-		router.Put(s.baseUrl+"/sessions/{session_id}/charging_preferences", s.PutOcpiSesionChargingPreferences)
+		router.HandleFunc(s.baseUrl+"/sessions", s.GetOcpiSessions)
+		router.HandleFunc("PUT "+s.baseUrl+"/sessions/{session_id}/charging_preferences", s.PutOcpiSesionChargingPreferences)
 	}
 	if s.sessionsReceiver != nil {
-		router.Get(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.GetOcpiSession)
-		router.Put(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)
-		router.Patch(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
+		router.HandleFunc(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.GetOcpiSession)
+		router.HandleFunc("PUT "+s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)
+		router.HandleFunc("PATCH "+s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
 	}
 
 	if s.cdrsSender != nil {
-		router.Get(s.baseUrl+"/tariffs", s.GetOcpiCDRs)
+		router.HandleFunc(s.baseUrl+"/tariffs", s.GetOcpiCDRs)
 	}
 	if s.cdrsReceiver != nil {
-		router.Get(s.baseUrl+"/cdrs/{cdr_id}", s.GetOcpiCDR)
-		router.Post(s.baseUrl+"/cdrs", s.PostOcpiCDR)
+		router.HandleFunc(s.baseUrl+"/cdrs/{cdr_id}", s.GetOcpiCDR)
+		router.HandleFunc("POST "+s.baseUrl+"/cdrs", s.PostOcpiCDR)
 	}
 
 	if s.tariffsSender != nil {
-		router.Get(s.baseUrl+"/tariffs", s.GetOcpiTariffs)
+		router.HandleFunc(s.baseUrl+"/tariffs", s.GetOcpiTariffs)
 	}
 	if s.tariffsReceiver != nil {
-		router.Get(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.GetOcpiTariff)
-		router.Put(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.PutOcpiTariff)
-		router.Delete(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.DeleteOcpiTariff)
+		router.HandleFunc(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.GetOcpiTariff)
+		router.HandleFunc("PUT "+s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.PutOcpiTariff)
+		router.HandleFunc("DELETE "+s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.DeleteOcpiTariff)
 	}
 
 	if s.tokensSender != nil {
-		router.Get(s.baseUrl+"/tokens", s.GetOcpiTokens)
-		router.Post(s.baseUrl+"/tokens/{token_uid}/authorize", s.PostOcpiToken)
+		router.HandleFunc(s.baseUrl+"/tokens", s.GetOcpiTokens)
+		router.HandleFunc("POST "+s.baseUrl+"/tokens/{token_uid}/authorize", s.PostOcpiToken)
 	}
 	if s.tokensReceiver != nil {
-		router.Get(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.GetOcpiToken)
-		router.Put(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PutOcpiToken)
-		router.Patch(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PatchOcpiToken)
+		router.HandleFunc(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.GetOcpiToken)
+		router.HandleFunc("PUT "+s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PutOcpiToken)
+		router.HandleFunc("PATCH "+s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PatchOcpiToken)
 	}
 
 	if s.commandsReceiver != nil {
-		router.Post(s.baseUrl+"/commands/{command_type}", s.PostOcpiCommand)
+		router.HandleFunc("POST "+s.baseUrl+"/commands/{command_type}", s.PostOcpiCommand)
 	}
 	if s.commandsSender != nil {
-		router.Post(s.baseUrl+"/commands/{command_type}/{uid}", s.PostOcpiCommandResponse)
+		router.HandleFunc("POST "+s.baseUrl+"/commands/{command_type}/{uid}", s.PostOcpiCommandResponse)
 	}
-
-	s.baseUrl = fmt.Sprintf("/ocpi/%s", ocpi.VersionNumber221)
 	return router
+}
+
+func writeOkResponse(w http.ResponseWriter, r *http.Request, b []byte) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set(HttpHeaderXRequestID, uuid.Must(uuid.NewV7()).String())
+	w.Header().Set(HttpHeaderXCorrelationID, r.Header.Get(HttpHeaderXCorrelationID))
+	w.Write(b)
 }
