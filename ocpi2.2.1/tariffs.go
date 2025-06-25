@@ -109,7 +109,7 @@ func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *client) GetTariffs(
+func (c *ClientConn) GetTariffs(
 	ctx context.Context,
 	params ...GetTariffsParams,
 ) (ocpi.Result[[]Tariff], error) {
@@ -147,7 +147,7 @@ func (c *client) GetTariffs(
 	return ocpi.NewResult(o), nil
 }
 
-func (c *client) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (any, error) {
+func (c *ClientConn) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (any, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
 	if err != nil {
 		return nil, err

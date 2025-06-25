@@ -155,7 +155,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *client) GetSessions(
+func (c *ClientConn) GetSessions(
 	ctx context.Context,
 	params ...GetSessionsParams,
 ) (*SessionsResponse, error) {
@@ -193,7 +193,7 @@ func (c *client) GetSessions(
 	return &o, nil
 }
 
-func (c *client) GetSession(
+func (c *ClientConn) GetSession(
 	ctx context.Context,
 	countryCode string,
 	partyID string,
@@ -211,7 +211,7 @@ func (c *client) GetSession(
 	return &o, nil
 }
 
-func (c *client) SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error) {
+func (c *ClientConn) SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err

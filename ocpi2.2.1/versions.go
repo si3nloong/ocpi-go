@@ -80,7 +80,7 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 	writeOkResponse(w, r, b)
 }
 
-func (c *client) Versions(ctx context.Context) ([]ocpi.Version, error) {
+func (c *ClientConn) Versions(ctx context.Context) ([]ocpi.Version, error) {
 	var o ocpi.Response[[]ocpi.Version]
 	if err := c.do(ctx, http.MethodGet, c.versionUrl, nil, &o); err != nil {
 		return nil, err

@@ -33,9 +33,9 @@ type Client interface {
 	SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error)
 }
 
-type Option func(*client)
+type Option func(*ClientConn)
 
-type client struct {
+type ClientConn struct {
 	rw           sync.RWMutex
 	tokenA       string
 	tokenC       string
@@ -44,14 +44,16 @@ type client struct {
 	endpointDict map[string]Endpoint
 }
 
+var _ Client = (*ClientConn)(nil)
+
 func WithTokenC(tokenC string) Option {
-	return func(c *client) {
+	return func(c *ClientConn) {
 		c.tokenC = tokenC
 	}
 }
 
-func NewClient(versionUrl string, options ...Option) Client {
-	c := new(client)
+func NewClient(versionUrl string, options ...Option) *ClientConn {
+	c := new(ClientConn)
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}
 	for _, opt := range options {
@@ -60,7 +62,7 @@ func NewClient(versionUrl string, options ...Option) Client {
 	return c
 }
 
-func (c *client) CallEndpoint(
+func (c *ClientConn) CallEndpoint(
 	ctx context.Context,
 	mod ModuleID,
 	role InterfaceRole,
@@ -78,7 +80,7 @@ func (c *client) CallEndpoint(
 	return nil
 }
 
-func (c *client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error) {
+func (c *ClientConn) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error) {
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
@@ -113,7 +115,7 @@ func (c *client) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRo
 	return "", fmt.Errorf(`ocpi221: missing endpoint for module id %q (%s)`, mod, role)
 }
 
-func (c *client) newRequest(
+func (c *ClientConn) newRequest(
 	ctx context.Context,
 	method, endpoint string,
 	src any,
@@ -145,7 +147,7 @@ func (c *client) newRequest(
 	return req, nil
 }
 
-func (c *client) do(
+func (c *ClientConn) do(
 	ctx context.Context,
 	method, endpoint string,
 	src, dst any,

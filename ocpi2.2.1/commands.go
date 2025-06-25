@@ -55,7 +55,7 @@ func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request)
 	w.Write(b)
 }
 
-func (c *client) StartSession(ctx context.Context, req StartSession) (*CommandResponse, error) {
+func (c *ClientConn) StartSession(ctx context.Context, req StartSession) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (c *client) StartSession(ctx context.Context, req StartSession) (*CommandRe
 	return &res, nil
 }
 
-func (c *client) StopSession(ctx context.Context, req StopSession) (*CommandResponse, error) {
+func (c *ClientConn) StopSession(ctx context.Context, req StopSession) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (c *client) StopSession(ctx context.Context, req StopSession) (*CommandResp
 	return &res, nil
 }
 
-func (c *client) ReserveNow(ctx context.Context, req ReserveNow) (*CommandResponse, error) {
+func (c *ClientConn) ReserveNow(ctx context.Context, req ReserveNow) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (c *client) ReserveNow(ctx context.Context, req ReserveNow) (*CommandRespon
 	return &res, nil
 }
 
-func (c *client) CancelReservation(ctx context.Context, req CancelReservation) (*CommandResponse, error) {
+func (c *ClientConn) CancelReservation(ctx context.Context, req CancelReservation) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (c *client) CancelReservation(ctx context.Context, req CancelReservation) (
 	return &res, nil
 }
 
-func (c *client) UnlockConnector(ctx context.Context, req UnlockConnector) (*CommandResponse, error) {
+func (c *ClientConn) UnlockConnector(ctx context.Context, req UnlockConnector) (*CommandResponse, error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err

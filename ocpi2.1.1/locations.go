@@ -230,7 +230,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *client) GetLocation(
+func (c *ClientConn) GetLocation(
 	ctx context.Context,
 	locationID string,
 ) (*LocationResponse, error) {

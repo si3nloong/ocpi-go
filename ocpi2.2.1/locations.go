@@ -231,7 +231,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *client) GetLocations(
+func (c *ClientConn) GetLocations(
 	ctx context.Context,
 	params ...GetLocationsParams,
 ) (ocpi.Result[[]Location], error) {
@@ -270,7 +270,7 @@ func (c *client) GetLocations(
 	return ocpi.NewResult(o), nil
 }
 
-func (c *client) GetLocation(
+func (c *ClientConn) GetLocation(
 	ctx context.Context,
 	locationID string,
 ) (*LocationResponse, error) {
@@ -286,7 +286,7 @@ func (c *client) GetLocation(
 	return &o, nil
 }
 
-func (c *client) GetClientOwnedLocation(
+func (c *ClientConn) GetClientOwnedLocation(
 	ctx context.Context,
 	countryCode string,
 	partyID string,
@@ -304,7 +304,7 @@ func (c *client) GetClientOwnedLocation(
 	return &o, nil
 }
 
-func (c *client) PutClientOwnedLocation(
+func (c *ClientConn) PutClientOwnedLocation(
 	ctx context.Context,
 	countryCode string,
 	partyID string,
@@ -322,7 +322,7 @@ func (c *client) PutClientOwnedLocation(
 	return nil
 }
 
-func (c *client) PatchClientOwnedLocation(
+func (c *ClientConn) PatchClientOwnedLocation(
 	ctx context.Context,
 	countryCode string,
 	partyID string,

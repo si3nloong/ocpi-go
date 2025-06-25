@@ -165,7 +165,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *client) GetSessions(
+func (c *ClientConn) GetSessions(
 	ctx context.Context,
 	dateFrom time.Time,
 	params ...GetSessionsParams,
@@ -202,7 +202,7 @@ func (c *client) GetSessions(
 	return &o, nil
 }
 
-func (c *client) GetSession(
+func (c *ClientConn) GetSession(
 	ctx context.Context,
 	countryCode string,
 	partyID string,
