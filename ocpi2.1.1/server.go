@@ -69,9 +69,15 @@ func (s *Server) Handler() http.Handler {
 		router.HandleFunc("POST "+s.baseUrl+"/commands/{command_type}", s.PostOcpiCommandResponse)
 	}
 	if s.emsp != nil {
-		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
-		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
-		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.GetOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.GetOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.GetOcpiLocation)
+		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.PutOcpiLocation)
+		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.PutOcpiLocation)
+		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.PutOcpiLocation)
+		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.PatchOcpiLocation)
+		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.PatchOcpiLocation)
+		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.PatchOcpiLocation)
 
 		router.HandleFunc(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.GetOcpiSession)
 		router.HandleFunc("PUT "+s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)

@@ -142,12 +142,20 @@ func (s *Server) Handler() http.Handler {
 
 	if s.locationsSender != nil {
 		router.HandleFunc(s.baseUrl+"/locations", s.GetOcpiLocations)
-		router.HandleFunc(s.baseUrl+"/locations/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{location_id}", s.GetOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{location_id}/{evse_uid}", s.GetOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{location_id}/{evse_uid}/{connector_id}", s.GetOcpiLocation)
 	}
 	if s.locationsReceiver != nil {
-		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.GetOcpiClientOwnedLocation)
-		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PutOcpiLocation)
-		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}(/{evse_uid}(/{connector_id}))", s.PatchOcpiLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.GetOcpiClientOwnedLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.GetOcpiClientOwnedLocation)
+		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.GetOcpiClientOwnedLocation)
+		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.PutOcpiLocation)
+		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.PutOcpiLocation)
+		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.PutOcpiLocation)
+		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.PatchOcpiLocation)
+		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.PatchOcpiLocation)
+		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.PatchOcpiLocation)
 	}
 
 	if s.sessionsSender != nil {
