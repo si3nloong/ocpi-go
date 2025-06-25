@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
@@ -17,7 +18,8 @@ const (
 func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	origin := httputil.GetHostname(r) + s.baseUrl
+	path := strings.TrimSuffix(r.RequestURI, "/details")
+	origin := httputil.GetHostname(r) + s.baseUrl + path
 	endpoints := []Endpoint{
 		{Identifier: ModuleIDCredentials, Role: InterfaceRoleSender, URL: origin + "/credentials"},
 		{Identifier: ModuleIDCredentials, Role: InterfaceRoleReceiver, URL: origin + "/credentials"},

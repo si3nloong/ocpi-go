@@ -568,8 +568,8 @@ type CdrLocation struct {
 
 // GeoLocation defines model for cdrBody_cdr_location_coordinates.
 type GeoLocation struct {
-	Latitude  float64 `json:"latitude,string"`
-	Longitude float64 `json:"longitude,string"`
+	Latitude  string `json:"latitude"`
+	Longitude string `json:"longitude"`
 }
 
 // CdrToken defines model for cdrBody_cdr_token.
