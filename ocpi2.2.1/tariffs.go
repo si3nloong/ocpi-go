@@ -112,7 +112,7 @@ func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
 func (c *ClientConn) GetTariffs(
 	ctx context.Context,
 	params ...GetTariffsParams,
-) (ocpi.Result[[]Tariff], error) {
+) (*ocpi.PaginationResponse[Tariff], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
@@ -140,11 +140,13 @@ func (c *ClientConn) GetTariffs(
 		}
 	}
 	u.RawQuery = query.Encode()
-	var o TariffsResponse
+	var o ocpi.Response[[]Tariff]
 	if err := c.do(ctx, http.MethodGet, u.String(), nil, &o); err != nil {
 		return nil, err
 	}
-	return ocpi.NewResult(o), nil
+	return &ocpi.PaginationResponse[Tariff]{
+		Data: o.Data,
+	}, nil
 }
 
 func (c *ClientConn) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (any, error) {

@@ -852,12 +852,6 @@ type LocationReferences struct {
 	LocationID string  `json:"location_id"`
 }
 
-// Locations defines model for locations.
-type LocationsResponse = ocpi.Response[[]Location]
-
-// Locations defines model for locations.
-type LocationResponse = ocpi.Response[Location]
-
 // LocationsData defines model for locations_data.
 type Location struct {
 	CountryCode        string                  `json:"country_code" validate:"required,len=2"`
@@ -1045,12 +1039,6 @@ type PatchedSession struct {
 	TotalCost              *Price          `json:"total_cost,omitempty"`
 }
 
-// SessionResponse defines model for sessionResponse.
-type SessionsResponse = ocpi.Response[[]Session]
-
-// SessionResponse defines model for sessionResponse.
-type SessionResponse = ocpi.Response[Session]
-
 // ChargingPeriod defines model for session_charging_periods.
 type ChargingPeriod struct {
 	StartDateTime DateTime       `json:"start_date_time" validate:"required"`
@@ -1149,9 +1137,6 @@ type TariffRestrictions struct {
 	DayOfWeek   []DayOfWeek                 `json:"day_of_week,omitempty"`
 	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
 }
-
-// TariffsResponse defines model for tariffsResponse.
-type TariffsResponse = ocpi.Response[[]Tariff]
 
 type InvoiceCreator string
 

@@ -234,7 +234,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 func (c *ClientConn) GetLocations(
 	ctx context.Context,
 	params ...GetLocationsParams,
-) (ocpi.Result[[]Location], error) {
+) (*ocpi.PaginationResponse[Location], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
@@ -263,23 +263,25 @@ func (c *ClientConn) GetLocations(
 	}
 	u.RawQuery = query.Encode()
 
-	var o LocationsResponse
+	var o ocpi.Response[[]Location]
 	if err := c.do(ctx, http.MethodGet, u.String(), nil, &o); err != nil {
 		return nil, err
 	}
-	return ocpi.NewResult(o), nil
+	return &ocpi.PaginationResponse[Location]{
+		Data: o.Data,
+	}, nil
 }
 
 func (c *ClientConn) GetLocation(
 	ctx context.Context,
 	locationID string,
-) (*LocationResponse, error) {
+) (*ocpi.Response[Location], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
 
-	var o LocationResponse
+	var o ocpi.Response[Location]
 	if err := c.do(ctx, http.MethodGet, endpoint+"/"+locationID, nil, &o); err != nil {
 		return nil, err
 	}
@@ -291,13 +293,13 @@ func (c *ClientConn) GetClientOwnedLocation(
 	countryCode string,
 	partyID string,
 	locationID string,
-) (*LocationResponse, error) {
+) (*ocpi.Response[Location], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
 
-	var o LocationResponse
+	var o ocpi.Response[Location]
 	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+locationID, nil, &o); err != nil {
 		return nil, err
 	}

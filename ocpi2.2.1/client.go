@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"net/http/httputil"
 	"sync"
 	"unsafe"
 
@@ -17,19 +19,19 @@ type EndpointResolver func(endpoint string) string
 
 type Client interface {
 	CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, endpointResolver EndpointResolver, src, dst any) error
-	GetTariffs(ctx context.Context, params ...GetTariffsParams) (ocpi.Result[[]Tariff], error)
-	GetLocations(ctx context.Context, params ...GetLocationsParams) (ocpi.Result[[]Location], error)
-	GetLocation(ctx context.Context, locationID string) (*LocationResponse, error)
-	GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*LocationResponse, error)
+	GetTariffs(ctx context.Context, params ...GetTariffsParams) (*ocpi.PaginationResponse[Tariff], error)
+	GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
+	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
+	GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error)
 	PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, loc Location) error
 	PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, loc PatchedLocation) error
-	GetSessions(ctx context.Context, params ...GetSessionsParams) (*SessionsResponse, error)
-	GetSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*SessionResponse, error)
-	StartSession(ctx context.Context, req StartSession) (*CommandResponse, error)
-	StopSession(ctx context.Context, req StopSession) (*CommandResponse, error)
-	ReserveNow(ctx context.Context, req ReserveNow) (*CommandResponse, error)
-	CancelReservation(ctx context.Context, req CancelReservation) (*CommandResponse, error)
-	UnlockConnector(ctx context.Context, req UnlockConnector) (*CommandResponse, error)
+	GetSessions(ctx context.Context, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
+	GetSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error)
+	StartSession(ctx context.Context, req StartSession) (*ocpi.Response[CommandResponse], error)
+	StopSession(ctx context.Context, req StopSession) (*ocpi.Response[CommandResponse], error)
+	ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Response[CommandResponse], error)
+	CancelReservation(ctx context.Context, req CancelReservation) (*ocpi.Response[CommandResponse], error)
+	UnlockConnector(ctx context.Context, req UnlockConnector) (*ocpi.Response[CommandResponse], error)
 	SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error)
 }
 
@@ -157,6 +159,8 @@ func (c *ClientConn) do(
 		return err
 	}
 
+	b, _ := httputil.DumpRequest(req, true)
+	log.Println(string(b))
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return err

@@ -158,7 +158,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 func (c *ClientConn) GetSessions(
 	ctx context.Context,
 	params ...GetSessionsParams,
-) (*SessionsResponse, error) {
+) (*ocpi.PaginationResponse[Session], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
@@ -186,7 +186,7 @@ func (c *ClientConn) GetSessions(
 	}
 	u.RawQuery = query.Encode()
 
-	var o SessionsResponse
+	var o ocpi.PaginationResponse[Session]
 	if err := c.do(ctx, http.MethodGet, u.String(), nil, &o); err != nil {
 		return nil, err
 	}
@@ -198,13 +198,13 @@ func (c *ClientConn) GetSession(
 	countryCode string,
 	partyID string,
 	sessionID string,
-) (*SessionResponse, error) {
+) (*ocpi.Response[Session], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
 
-	var o SessionResponse
+	var o ocpi.Response[Session]
 	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, nil, &o); err != nil {
 		return nil, err
 	}
