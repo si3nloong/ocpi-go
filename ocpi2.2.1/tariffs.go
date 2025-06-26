@@ -145,19 +145,19 @@ func (c *ClientConn) GetTariffs(
 		return nil, err
 	}
 	return &ocpi.PaginationResponse[Tariff]{
-		Data: o.Data,
+		Response: o,
 	}, nil
 }
 
-func (c *ClientConn) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (any, error) {
+func (c *ClientConn) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[Tariff], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
 
-	var o json.RawMessage
+	var o ocpi.Response[Tariff]
 	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+tariffID, nil, &o); err != nil {
 		return nil, err
 	}
-	return string(o), nil
+	return &o, nil
 }

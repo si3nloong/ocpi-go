@@ -12,6 +12,7 @@ import (
 	"sync"
 	"unsafe"
 
+	"github.com/gofrs/uuid/v5"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
@@ -19,7 +20,6 @@ type EndpointResolver func(endpoint string) string
 
 type Client interface {
 	CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, endpointResolver EndpointResolver, src, dst any) error
-	GetTariffs(ctx context.Context, params ...GetTariffsParams) (*ocpi.PaginationResponse[Tariff], error)
 	GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
 	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
 	GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error)
@@ -138,6 +138,8 @@ func (c *ClientConn) newRequest(
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set(HttpHeaderXRequestID, uuid.Must(uuid.NewV7()).String())
+	// req.Header.Set(HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 
 	c.rw.RLock()
 	if c.tokenC != "" {
@@ -167,6 +169,11 @@ func (c *ClientConn) do(
 	}
 	defer res.Body.Close()
 
+	if scanner, ok := dst.(ocpi.HeaderScanner); ok {
+		if err := scanner.ScanHeader(res.Header); err != nil {
+			return fmt.Errorf(`ocpi221: unable to scan header: %w`, err)
+		}
+	}
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		b, _ := io.ReadAll(res.Body)
 		return fmt.Errorf(`ocpi221: encounter status code (%d) due to %s`, res.StatusCode, unsafe.String(unsafe.SliceData(b), len(b)))

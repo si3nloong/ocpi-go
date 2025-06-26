@@ -494,11 +494,11 @@ type ActiveChargingProfile struct {
 
 // Authorization Changed name of the object from official docs due to colliding naming of info property
 type AuthorizationInfo struct {
-	Allowed                AuthorizationAllowed    `json:"allowed"`
-	AuthorizationReference *string                 `json:"authorization_reference,omitempty"`
-	Info                   *CommandResponseMessage `json:"info,omitempty"`
-	Location               *LocationReferences     `json:"location,omitempty"`
-	Token                  Token                   `json:"token"`
+	Allowed                AuthorizationAllowed `json:"allowed"`
+	AuthorizationReference *string              `json:"authorization_reference,omitempty"`
+	Info                   *DisplayText         `json:"info,omitempty"`
+	Location               *LocationReferences  `json:"location,omitempty"`
+	Token                  Token                `json:"token"`
 }
 
 // BusinessDetails defines model for businessDetails.
@@ -736,21 +736,15 @@ type ClientsInfoResponse struct {
 
 // CommandResponse defines model for commandResponse.
 type CommandResponse struct {
-	Message *CommandResponseMessage `json:"message,omitempty"`
-	Result  CommandResponseType     `json:"result"`
-	Timeout int                     `json:"timeout"`
-}
-
-// CommandResponseMessage defines model for commandResponse_message.
-type CommandResponseMessage struct {
-	Language string `json:"language"`
-	Text     string `json:"text"`
+	Message *DisplayText        `json:"message,omitempty"`
+	Result  CommandResponseType `json:"result"`
+	Timeout int                 `json:"timeout"`
 }
 
 // CommandResult defines model for commandResult.
 type CommandResult struct {
-	Message *CommandResponseMessage `json:"message,omitempty"`
-	Result  CommandResultType       `json:"result"`
+	Message *DisplayText      `json:"message,omitempty"`
+	Result  CommandResultType `json:"result"`
 }
 
 // CommandResultType defines model for CommandResult.Result.

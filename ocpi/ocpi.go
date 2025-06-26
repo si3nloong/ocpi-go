@@ -2,6 +2,7 @@ package ocpi
 
 import (
 	"encoding/json"
+	"net/http"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -20,6 +21,10 @@ const (
 	VersionNumber221 VersionNumber = "2.2.1"
 	VersionNumber230 VersionNumber = "2.3.0"
 )
+
+type HeaderScanner interface {
+	ScanHeader(httpHeader http.Header) error
+}
 
 func init() {
 	validate = validator.New()

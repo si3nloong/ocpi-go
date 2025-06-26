@@ -97,7 +97,7 @@ func (c *ClientConn) getEndpoint(ctx context.Context, mod ModuleID) (string, err
 	if ok {
 		return v.URL, nil
 	}
-	return "", fmt.Errorf(`ocpi: missing endpoint for module id %q`, mod)
+	return "", fmt.Errorf(`ocpi211: missing endpoint for module id %q`, mod)
 }
 
 func (c *ClientConn) newRequest(

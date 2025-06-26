@@ -268,7 +268,7 @@ func (c *ClientConn) GetLocations(
 		return nil, err
 	}
 	return &ocpi.PaginationResponse[Location]{
-		Data: o.Data,
+		Response: o,
 	}, nil
 }
 

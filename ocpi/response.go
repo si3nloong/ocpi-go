@@ -28,7 +28,9 @@ func NewEmptyResponse() *Response[any] {
 }
 
 type PaginationResponse[T any] struct {
-	Data       []T
-	TotalCount int64
-	Limit      int64
+	Header struct {
+		TotalCount int64
+		Limit      int64
+	}
+	Response[[]T]
 }
