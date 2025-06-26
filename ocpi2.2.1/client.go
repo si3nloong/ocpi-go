@@ -19,7 +19,7 @@ import (
 type EndpointResolver func(endpoint string) string
 
 type Client interface {
-	CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, endpointResolver EndpointResolver, src, dst any) error
+	CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, method string, endpointResolver EndpointResolver, src, dst any) error
 	GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
 	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
 	GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error)
@@ -68,15 +68,16 @@ func (c *ClientConn) CallEndpoint(
 	ctx context.Context,
 	mod ModuleID,
 	role InterfaceRole,
+	method string,
 	endpointResolver EndpointResolver,
 	src, dst any,
 ) error {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
+	endpoint, err := c.getEndpoint(ctx, mod, role)
 	if err != nil {
 		return err
 	}
 
-	if err := c.do(ctx, http.MethodGet, endpointResolver(endpoint), src, dst); err != nil {
+	if err := c.do(ctx, method, endpointResolver(endpoint), src, dst); err != nil {
 		return err
 	}
 	return nil
