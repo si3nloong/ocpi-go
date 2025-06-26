@@ -23,8 +23,8 @@ type Client interface {
 	GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
 	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
 	GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error)
-	PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, loc Location) error
-	PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, loc PatchedLocation) error
+	PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location Location) (*ocpi.Response[any], error)
+	PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location PatchedLocation) (*ocpi.Response[any], error)
 	GetSessions(ctx context.Context, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
 	GetSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error)
 	StartSession(ctx context.Context, req StartSession) (*ocpi.Response[CommandResponse], error)
@@ -169,6 +169,8 @@ func (c *ClientConn) do(
 	}
 	defer res.Body.Close()
 
+	b, _ = httputil.DumpResponse(res, true)
+	log.Println(string(b))
 	if scanner, ok := dst.(ocpi.HeaderScanner); ok {
 		if err := scanner.ScanHeader(res.Header); err != nil {
 			return fmt.Errorf(`ocpi221: unable to scan header: %w`, err)

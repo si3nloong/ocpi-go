@@ -149,14 +149,53 @@ func (c *ClientConn) GetTariffs(
 	}, nil
 }
 
-func (c *ClientConn) GetTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[Tariff], error) {
+func (c *ClientConn) GetTariff(ctx context.Context, tariffID string) (*ocpi.Response[Tariff], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
 
 	var o ocpi.Response[Tariff]
+	if err := c.do(ctx, http.MethodGet, endpoint+"/"+tariffID, nil, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (c *ClientConn) GetClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[Tariff], error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
+	if err != nil {
+		return nil, err
+	}
+
+	var o ocpi.Response[Tariff]
 	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+tariffID, nil, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (c *ClientConn) PutClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string, tariff Tariff) (*ocpi.Response[any], error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
+	if err != nil {
+		return nil, err
+	}
+
+	var o ocpi.Response[any]
+	if err := c.do(ctx, http.MethodPut, endpoint+"/"+countryCode+"/"+partyID+"/"+tariffID, tariff, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (c *ClientConn) DeleteClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[any], error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
+	if err != nil {
+		return nil, err
+	}
+
+	var o ocpi.Response[any]
+	if err := c.do(ctx, http.MethodDelete, endpoint+"/"+countryCode+"/"+partyID+"/"+tariffID, nil, &o); err != nil {
 		return nil, err
 	}
 	return &o, nil
