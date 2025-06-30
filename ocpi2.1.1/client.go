@@ -16,7 +16,7 @@ import (
 type EndpointResolver func(endpoint string) string
 
 type Client interface {
-	CallEndpoint(ctx context.Context, mod ModuleID, endpointResolver EndpointResolver, src, dst any) error
+	CallEndpoint(ctx context.Context, mod ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
 }
 
 type Option func(*ClientConn)
@@ -50,22 +50,22 @@ func NewClient(versionUrl string, options ...Option) *ClientConn {
 
 func (c *ClientConn) CallEndpoint(
 	ctx context.Context,
-	mod ModuleID,
+	module ModuleID,
+	method string,
 	endpointResolver EndpointResolver,
 	src, dst any,
 ) error {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations)
+	endpoint, err := c.getEndpoint(ctx, module)
 	if err != nil {
 		return err
 	}
-
-	if err := c.do(ctx, http.MethodGet, endpointResolver(endpoint), src, dst); err != nil {
+	if err := c.do(ctx, method, endpointResolver(endpoint), src, dst); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientConn) getEndpoint(ctx context.Context, mod ModuleID) (string, error) {
+func (c *ClientConn) getEndpoint(ctx context.Context, module ModuleID) (string, error) {
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
@@ -73,7 +73,6 @@ func (c *ClientConn) getEndpoint(ctx context.Context, mod ModuleID) (string, err
 		if err != nil {
 			return "", err
 		}
-
 		if len(versions) == 0 {
 			return "", fmt.Errorf("ocpi211: no versions found at %s", c.versionUrl)
 		}
@@ -93,11 +92,11 @@ func (c *ClientConn) getEndpoint(ctx context.Context, mod ModuleID) (string, err
 		c.rw.RLock()
 	}
 	defer c.rw.RUnlock()
-	v, ok := c.endpointDict[string(mod)]
+	v, ok := c.endpointDict[string(module)]
 	if ok {
 		return v.URL, nil
 	}
-	return "", fmt.Errorf(`ocpi211: missing endpoint for module id %q`, mod)
+	return "", fmt.Errorf(`ocpi211: missing endpoint for module id %q`, module)
 }
 
 func (c *ClientConn) newRequest(

@@ -60,6 +60,7 @@ func (c *ClientConn) StartSession(ctx context.Context, req StartSession) (*ocpi.
 	if err != nil {
 		return nil, err
 	}
+	req.Token.LastUpdated = DateTime{Time: req.Token.LastUpdated.UTC()}
 	var res ocpi.Response[CommandResponse]
 	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeStartSession), req, &res); err != nil {
 		return nil, err
@@ -84,6 +85,7 @@ func (c *ClientConn) ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Resp
 	if err != nil {
 		return nil, err
 	}
+	req.Token.LastUpdated = DateTime{Time: req.Token.LastUpdated.UTC()}
 	var res ocpi.Response[CommandResponse]
 	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeReserveNow), req, &res); err != nil {
 		return nil, err

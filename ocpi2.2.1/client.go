@@ -26,7 +26,10 @@ type Client interface {
 	PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location Location) (*ocpi.Response[any], error)
 	PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location PatchedLocation) (*ocpi.Response[any], error)
 	GetSessions(ctx context.Context, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
-	GetSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error)
+	GetSession(ctx context.Context, sessionID string) (*ocpi.Response[Session], error)
+	GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error)
+	PutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session Session) (*ocpi.Response[any], error)
+	PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PatchedSession) (*ocpi.Response[any], error)
 	StartSession(ctx context.Context, req StartSession) (*ocpi.Response[CommandResponse], error)
 	StopSession(ctx context.Context, req StopSession) (*ocpi.Response[CommandResponse], error)
 	ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Response[CommandResponse], error)
@@ -140,7 +143,6 @@ func (c *ClientConn) newRequest(
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set(HttpHeaderXRequestID, uuid.Must(uuid.NewV7()).String())
-	// req.Header.Set(HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 
 	c.rw.RLock()
 	if c.tokenC != "" {

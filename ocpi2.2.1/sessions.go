@@ -155,11 +155,8 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (c *ClientConn) GetSessions(
-	ctx context.Context,
-	params ...GetSessionsParams,
-) (*ocpi.PaginationResponse[Session], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+func (c *ClientConn) GetSessions(ctx context.Context, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +182,6 @@ func (c *ClientConn) GetSessions(
 		}
 	}
 	u.RawQuery = query.Encode()
-
 	var o ocpi.PaginationResponse[Session]
 	if err := c.do(ctx, http.MethodGet, u.String(), nil, &o); err != nil {
 		return nil, err
@@ -193,17 +189,36 @@ func (c *ClientConn) GetSessions(
 	return &o, nil
 }
 
-func (c *ClientConn) GetSession(
-	ctx context.Context,
-	countryCode string,
-	partyID string,
-	sessionID string,
-) (*ocpi.Response[Session], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+func (c *ClientConn) GetSession(ctx context.Context, sessionID string) (*ocpi.Response[Session], error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
+	if err != nil {
+		return nil, err
+	}
+	var o ocpi.Response[Session]
+	if err := c.do(ctx, http.MethodGet, endpoint+"/"+sessionID, nil, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (c *ClientConn) SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
 
+	var o ocpi.Response[ChargingPreferencesResponse]
+	if err := c.do(ctx, http.MethodGet, endpoint+"/sessions/"+sessionID+"/charging_preferences", nil, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (c *ClientConn) GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+	if err != nil {
+		return nil, err
+	}
 	var o ocpi.Response[Session]
 	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, nil, &o); err != nil {
 		return nil, err
@@ -211,14 +226,25 @@ func (c *ClientConn) GetSession(
 	return &o, nil
 }
 
-func (c *ClientConn) SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error) {
+func (c *ClientConn) PutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session Session) (*ocpi.Response[any], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
+	var o ocpi.Response[any]
+	if err := c.do(ctx, http.MethodPut, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, session, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
 
-	var o ocpi.Response[ChargingPreferencesResponse]
-	if err := c.do(ctx, http.MethodGet, endpoint+"/sessions/"+sessionID+"/charging_preferences", nil, &o); err != nil {
+func (c *ClientConn) PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PatchedSession) (*ocpi.Response[any], error) {
+	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+	if err != nil {
+		return nil, err
+	}
+	var o ocpi.Response[any]
+	if err := c.do(ctx, http.MethodPatch, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, session, &o); err != nil {
 		return nil, err
 	}
 	return &o, nil

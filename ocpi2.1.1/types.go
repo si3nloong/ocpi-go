@@ -44,8 +44,8 @@ func (dt *DateTime) IsZero() bool {
 	return dt.Time.IsZero()
 }
 
-func (dt *DateTime) UTC() DateTime {
-	return DateTime{dt.Time.UTC()}
+func (dt *DateTime) UTC() time.Time {
+	return dt.Time.UTC()
 }
 
 func (dt *DateTime) Format(layout string) string {

@@ -60,8 +60,7 @@ func (c *ClientConn) StartSession(ctx context.Context, req StartSession) (*Comma
 	if err != nil {
 		return nil, err
 	}
-
-	req.Token.LastUpdated = req.Token.LastUpdated.UTC()
+	req.Token.LastUpdated = DateTime{Time: req.Token.LastUpdated.UTC()}
 	var res CommandResponse
 	if err := c.do(ctx, http.MethodPost, endpoint+"/"+string(CommandTypeStartSession), req, &res); err != nil {
 		return nil, err

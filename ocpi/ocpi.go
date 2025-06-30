@@ -35,7 +35,7 @@ func init() {
 		}
 		switch v {
 		case VersionNumber20, VersionNumber21, VersionNumber211,
-			VersionNumber22, VersionNumber221:
+			VersionNumber22, VersionNumber221, VersionNumber230:
 			return true
 		default:
 			return false
@@ -43,10 +43,7 @@ func init() {
 	}); err != nil {
 		panic(err)
 	}
-
 }
-
-// ModuleID defines the OCPI module identifier.
 
 type RawMessage[T any] json.RawMessage
 
