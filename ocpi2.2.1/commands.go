@@ -10,7 +10,6 @@ import (
 )
 
 func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	commandType := r.PathValue("command_type")
 
 	resp, err := s.commandsReceiver.OnPostCommand(r.Context(), CommandType(commandType))
@@ -30,7 +29,6 @@ func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	commandType := r.PathValue("command_type")
 	uid := r.PathValue("uid")
 

@@ -14,7 +14,6 @@ import (
 )
 
 func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	params := GetLocationsParams{}
 	response, err := s.locationsSender.OnGetLocations(r.Context(), params)
@@ -28,7 +27,6 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	w.Header().Set("Content-Type", "application/json")
 
 	locationID := r.PathValue("location_id")
 	evseUID := strings.TrimSpace(r.PathValue("evse_uid"))
@@ -62,7 +60,6 @@ func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetOcpiClientOwnedLocation(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	w.Header().Set("Content-Type", "application/json")
 
 	countryCode := r.PathValue("country_code")
 	partyID := r.PathValue("party_id")
@@ -97,7 +94,6 @@ func (s *Server) GetOcpiClientOwnedLocation(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -168,7 +164,6 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

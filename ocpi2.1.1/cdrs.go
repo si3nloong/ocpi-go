@@ -9,8 +9,6 @@ import (
 )
 
 func (s *Server) GetOcpiCDRs(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	params := GetCdrsParams{}
 	response, err := s.cpo.OnGetCDRs(r.Context(), params)
 	if err != nil {
@@ -22,8 +20,6 @@ func (s *Server) GetOcpiCDRs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	cdrID := r.PathValue("cdr_id")
 
 	cdr, err := s.emsp.OnGetCDR(r.Context(), cdrID)
@@ -43,8 +39,6 @@ func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)

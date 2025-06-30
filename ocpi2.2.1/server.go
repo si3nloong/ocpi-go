@@ -201,7 +201,7 @@ func (s *Server) Handler() http.Handler {
 	if s.commandsSender != nil {
 		router.HandleFunc("POST "+s.baseUrl+"/commands/{command_type}/{uid}", s.PostOcpiCommandResponse)
 	}
-	return router
+	return s.authorizeMiddleware(router)
 }
 
 func writeOkResponse(w http.ResponseWriter, r *http.Request, b []byte) {

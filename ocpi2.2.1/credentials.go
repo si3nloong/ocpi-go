@@ -9,9 +9,8 @@ import (
 )
 
 func (s *Server) GetOcpiCredentials(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
-	credential, err := s.credentials.GetCredential(r.Context(), r.Header.Get("Authorization"))
+	credential, err := s.credentials.OnGetCredential(r.Context(), r.Header.Get("Authorization"))
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -28,7 +27,6 @@ func (s *Server) GetOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -36,7 +34,7 @@ func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	credential, err := s.credentials.PostCredential(r.Context(), r.Header.Get("Authorization"), ocpi.RawMessage[Credential](body))
+	credential, err := s.credentials.OnPostCredential(r.Context(), r.Header.Get("Authorization"), ocpi.RawMessage[Credential](body))
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -53,7 +51,6 @@ func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -61,7 +58,7 @@ func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	credential, err := s.credentials.PutCredential(r.Context(), r.Header.Get("Authorization"), ocpi.RawMessage[Credential](body))
+	credential, err := s.credentials.OnPutCredential(r.Context(), r.Header.Get("Authorization"), ocpi.RawMessage[Credential](body))
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -78,15 +75,14 @@ func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) DeleteOcpiCredentials(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
-	credential, err := s.credentials.DeleteCredential(r.Context(), r.Header.Get("Authorization"))
+	err := s.credentials.OnDeleteCredential(r.Context(), r.Header.Get("Authorization"))
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse(credential))
+	b, err := json.Marshal(ocpi.NewEmptyResponse())
 	if err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return

@@ -12,28 +12,33 @@ var ErrNotImplemented = errors.New("not implemented")
 type UnimplementedServer struct{}
 
 // GetCredential implements Credentials.
-func (UnimplementedServer) GetCredential(ctx context.Context, tokenA string) (*Credential, error) {
+func (UnimplementedServer) OnGetCredential(ctx context.Context, tokenA string) (*Credential, error) {
 	return nil, ErrNotImplemented
 }
 
 // PostCredential implements Credentials.
-func (UnimplementedServer) PostCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error) {
+func (UnimplementedServer) OnPostCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error) {
 	return nil, ErrNotImplemented
 }
 
 // PutCredential implements Credentials.
-func (UnimplementedServer) PutCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error) {
+func (UnimplementedServer) OnPutCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error) {
 	return nil, ErrNotImplemented
 }
 
 // DeleteCredential implements Credentials.
-func (UnimplementedServer) DeleteCredential(ctx context.Context, tokenA string) (*Credential, error) {
-	return nil, ErrNotImplemented
+func (UnimplementedServer) OnDeleteCredential(ctx context.Context, tokenA string) error {
+	return ErrNotImplemented
 }
 
 // VerifyToken implements Credentials.
-func (UnimplementedServer) VerifyToken(token string) bool {
+func (UnimplementedServer) VerifyToken(ctx context.Context, token string) bool {
 	return true
+}
+
+// VerifyToken implements Credentials.
+func (UnimplementedServer) StoreVersionDetails(ctx context.Context, token VersionDetails) error {
+	return nil
 }
 
 func (UnimplementedServer) GetLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*Location, error) {

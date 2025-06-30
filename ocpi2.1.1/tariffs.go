@@ -13,7 +13,6 @@ import (
 )
 
 func (s *Server) GetOcpiTariffs(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	params := GetTariffsParams{}
 	response, err := s.cpo.OnGetTariffs(r.Context(), params)
@@ -26,7 +25,6 @@ func (s *Server) GetOcpiTariffs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetOcpiTariff(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	countryCode := r.PathValue("country_code")
 	partyID := r.PathValue("party_id")
@@ -49,7 +47,6 @@ func (s *Server) GetOcpiTariff(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PutOcpiTariff(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -83,7 +80,6 @@ func (s *Server) PutOcpiTariff(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PatchOcpiTariff(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -117,7 +113,6 @@ func (s *Server) PatchOcpiTariff(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) DeleteOcpiTariff(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	countryCode := r.PathValue("country_code")
 	partyID := r.PathValue("party_id")

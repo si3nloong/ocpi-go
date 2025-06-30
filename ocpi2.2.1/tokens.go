@@ -9,8 +9,6 @@ import (
 )
 
 func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	params := GetTokensParams{}
 	response, err := s.tokensSender.OnGetTokens(r.Context(), params)
 	if err != nil {
@@ -22,7 +20,6 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	tokenUID := r.PathValue("token_uid")
 
 	var body json.RawMessage
@@ -66,8 +63,6 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	countryCode := r.PathValue("country_code")
 	partyID := r.PathValue("party_id")
 	tokenUID := r.PathValue("token_uid")
@@ -109,8 +104,6 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	countryCode := r.PathValue("country_code")
 	partyID := r.PathValue("party_id")
 	tokenUID := r.PathValue("token_uid")
@@ -158,8 +151,6 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	countryCode := r.PathValue("country_code")
 	partyID := r.PathValue("party_id")
 	tokenUID := r.PathValue("token_uid")

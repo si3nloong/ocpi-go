@@ -13,7 +13,6 @@ import (
 )
 
 func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	params := GetSessionsParams{}
 	response, err := s.sessionsSender.OnGetSessions(r.Context(), params)
@@ -26,7 +25,6 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PutOcpiSesionChargingPreferences(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	sessionID := r.PathValue("session_id")
 
@@ -58,7 +56,6 @@ func (s *Server) PutOcpiSesionChargingPreferences(w http.ResponseWriter, r *http
 }
 
 func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	countryCode := r.PathValue("country_code")
 	partyID := r.PathValue("party_id")
@@ -86,7 +83,6 @@ func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -121,7 +117,6 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

@@ -16,8 +16,6 @@ const (
 )
 
 func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	path := strings.TrimSuffix(r.RequestURI, "/details")
 	origin := httputil.GetHostname(r) + s.baseUrl + path
 	endpoints := []Endpoint{

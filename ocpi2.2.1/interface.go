@@ -78,11 +78,17 @@ type SCSP interface {
 }
 
 type Credentials interface {
-	VerifyToken(token string) bool
-	GetCredential(ctx context.Context, tokenA string) (*Credential, error)
-	PostCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error)
-	PutCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error)
-	DeleteCredential(ctx context.Context, tokenA string) (*Credential, error)
+	VerifyToken(ctx context.Context, token string) bool
+	StoreVersionDetails(ctx context.Context, endpoints VersionDetails) error
+
+	// (GET /ocpi/2.2.1/credentials)
+	OnGetCredential(ctx context.Context, token string) (*Credential, error)
+	// (POST /ocpi/2.2.1/credentials)
+	OnPostCredential(ctx context.Context, token string, body ocpi.RawMessage[Credential]) (*Credential, error)
+	// (PUT /ocpi/2.2.1/credentials)
+	OnPutCredential(ctx context.Context, token string, body ocpi.RawMessage[Credential]) (*Credential, error)
+	// (DELETE /ocpi/2.2.1/credentials)
+	OnDeleteCredential(ctx context.Context, token string) error
 }
 
 type CDRsSender interface {
