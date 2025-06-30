@@ -72,7 +72,7 @@ func (UnimplementedServer) PatchLocationConnector(ctx context.Context, countryCo
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) GetTariff(ctx context.Context, countryCode string, partyID string, sessionID string) (*Tariff, error) {
+func (UnimplementedServer) GetTariff(ctx context.Context, countryCode string, partyID string, tariffID string) (*Tariff, error) {
 	return nil, ErrNotImplemented
 }
 

@@ -169,7 +169,7 @@ func (s *Server) Handler() http.Handler {
 	}
 
 	if s.cdrsSender != nil {
-		router.HandleFunc(s.baseUrl+"/tariffs", s.GetOcpiCDRs)
+		router.HandleFunc(s.baseUrl+"/cdrs", s.GetOcpiCDRs)
 	}
 	if s.cdrsReceiver != nil {
 		router.HandleFunc(s.baseUrl+"/cdrs/{cdr_id}", s.GetOcpiCDR)
