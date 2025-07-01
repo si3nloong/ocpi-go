@@ -57,6 +57,6 @@ func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Location", resp.Location.String())
+	w.Header().Set("Location", resp.Location)
 	w.Write(b)
 }
