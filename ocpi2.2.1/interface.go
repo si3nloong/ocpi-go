@@ -103,14 +103,18 @@ type CDRsReceiver interface {
 }
 
 type ChargingProfilesSender interface {
+	// (POST /ocpi/2.2.1/activechargingprofile)
+	OnPostActiveChargingProfile(ctx context.Context, body ocpi.RawMessage[any]) error
+	// (PUT /ocpi/2.2.1/chargingprofiles/{session_id})
+	OnPutActiveChargingProfile(ctx context.Context, sessionID string, body ocpi.RawMessage[ActiveChargingProfile]) error
 }
 type ChargingProfilesReceiver interface {
-	// (GET /ocpi/2.2.1/chargingprofiles/{session_id})
-	OnGetChargingProfile(ctx context.Context, sessionID string) (*ChargingProfile, error)
+	// (GET /ocpi/2.2.1/chargingprofiles/{session_id}?duration={duration}&response_url={url})
+	OnGetChargingProfile(ctx context.Context, sessionID string, duration int, responseURL string) (*ChargingProfileResponse, error)
 	// (PUT /ocpi/2.2.1/chargingprofiles/{session_id})
-	OnPutChargingProfile(ctx context.Context, sessionID string) (*ChargingProfileResponse, error)
-	// (DELETE /ocpi/2.2.1/chargingprofiles/{session_id})
-	OnDeleteChargingProfile(ctx context.Context, sessionID string) (*ChargingProfileResponse, error)
+	OnPutChargingProfile(ctx context.Context, sessionID string, body ocpi.RawMessage[SetChargingProfile]) (*ChargingProfileResponse, error)
+	// (DELETE /ocpi/2.2.1/chargingprofiles/{session_id}?response_url={url})
+	OnDeleteChargingProfile(ctx context.Context, sessionID string, responseURL string) (*ChargingProfileResponse, error)
 }
 
 type CommandsSender interface {
@@ -157,11 +161,11 @@ type LocationsReceiver interface {
 	// (PUT /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
 	OnPutClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[Location]) error
 	// (PATCH /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id})
-	OnPatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PartialLocation]) error
 	// (PATCH /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid})
-	OnPatchClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PartialLocation]) error
 	// (PATCH /ocpi/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
-	OnPatchClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PartialLocation]) error
 }
 
 type SessionsSender interface {
@@ -177,7 +181,7 @@ type SessionsReceiver interface {
 	// (PUT /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
 	OnPutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[Session]) error
 	// (PATCH /ocpi/2.2.1/sessions/{country_code}/{party_id}/{session_id})
-	OnPatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PatchedSession]) error
+	OnPatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PartialSession]) error
 }
 
 type TariffsSender interface {
@@ -207,7 +211,7 @@ type TokensReceiver interface {
 	// (PUT /ocpi/2.2.1/tokens/{country_code}/{party_id}/{token_uid}[?type={type}])
 	OnPutClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[Token], tokenType ...TokenType) error
 	// (PATCH /ocpi/2.2.1/tokens/{country_code}/{party_id}/{token_uid}[?type={type}])
-	OnPatchClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PatchedToken], tokenType ...TokenType) error
+	OnPatchClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PartialToken], tokenType ...TokenType) error
 }
 
 type Versions interface {

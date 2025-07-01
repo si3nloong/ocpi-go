@@ -65,15 +65,15 @@ func (UnimplementedServer) PutLocationConnector(ctx context.Context, countryCode
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PatchLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PatchedLocation]) error {
+func (UnimplementedServer) PatchLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PartialLocation]) error {
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PatchLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PatchedLocation]) error {
+func (UnimplementedServer) PatchLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PartialLocation]) error {
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PatchLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PatchedLocation]) error {
+func (UnimplementedServer) PatchLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PartialLocation]) error {
 	return ErrNotImplemented
 }
 
@@ -97,7 +97,7 @@ func (UnimplementedServer) PutSession(ctx context.Context, countryCode string, p
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PatchSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PatchedSession]) error {
+func (UnimplementedServer) PatchSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PartialSession]) error {
 	return ErrNotImplemented
 }
 
@@ -109,7 +109,7 @@ func (UnimplementedServer) PutToken(ctx context.Context, countryCode string, par
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) PatchToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PatchedToken]) error {
+func (UnimplementedServer) PatchToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PartialToken]) error {
 	return ErrNotImplemented
 }
 

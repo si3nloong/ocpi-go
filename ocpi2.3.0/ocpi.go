@@ -172,7 +172,7 @@ type Location struct {
 	HelpPhone          *string                 `json:"help_phone,omitempty"`
 }
 
-type PatchedLocation struct {
+type PartialLocation struct {
 }
 
 // PublishTokenType defines model for locations_data_publish_allowed_to.

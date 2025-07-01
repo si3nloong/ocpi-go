@@ -134,7 +134,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 		countryCode,
 		partyID,
 		sessionID,
-		ocpi.RawMessage[PatchedSession](body),
+		ocpi.RawMessage[PartialSession](body),
 	); err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return
@@ -233,7 +233,7 @@ func (c *ClientConn) PutClientOwnedSession(ctx context.Context, countryCode stri
 	return &o, nil
 }
 
-func (c *ClientConn) PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PatchedSession) (*ocpi.Response[any], error) {
+func (c *ClientConn) PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PartialSession) (*ocpi.Response[any], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err

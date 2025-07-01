@@ -180,7 +180,7 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 		countryCode,
 		partyID,
 		tokenUID,
-		ocpi.RawMessage[PatchedToken](body),
+		ocpi.RawMessage[PartialToken](body),
 		tokenType,
 	); err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)

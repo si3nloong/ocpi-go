@@ -20,7 +20,7 @@ type CPO interface {
 	// (PUT /ocpi/2.1.1/tokens/{country_code}/{party_id}/{token_uid})
 	OnPutClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[Token], tokenType ...TokenType) error
 	// (PATCH /ocpi/2.1.1/tokens/{country_code}/{party_id}/{token_uid})
-	OnPatchClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PatchedToken], tokenType ...TokenType) error
+	OnPatchClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PartialToken], tokenType ...TokenType) error
 	// (POST /ocpi/2.1.1/commands/{command})
 	OnPostCommand(ctx context.Context, commandType CommandType) (*CommandResponse, error)
 }
@@ -39,18 +39,18 @@ type EMSP interface {
 	// (PUT /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
 	OnPutClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[Location]) error
 	// (PATCH /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id})
-	OnPatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PartialLocation]) error
 	// (PATCH /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid})
-	OnPatchClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PartialLocation]) error
 	// (PATCH /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
-	OnPatchClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PartialLocation]) error
 
 	// (GET /ocpi/2.1.1/sessions/{country_code}/{party_id}/{session_id})
 	OnGetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*Session, error)
 	// (PUT /ocpi/2.1.1/sessions/{country_code}/{party_id}/{session_id})
 	OnPutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[Session]) error
 	// (PATCH /ocpi/2.1.1/sessions/{country_code}/{party_id}/{session_id})
-	OnPatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PatchedSession]) error
+	OnPatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PartialSession]) error
 
 	// (GET /ocpi/2.1.1/cdrs/{cdr_id})
 	OnGetCDR(ctx context.Context, cdrID string) (*ChargeDetailRecord, error)

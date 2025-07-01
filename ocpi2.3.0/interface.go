@@ -139,11 +139,11 @@ type LocationsReceiver interface {
 	// (PUT /ocpi/2.3.0/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
 	OnPutClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[Location]) error
 	// (PATCH /ocpi/2.3.0/locations/{country_code}/{party_id}/{location_id})
-	OnPatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PartialLocation]) error
 	// (PATCH /ocpi/2.3.0/locations/{country_code}/{party_id}/{location_id}/{evse_uid})
-	OnPatchClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PartialLocation]) error
 	// (PATCH /ocpi/2.3.0/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
-	OnPatchClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PatchedLocation]) error
+	OnPatchClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PartialLocation]) error
 }
 
 type SessionsSender interface {

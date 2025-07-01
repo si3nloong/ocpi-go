@@ -145,7 +145,7 @@ func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 		countryCode,
 		partyID,
 		sessionID,
-		ocpi.RawMessage[PatchedSession](body),
+		ocpi.RawMessage[PartialSession](body),
 	); err != nil {
 		httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 		return

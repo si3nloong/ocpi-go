@@ -186,7 +186,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			locationID,
 			evseUID,
 			connectorID,
-			ocpi.RawMessage[PatchedLocation](body),
+			ocpi.RawMessage[PartialLocation](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -198,7 +198,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			partyID,
 			locationID,
 			evseUID,
-			ocpi.RawMessage[PatchedLocation](body),
+			ocpi.RawMessage[PartialLocation](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -209,7 +209,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			countryCode,
 			partyID,
 			locationID,
-			ocpi.RawMessage[PatchedLocation](body),
+			ocpi.RawMessage[PartialLocation](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return

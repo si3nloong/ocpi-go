@@ -2,7 +2,6 @@ package ocpi221
 
 import (
 	"encoding/json"
-	"net/url"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -488,8 +487,8 @@ type ActiveChargingProfileResult struct {
 
 // ActiveChargingProfile defines model for activeChargingProfile.
 type ActiveChargingProfile struct {
-	ChargingProfile ChargingProfile `json:"charging_profile"`
-	StartDateTime   string          `json:"start_date_time"`
+	StartDateTime   DateTime        `json:"start_date_time" validate:"required"`
+	ChargingProfile ChargingProfile `json:"charging_profile" validate:"required"`
 }
 
 // Authorization Changed name of the object from official docs due to colliding naming of info property
@@ -905,7 +904,7 @@ const (
 	VehicleTypeDisabled                   VehicleType = "DISABLED"
 )
 
-type PatchedLocation struct {
+type PartialLocation struct {
 	CountryCode        *string                 `json:"country_code,omitempty"`
 	PartyID            *string                 `json:"party_id,omitempty"`
 	ID                 *string                 `json:"id,omitempty"`
@@ -1012,7 +1011,7 @@ type Session struct {
 	LastUpdated            DateTime         `json:"last_updated" validate:"required"`
 }
 
-type PatchedSession struct {
+type PartialSession struct {
 	LastUpdated            DateTime        `json:"last_updated" validate:"required"`
 	AuthMethod             *AuthMethod     `json:"auth_method,omitempty"`
 	AuthorizationReference *string         `json:"authorization_reference,omitempty"`
@@ -1150,7 +1149,7 @@ type Terminal struct {
 	State             *string         `json:"state,omitempty"`
 	Country           *string         `json:"country,omitempty"`
 	Coordinates       *GeoLocation    `json:"coordinates,omitempty"`
-	InvoiceBaseUrl    *url.URL        `json:"invoice_base_url,omitempty"`
+	InvoiceBaseUrl    *string         `json:"invoice_base_url,omitempty"`
 	InvoiceCreator    *InvoiceCreator `json:"invoice_creator,omitempty"`
 	Reference         *string         `json:"reference,omitempty"`
 	LocationIDs       []string        `json:"location_ids,omitempty"`
@@ -1195,7 +1194,7 @@ type Token struct {
 	Whitelist          WhitelistType        `json:"whitelist"`
 }
 
-type PatchedToken struct {
+type PartialToken struct {
 	ContractID         string               `json:"contract_id"`
 	CountryCode        string               `json:"country_code"`
 	DefaultProfileType *ProfileType         `json:"default_profile_type,omitempty"`
@@ -1333,5 +1332,5 @@ type GetTokensParams struct {
 }
 
 type ChargeDetailRecordResponse struct {
-	Location url.URL
+	Location string
 }

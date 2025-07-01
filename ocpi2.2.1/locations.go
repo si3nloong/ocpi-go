@@ -186,7 +186,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			locationID,
 			evseUID,
 			connectorID,
-			ocpi.RawMessage[PatchedLocation](body),
+			ocpi.RawMessage[PartialLocation](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -198,7 +198,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			partyID,
 			locationID,
 			evseUID,
-			ocpi.RawMessage[PatchedLocation](body),
+			ocpi.RawMessage[PartialLocation](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -209,7 +209,7 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 			countryCode,
 			partyID,
 			locationID,
-			ocpi.RawMessage[PatchedLocation](body),
+			ocpi.RawMessage[PartialLocation](body),
 		); err != nil {
 			httputil.ResponseError(w, err, ocpi.StatusCodeServerError)
 			return
@@ -303,7 +303,7 @@ func (c *ClientConn) PutClientOwnedLocation(ctx context.Context, countryCode str
 	return &o, nil
 }
 
-func (c *ClientConn) PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location PatchedLocation) (*ocpi.Response[any], error) {
+func (c *ClientConn) PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location PartialLocation) (*ocpi.Response[any], error) {
 	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err

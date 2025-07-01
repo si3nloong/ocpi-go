@@ -2,7 +2,6 @@ package ocpi211
 
 import (
 	"encoding/json"
-	"net/url"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -336,7 +335,7 @@ type ExceptionalPeriod struct {
 	PeriodEnd   DateTime `json:"period_end"`
 }
 
-type PatchedLocation struct {
+type PartialLocation struct {
 	ID                 *string                 `json:"id" validate:"omitempty,required"`
 	Type               *LocationType           `json:"type" validate:"omitempty,required"`
 	Name               *string                 `json:"name" validate:"omitempty,required"`
@@ -444,14 +443,14 @@ type Session struct {
 	LastUpdated     DateTime         `json:"last_updated" validate:"required"`
 }
 
-type PatchedSession struct {
+type PartialSession struct {
 	ID              *string          `json:"id" validate:"omitempty,required"`
 	StartDateTime   *DateTime        `json:"start_datetime" validate:"omitempty,required"`
 	EndDateTime     *DateTime        `json:"end_datetime" validate:"omitempty,required"`
 	Kwh             *json.Number     `json:"kwh" validate:"omitempty,required"`
 	AuthID          *string          `json:"auth_id" validate:"omitempty,required"`
 	AuthMethod      *AuthMethod      `json:"auth_method" validate:"omitempty,required"`
-	Location        *PatchedLocation `json:"location" validate:"omitempty,required"`
+	Location        *PartialLocation `json:"location" validate:"omitempty,required"`
 	MeterID         *string          `json:"meter_id,omitempty"`
 	Currency        *string          `json:"currency" validate:"omitempty,required,len=3"`
 	ChargingPeriods []ChargingPeriod `json:"charging_periods,omitempty"`
@@ -650,10 +649,10 @@ type LocationReferences struct {
 }
 
 type ChargeDetailRecordResponse struct {
-	Location url.URL
+	Location string
 }
 
-type PatchedToken struct {
+type PartialToken struct {
 	UID          *string        `json:"uid,omitempty" validate:"omitempty,required"`
 	Type         *TokenType     `json:"type,omitempty"`
 	AuthID       *string        `json:"auth_id,omitempty" validate:"omitempty,required"`
