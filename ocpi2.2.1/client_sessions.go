@@ -11,7 +11,7 @@ import (
 )
 
 func (c *ClientConn) GetSessions(ctx context.Context, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *ClientConn) GetSessions(ctx context.Context, params ...GetSessionsParam
 }
 
 func (c *ClientConn) GetSession(ctx context.Context, sessionID string) (*ocpi.Response[Session], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *ClientConn) GetSession(ctx context.Context, sessionID string) (*ocpi.Re
 }
 
 func (c *ClientConn) SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (c *ClientConn) SetSessionChargingPreferences(ctx context.Context, sessionI
 }
 
 func (c *ClientConn) GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (c *ClientConn) GetClientOwnedSession(ctx context.Context, countryCode stri
 }
 
 func (c *ClientConn) PutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session Session) (*ocpi.Response[any], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (c *ClientConn) PutClientOwnedSession(ctx context.Context, countryCode stri
 }
 
 func (c *ClientConn) PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PartialSession) (*ocpi.Response[any], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}

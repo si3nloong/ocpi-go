@@ -16,8 +16,8 @@ func (UnimplementedServer) IsClientRegistered(ctx context.Context, token string)
 }
 
 // VerifyCredentialsToken implements Credentials.
-func (UnimplementedServer) VerifyCredentialsToken(ctx context.Context, token string) bool {
-	return true
+func (UnimplementedServer) VerifyCredentialsToken(ctx context.Context, token string) error {
+	return nil
 }
 
 // VerifyCredentialsToken implements Credentials.

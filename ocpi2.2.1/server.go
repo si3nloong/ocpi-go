@@ -1,6 +1,7 @@
 package ocpi221
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"log/slog"
@@ -10,6 +11,14 @@ import (
 )
 
 type TokenResolver func(token string) (string, error)
+
+type OCPIServer interface {
+	IsClientRegistered(ctx context.Context, tokenA string) bool
+	VerifyCredentialsToken(ctx context.Context, token string) error
+	StoreVersionDetails(ctx context.Context, endpoints VersionDetails) error
+	Credentials
+	// Versions
+}
 
 type ServerConfig struct {
 	OmitRole      bool
@@ -28,13 +37,13 @@ type serverOptions struct {
 type Server struct {
 	serverOptions
 	errs                     chan error
+	ocpi                     OCPIServer
 	tokenResolver            TokenResolver
 	roles                    map[Role]struct{}
 	cdrsSender               CDRsSender
 	cdrsReceiver             CDRsReceiver
 	chargingProfilesSender   ChargingProfilesSender
 	chargingProfilesReceiver ChargingProfilesReceiver
-	credentials              Credentials
 	commandsSender           CommandsSender
 	commandsReceiver         CommandsReceiver
 	hubClientInfoSender      HubClientInfoSender
@@ -47,10 +56,9 @@ type Server struct {
 	tariffsReceiver          TariffsReceiver
 	tokensSender             TokensSender
 	tokensReceiver           TokensReceiver
-	versions                 Versions
 }
 
-func NewServer(credential Credentials, cfg ...ServerConfig) *Server {
+func NewServer(ocpi OCPIServer, cfg ...ServerConfig) *Server {
 	s := new(Server)
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
@@ -68,7 +76,7 @@ func NewServer(credential Credentials, cfg ...ServerConfig) *Server {
 	}
 
 	s.roles = make(map[Role]struct{})
-	s.credentials = credential
+	s.ocpi = ocpi
 	s.errs = make(chan error, 1)
 	return s
 }
@@ -78,26 +86,22 @@ func (s *Server) SetCPO(cpo CPO) {
 	s.cdrsSender = cpo
 	s.chargingProfilesReceiver = cpo
 	s.commandsReceiver = cpo
-	s.credentials = cpo
 	s.hubClientInfoReceiver = cpo
 	s.locationsSender = cpo
 	s.sessionsSender = cpo
 	s.tariffsSender = cpo
 	s.tokensReceiver = cpo
-	s.versions = cpo
 }
 
 func (s *Server) SetEMSP(emsp EMSP) {
 	s.roles[RoleEMSP] = struct{}{}
 	s.cdrsReceiver = emsp
 	s.commandsSender = emsp
-	s.credentials = emsp
 	s.hubClientInfoReceiver = emsp
 	s.locationsReceiver = emsp
 	s.sessionsReceiver = emsp
 	s.tariffsReceiver = emsp
 	s.tokensSender = emsp
-	// s.versions = emsp
 }
 
 func (s *Server) SetHub(hub Hub) {
@@ -108,7 +112,6 @@ func (s *Server) SetHub(hub Hub) {
 	s.chargingProfilesReceiver = hub
 	s.commandsSender = hub
 	s.commandsReceiver = hub
-	s.credentials = hub
 	s.hubClientInfoSender = hub
 	s.locationsSender = hub
 	s.locationsReceiver = hub
@@ -118,36 +121,29 @@ func (s *Server) SetHub(hub Hub) {
 	s.tariffsReceiver = hub
 	s.tokensSender = hub
 	s.tokensReceiver = hub
-	s.versions = hub
 }
 
 func (s *Server) SetNSP(nsp NSP) {
 	s.roles[RoleNSP] = struct{}{}
-	s.credentials = nsp
 	s.hubClientInfoReceiver = nsp
 	s.locationsReceiver = nsp
 	s.tariffsReceiver = nsp
-	s.versions = nsp
 }
 
 func (s *Server) SetNAP(nap NAP) {
 	s.roles[RoleNAP] = struct{}{}
-	s.credentials = nap
 	s.hubClientInfoReceiver = nap
 	s.locationsSender = nap
 	s.locationsReceiver = nap
 	s.tariffsSender = nap
 	s.tariffsReceiver = nap
-	s.versions = nap
 }
 
 func (s *Server) SetSCSP(scsp SCSP) {
 	s.roles[RoleSCSP] = struct{}{}
 	s.chargingProfilesSender = scsp
-	s.credentials = scsp
 	s.hubClientInfoReceiver = scsp
 	s.sessionsReceiver = scsp
-	s.versions = scsp
 }
 
 func (s *Server) Handler() http.Handler {

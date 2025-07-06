@@ -8,7 +8,7 @@ import (
 )
 
 func (c *ClientConn) StartSession(ctx context.Context, req StartSession) (*ocpi.Response[CommandResponse], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (c *ClientConn) StartSession(ctx context.Context, req StartSession) (*ocpi.
 }
 
 func (c *ClientConn) StopSession(ctx context.Context, req StopSession) (*ocpi.Response[CommandResponse], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (c *ClientConn) StopSession(ctx context.Context, req StopSession) (*ocpi.Re
 }
 
 func (c *ClientConn) ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Response[CommandResponse], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (c *ClientConn) ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Resp
 }
 
 func (c *ClientConn) CancelReservation(ctx context.Context, req CancelReservation) (*ocpi.Response[CommandResponse], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (c *ClientConn) CancelReservation(ctx context.Context, req CancelReservatio
 }
 
 func (c *ClientConn) UnlockConnector(ctx context.Context, req UnlockConnector) (*ocpi.Response[CommandResponse], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDCommands, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}

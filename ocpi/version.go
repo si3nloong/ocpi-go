@@ -1,7 +1,21 @@
 package ocpi
 
+import "golang.org/x/mod/semver"
+
 // VersionsData defines model for versions_data.
 type Version struct {
 	URL     string        `json:"url"`
 	Version VersionNumber `json:"version"`
+}
+
+type Versions []Version
+
+func (vs Versions) Len() int      { return len(vs) }
+func (vs Versions) Swap(i, j int) { vs[i], vs[j] = vs[j], vs[i] }
+func (vs Versions) Less(i, j int) bool {
+	cmp := semver.Compare(string(vs[i].Version), string(vs[j].Version))
+	if cmp != 0 {
+		return cmp < 0
+	}
+	return vs[i].Version < vs[j].Version
 }

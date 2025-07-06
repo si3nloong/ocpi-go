@@ -11,25 +11,21 @@ type CPO interface {
 	CDRsSender
 	ChargingProfilesReceiver
 	CommandsReceiver
-	Credentials
 	HubClientInfoReceiver
 	LocationsSender
 	SessionsSender
 	TariffsSender
 	TokensReceiver
-	Versions
 }
 
 type EMSP interface {
 	CDRsReceiver
 	CommandsSender
-	Credentials
 	HubClientInfoReceiver
 	LocationsReceiver
 	SessionsReceiver
 	TariffsReceiver
 	TokensSender
-	// Versions
 }
 
 type Hub interface {
@@ -39,7 +35,6 @@ type Hub interface {
 	ChargingProfilesReceiver
 	CommandsSender
 	CommandsReceiver
-	Credentials
 	HubClientInfoSender
 	LocationsSender
 	LocationsReceiver
@@ -49,48 +44,37 @@ type Hub interface {
 	TariffsReceiver
 	TokensSender
 	TokensReceiver
-	Versions
 }
 
 type NSP interface {
-	Credentials
 	HubClientInfoReceiver
 	LocationsReceiver
 	TariffsReceiver
-	Versions
 }
 
 type NAP interface {
-	Credentials
 	HubClientInfoReceiver
 	LocationsSender
 	LocationsReceiver
 	TariffsSender
 	TariffsReceiver
-	Versions
 }
 
 type SCSP interface {
 	ChargingProfilesSender
-	Credentials
 	HubClientInfoReceiver
 	SessionsReceiver
-	Versions
 }
 
 type Credentials interface {
-	IsClientRegistered(ctx context.Context, token string) bool
-	VerifyCredentialsToken(ctx context.Context, token string) bool
-	StoreVersionDetails(ctx context.Context, endpoints VersionDetails) error
-
 	// (GET /ocpi/2.2.1/credentials)
-	OnGetCredential(ctx context.Context, token string) (*Credential, error)
+	OnGetCredential(ctx context.Context, tokenC string) (*Credential, error)
 	// (POST /ocpi/2.2.1/credentials)
-	OnPostCredential(ctx context.Context, token string, body ocpi.RawMessage[Credential]) (*Credential, error)
+	OnPostCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error)
 	// (PUT /ocpi/2.2.1/credentials)
-	OnPutCredential(ctx context.Context, token string, body ocpi.RawMessage[Credential]) (*Credential, error)
+	OnPutCredential(ctx context.Context, tokenC string, body ocpi.RawMessage[Credential]) (*Credential, error)
 	// (DELETE /ocpi/2.2.1/credentials)
-	OnDeleteCredential(ctx context.Context, token string) error
+	OnDeleteCredential(ctx context.Context, tokenC string) error
 }
 
 type CDRsSender interface {

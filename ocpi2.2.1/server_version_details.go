@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
-	if recv, ok := s.credentials.(VersionsReceiver); ok {
+	if recv, ok := s.ocpi.(VersionsReceiver); ok {
 		ctx := r.Context()
 		endpoints, err := recv.OnVersionDetails(ctx, GetRequestContext(ctx).Token())
 		if err != nil {

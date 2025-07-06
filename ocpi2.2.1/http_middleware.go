@@ -29,7 +29,7 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		if !s.credentials.VerifyCredentialsToken(r.Context(), token) {
+		if err := s.ocpi.VerifyCredentialsToken(r.Context(), token); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

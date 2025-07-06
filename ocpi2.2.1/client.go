@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"sync"
 	"unsafe"
 
 	"github.com/gofrs/uuid/v5"
@@ -17,6 +16,11 @@ import (
 )
 
 type EndpointResolver func(endpoint string) string
+
+type OCPIClient interface {
+	GetCredentialsTokenC(ctx context.Context, versionUrl string) (string, error)
+	GetEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error)
+}
 
 type Client interface {
 	CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, method string, endpointResolver EndpointResolver, src, dst any) error
@@ -38,101 +42,35 @@ type Client interface {
 	SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error)
 }
 
-type Option func(*ClientConn)
-
 type ClientConn struct {
-	rw           sync.RWMutex
-	tokenA       string
-	tokenC       string
-	versionUrl   string
-	httpClient   *http.Client
-	endpointDict map[string]Endpoint
+	ocpi       OCPIClient
+	versionUrl string
+	httpClient *http.Client
 }
 
 var _ Client = (*ClientConn)(nil)
 
-func WithTokenC(tokenC string) Option {
-	return func(c *ClientConn) {
-		c.tokenC = tokenC
-	}
-}
-
-func NewClient(versionUrl string, options ...Option) *ClientConn {
+func NewClient(versionUrl string, ocpi OCPIClient) *ClientConn {
 	c := new(ClientConn)
 	c.versionUrl = versionUrl
+	c.ocpi = ocpi
 	c.httpClient = &http.Client{}
-	for _, opt := range options {
-		opt(c)
-	}
 	return c
 }
 
-func (c *ClientConn) CallEndpoint(
-	ctx context.Context,
-	mod ModuleID,
-	role InterfaceRole,
-	method string,
-	endpointResolver EndpointResolver,
-	src, dst any,
-) error {
-	endpoint, err := c.getEndpoint(ctx, mod, role)
+func (c *ClientConn) CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, method string, resolver EndpointResolver, src, dst any) error {
+	endpoint, err := c.ocpi.GetEndpoint(ctx, mod, role)
 	if err != nil {
 		return err
 	}
 
-	if err := c.do(ctx, method, endpointResolver(endpoint), src, dst); err != nil {
+	if err := c.do(ctx, method, resolver(endpoint), src, dst); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientConn) getEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error) {
-	c.rw.RLock()
-	if c.endpointDict == nil {
-		c.rw.RUnlock()
-		versionResponse, err := c.GetVersions(ctx)
-		if err != nil {
-			return "", err
-		}
-		versions, err := versionResponse.Data()
-		if err != nil {
-			return "", err
-		}
-		if len(versions) == 0 {
-			return "", fmt.Errorf("ocpi221: no versions found at %s", c.versionUrl)
-		}
-
-		version := versions[0]
-		var o ocpi.Response[VersionDetails]
-		if err := c.do(ctx, http.MethodGet, version.URL, nil, &o); err != nil {
-			return "", err
-		}
-		versionDetails, err := o.Data()
-		if err != nil {
-			return "", err
-		}
-
-		c.rw.Lock()
-		c.endpointDict = make(map[string]Endpoint)
-		for _, v := range versionDetails.Endpoints {
-			c.endpointDict[string(v.Identifier)+":"+string(v.Role)] = v
-		}
-		c.rw.Unlock()
-		c.rw.RLock()
-	}
-	defer c.rw.RUnlock()
-	v, ok := c.endpointDict[string(mod)+":"+string(role)]
-	if ok {
-		return v.URL, nil
-	}
-	return "", fmt.Errorf(`ocpi221: missing endpoint for module id %q (%s)`, mod, role)
-}
-
-func (c *ClientConn) newRequest(
-	ctx context.Context,
-	method, endpoint string,
-	src any,
-) (*http.Request, error) {
+func (c *ClientConn) newRequest(ctx context.Context, method, endpoint string, src any) (*http.Request, error) {
 	var body io.Reader
 	if src != nil {
 		b, err := json.Marshal(src)
@@ -165,21 +103,15 @@ func (c *ClientConn) newRequest(
 		req.Header.Set(ocpi.HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 	}
 
-	c.rw.RLock()
-	if c.tokenC != "" {
-		req.Header.Set("Authorization", "Token "+c.tokenC)
-	} else {
-		req.Header.Set("Authorization", "Token "+c.tokenA)
+	token, err := c.ocpi.GetCredentialsTokenC(ctx, c.versionUrl)
+	if err != nil {
+		return nil, err
 	}
-	c.rw.RUnlock()
+	req.Header.Set("Authorization", "Token "+token)
 	return req, nil
 }
 
-func (c *ClientConn) do(
-	ctx context.Context,
-	method, endpoint string,
-	src, dst any,
-) error {
+func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst any) error {
 	req, err := c.newRequest(ctx, method, endpoint, src)
 	if err != nil {
 		return err
