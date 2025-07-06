@@ -1,7 +1,6 @@
 package ocpi221
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
@@ -15,7 +14,6 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 
 		requestID := strings.TrimSpace(r.Header.Get(ocpi.HttpHeaderXRequestID))
 		correlationID := strings.TrimSpace(r.Header.Get(ocpi.HttpHeaderXCorrelationID))
-		log.Println("debug header ->", requestID, correlationID, r.RequestURI)
 		defer func() {
 			w.Header().Set(ocpi.HttpHeaderXRequestID, requestID)
 			w.Header().Set(ocpi.HttpHeaderXCorrelationID, correlationID)
