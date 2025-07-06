@@ -17,17 +17,23 @@ func _() {
 	_ = x[StatusCodeServerErrorUnableToUseClientAPI-3001]
 	_ = x[StatusCodeServerErrorUnsupportedVersion-3002]
 	_ = x[StatusCodeServerErrorNoMatchingEndpoints-3003]
+	_ = x[StatusCodeHubErrorGeneric-4000]
+	_ = x[StatusCodeHubErrorUnknownReceiver-4001]
+	_ = x[StatusCodeHubErrorTimeout-4002]
+	_ = x[StatusCodeHubErrorConnectionProblem-4003]
 }
 
 const (
 	_StatusCode_name_0 = "Success"
 	_StatusCode_name_1 = "Client ErrorInvalid or missing parametersNot enough information, for example: Authorization request with too little information.Unknown Location, for example: Command: START_SESSION with unknown location."
 	_StatusCode_name_2 = "Generic Server ErrorUnable to use the client's API. For example during the credentials registration: When the initializing party requests data from the other party during the open POST call to its credentials endpoint. If one of the GETs can not be processed, the party should return this error in the POST response.Unsupported versionNo matching endpoints or expected endpoints missing between parties. Used during the registration process if the two parties do not have any mutual modules or endpoints available, or the minimum expected by the other party implementation."
+	_StatusCode_name_3 = "Generic errorUnknown receiver (TO address is unknown)Timeout on forwarded request (message is forwarded, but request times out)Connection problem (receiving party is not connected)"
 )
 
 var (
 	_StatusCode_index_1 = [...]uint8{0, 12, 41, 128, 204}
 	_StatusCode_index_2 = [...]uint16{0, 20, 316, 335, 573}
+	_StatusCode_index_3 = [...]uint8{0, 13, 53, 127, 180}
 )
 
 func (i StatusCode) String() string {
@@ -40,6 +46,9 @@ func (i StatusCode) String() string {
 	case 3000 <= i && i <= 3003:
 		i -= 3000
 		return _StatusCode_name_2[_StatusCode_index_2[i]:_StatusCode_index_2[i+1]]
+	case 4000 <= i && i <= 4003:
+		i -= 4000
+		return _StatusCode_name_3[_StatusCode_index_3[i]:_StatusCode_index_3[i+1]]
 	default:
 		return "StatusCode(" + strconv.FormatInt(int64(i), 10) + ")"
 	}

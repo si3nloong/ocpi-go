@@ -69,7 +69,11 @@ func (c *ClientConn) getEndpoint(ctx context.Context, module ModuleID) (string, 
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
-		versions, err := c.Versions(ctx)
+		versionsResponse, err := c.GetVersions(ctx)
+		if err != nil {
+			return "", err
+		}
+		versions, err := versionsResponse.Data()
 		if err != nil {
 			return "", err
 		}
@@ -82,10 +86,14 @@ func (c *ClientConn) getEndpoint(ctx context.Context, module ModuleID) (string, 
 		if err := c.do(ctx, http.MethodGet, version.URL, nil, &o); err != nil {
 			return "", err
 		}
+		versionDetails, err := o.Data()
+		if err != nil {
+			return "", err
+		}
 
 		c.rw.Lock()
 		c.endpointDict = make(map[string]Endpoint)
-		for _, v := range o.Data.Endpoints {
+		for _, v := range versionDetails.Endpoints {
 			c.endpointDict[string(v.Identifier)] = v
 		}
 		c.rw.Unlock()

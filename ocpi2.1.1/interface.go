@@ -2,6 +2,7 @@ package ocpi211
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -22,7 +23,7 @@ type CPO interface {
 	// (PATCH /ocpi/2.1.1/tokens/{country_code}/{party_id}/{token_uid})
 	OnPatchClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PartialToken], tokenType ...TokenType) error
 	// (POST /ocpi/2.1.1/commands/{command})
-	OnPostCommand(ctx context.Context, commandType CommandType) (*CommandResponse, error)
+	OnPostCommand(ctx context.Context, commandType CommandType, body json.RawMessage) (*CommandResponse, error)
 }
 
 type EMSP interface {

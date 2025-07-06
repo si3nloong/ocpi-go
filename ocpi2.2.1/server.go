@@ -1,12 +1,20 @@
 package ocpi221
 
 import (
+	"encoding/base64"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
-
-	"github.com/gofrs/uuid/v5"
+	"strings"
 )
+
+type TokenResolver func(token string) (string, error)
+
+type ServerConfig struct {
+	OmitRole      bool
+	TokenResolver TokenResolver
+}
 
 type ServerOption interface {
 	apply(*serverOptions)
@@ -19,6 +27,8 @@ type serverOptions struct {
 
 type Server struct {
 	serverOptions
+	errs                     chan error
+	tokenResolver            TokenResolver
 	roles                    map[Role]struct{}
 	cdrsSender               CDRsSender
 	cdrsReceiver             CDRsReceiver
@@ -40,17 +50,26 @@ type Server struct {
 	versions                 Versions
 }
 
-func NewServer(credential Credentials, options ...ServerOption) *Server {
+func NewServer(credential Credentials, cfg ...ServerConfig) *Server {
 	s := new(Server)
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
-	// s.baseUrl = fmt.Sprintf("/ocpi/%s", ocpi.VersionNumber221)
-	for _, opt := range options {
-		opt.apply(&s.serverOptions)
+	s.tokenResolver = func(token string) (string, error) {
+		token = strings.TrimPrefix(token, "Token ")
+		b, err := base64.StdEncoding.DecodeString(token)
+		if err == nil {
+			return string(b), nil
+		}
+		return token, nil
 	}
+	if len(cfg) > 0 {
+
+	}
+
 	s.roles = make(map[Role]struct{})
 	s.credentials = credential
+	s.errs = make(chan error, 1)
 	return s
 }
 
@@ -78,7 +97,7 @@ func (s *Server) SetEMSP(emsp EMSP) {
 	s.sessionsReceiver = emsp
 	s.tariffsReceiver = emsp
 	s.tokensSender = emsp
-	s.versions = emsp
+	// s.versions = emsp
 }
 
 func (s *Server) SetHub(hub Hub) {
@@ -134,79 +153,100 @@ func (s *Server) SetSCSP(scsp SCSP) {
 func (s *Server) Handler() http.Handler {
 	router := http.NewServeMux()
 
-	router.HandleFunc(s.baseUrl+"/details", s.GetOcpiVersionDetails)
-	router.HandleFunc(s.baseUrl+"/credentials", s.GetOcpiCredentials)
-	router.HandleFunc("POST "+s.baseUrl+"/credentials", s.PostOcpiCredentials)
-	router.HandleFunc("PUT "+s.baseUrl+"/credentials", s.PutOcpiCredentials)
-	router.HandleFunc("DELETE "+s.baseUrl+"/credentials", s.DeleteOcpiCredentials)
+	router.HandleFunc(s.baseUrl+"/2.2.1/details", s.GetOcpiVersionDetails)
+	router.HandleFunc(s.baseUrl+"/2.2.1/credentials", s.GetOcpiCredentials)
+	router.HandleFunc("POST "+s.baseUrl+"/2.2.1/credentials", s.PostOcpiCredentials)
+	router.HandleFunc("PUT "+s.baseUrl+"/2.2.1/credentials", s.PutOcpiCredentials)
+	router.HandleFunc("DELETE "+s.baseUrl+"/2.2.1/credentials", s.DeleteOcpiCredentials)
+
+	if s.hubClientInfoSender != nil {
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/hubclientinfo"), s.GetOcpiClientInfos)
+	}
+	if s.hubClientInfoReceiver != nil {
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/clientinfo/{country_code}/{party_id}"), s.GetOcpiClientInfo)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/clientinfo/{country_code}/{party_id}"), s.PutOcpiClientInfo)
+	}
 
 	if s.locationsSender != nil {
-		router.HandleFunc(s.baseUrl+"/locations", s.GetOcpiLocations)
-		router.HandleFunc(s.baseUrl+"/locations/{location_id}", s.GetOcpiLocation)
-		router.HandleFunc(s.baseUrl+"/locations/{location_id}/{evse_uid}", s.GetOcpiLocation)
-		router.HandleFunc(s.baseUrl+"/locations/{location_id}/{evse_uid}/{connector_id}", s.GetOcpiLocation)
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/locations"), s.GetOcpiLocations)
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/locations/{location_id}"), s.GetOcpiLocation)
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/locations/{location_id}/{evse_uid}"), s.GetOcpiLocation)
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/locations/{location_id}/{evse_uid}/{connector_id}"), s.GetOcpiLocation)
 	}
 	if s.locationsReceiver != nil {
-		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.GetOcpiClientOwnedLocation)
-		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.GetOcpiClientOwnedLocation)
-		router.HandleFunc(s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.GetOcpiClientOwnedLocation)
-		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.PutOcpiLocation)
-		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.PutOcpiLocation)
-		router.HandleFunc("PUT "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.PutOcpiLocation)
-		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}", s.PatchOcpiLocation)
-		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}", s.PatchOcpiLocation)
-		router.HandleFunc("PATCH "+s.baseUrl+"/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", s.PatchOcpiLocation)
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}"), s.GetOcpiClientOwnedLocation)
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}"), s.GetOcpiClientOwnedLocation)
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}"), s.GetOcpiClientOwnedLocation)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}"), s.PutOcpiLocation)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}"), s.PutOcpiLocation)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}"), s.PutOcpiLocation)
+		router.HandleFunc("PATCH "+s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}"), s.PatchOcpiLocation)
+		router.HandleFunc("PATCH "+s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}"), s.PatchOcpiLocation)
+		router.HandleFunc("PATCH "+s.withRole(InterfaceRoleReceiver, "/2.2.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}"), s.PatchOcpiLocation)
 	}
 
 	if s.sessionsSender != nil {
-		router.HandleFunc(s.baseUrl+"/sessions", s.GetOcpiSessions)
-		router.HandleFunc("PUT "+s.baseUrl+"/sessions/{session_id}/charging_preferences", s.PutOcpiSesionChargingPreferences)
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/sessions"), s.GetOcpiSessions)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleSender, "/2.2.1/sessions/{session_id}/charging_preferences"), s.PutOcpiSesionChargingPreferences)
 	}
 	if s.sessionsReceiver != nil {
-		router.HandleFunc(s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.GetOcpiSession)
-		router.HandleFunc("PUT "+s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PutOcpiSession)
-		router.HandleFunc("PATCH "+s.baseUrl+"/sessions/{country_code}/{party_id}/{session_id}", s.PatchOcpiSession)
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/sessions/{country_code}/{party_id}/{session_id}"), s.GetOcpiSession)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/sessions/{country_code}/{party_id}/{session_id}"), s.PutOcpiSession)
+		router.HandleFunc("PATCH "+s.withRole(InterfaceRoleReceiver, "/2.2.1/sessions/{country_code}/{party_id}/{session_id}"), s.PatchOcpiSession)
 	}
 
 	if s.cdrsSender != nil {
-		router.HandleFunc(s.baseUrl+"/cdrs", s.GetOcpiCDRs)
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/cdrs"), s.GetOcpiCDRs)
 	}
 	if s.cdrsReceiver != nil {
-		router.HandleFunc(s.baseUrl+"/cdrs/{cdr_id}", s.GetOcpiCDR)
-		router.HandleFunc("POST "+s.baseUrl+"/cdrs", s.PostOcpiCDR)
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/cdrs/{cdr_id}"), s.GetOcpiCDR)
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleReceiver, "/2.2.1/cdrs"), s.PostOcpiCDR)
 	}
 
 	if s.tariffsSender != nil {
-		router.HandleFunc(s.baseUrl+"/tariffs", s.GetOcpiTariffs)
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/tariffs"), s.GetOcpiTariffs)
 	}
 	if s.tariffsReceiver != nil {
-		router.HandleFunc(s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.GetOcpiTariff)
-		router.HandleFunc("PUT "+s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.PutOcpiTariff)
-		router.HandleFunc("DELETE "+s.baseUrl+"/tariffs/{country_code}/{party_id}/{tariff_id}", s.DeleteOcpiTariff)
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id}"), s.GetOcpiTariff)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id}"), s.PutOcpiTariff)
+		router.HandleFunc("DELETE "+s.withRole(InterfaceRoleReceiver, "/2.2.1/tariffs/{country_code}/{party_id}/{tariff_id}"), s.DeleteOcpiTariff)
 	}
 
 	if s.tokensSender != nil {
-		router.HandleFunc(s.baseUrl+"/tokens", s.GetOcpiTokens)
-		router.HandleFunc("POST "+s.baseUrl+"/tokens/{token_uid}/authorize", s.PostOcpiToken)
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/tokens"), s.GetOcpiTokens)
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleSender, "/2.2.1/tokens/{token_uid}/authorize"), s.PostOcpiToken)
 	}
 	if s.tokensReceiver != nil {
-		router.HandleFunc(s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.GetOcpiToken)
-		router.HandleFunc("PUT "+s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PutOcpiToken)
-		router.HandleFunc("PATCH "+s.baseUrl+"/tokens/{country_code}/{party_id}/{token_uid}", s.PatchOcpiToken)
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/tokens/{country_code}/{party_id}/{token_uid}"), s.GetOcpiToken)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/tokens/{country_code}/{party_id}/{token_uid}"), s.PutOcpiToken)
+		router.HandleFunc("PATCH "+s.withRole(InterfaceRoleReceiver, "/2.2.1/tokens/{country_code}/{party_id}/{token_uid}"), s.PatchOcpiToken)
 	}
 
 	if s.commandsReceiver != nil {
-		router.HandleFunc("POST "+s.baseUrl+"/commands/{command_type}", s.PostOcpiCommand)
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleReceiver, "/2.2.1/commands/{command_type}"), s.PostOcpiCommand)
 	}
 	if s.commandsSender != nil {
-		router.HandleFunc("POST "+s.baseUrl+"/commands/{command_type}/{uid}", s.PostOcpiCommandResponse)
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleSender, "/2.2.1/commands/{command_type}/{uid}"), s.PostOcpiCommandResponse)
 	}
 	return s.authorizeMiddleware(router)
 }
 
-func writeOkResponse(w http.ResponseWriter, r *http.Request, b []byte) {
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set(HttpHeaderXRequestID, uuid.Must(uuid.NewV7()).String())
-	w.Header().Set(HttpHeaderXCorrelationID, r.Header.Get(HttpHeaderXCorrelationID))
-	w.Write(b)
+func (s *Server) LogError(err error) {
+	s.errs <- err
+}
+
+func (s *Server) Errors() <-chan error {
+	return s.errs
+}
+
+func (s *Server) withRole(role InterfaceRole, path string) string {
+	return path
+	switch role {
+	case InterfaceRoleSender:
+		return s.baseUrl + "/emsp" + path
+	case InterfaceRoleReceiver:
+		return s.baseUrl + "/cpo" + path
+	default:
+		panic(fmt.Sprintf("ocpi221: invalid role %q", role))
+	}
 }

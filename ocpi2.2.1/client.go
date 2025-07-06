@@ -90,11 +90,14 @@ func (c *ClientConn) getEndpoint(ctx context.Context, mod ModuleID, role Interfa
 	c.rw.RLock()
 	if c.endpointDict == nil {
 		c.rw.RUnlock()
-		versions, err := c.Versions(ctx)
+		versionResponse, err := c.GetVersions(ctx)
 		if err != nil {
 			return "", err
 		}
-
+		versions, err := versionResponse.Data()
+		if err != nil {
+			return "", err
+		}
 		if len(versions) == 0 {
 			return "", fmt.Errorf("ocpi221: no versions found at %s", c.versionUrl)
 		}
@@ -104,10 +107,14 @@ func (c *ClientConn) getEndpoint(ctx context.Context, mod ModuleID, role Interfa
 		if err := c.do(ctx, http.MethodGet, version.URL, nil, &o); err != nil {
 			return "", err
 		}
+		versionDetails, err := o.Data()
+		if err != nil {
+			return "", err
+		}
 
 		c.rw.Lock()
 		c.endpointDict = make(map[string]Endpoint)
-		for _, v := range o.Data.Endpoints {
+		for _, v := range versionDetails.Endpoints {
 			c.endpointDict[string(v.Identifier)+":"+string(v.Role)] = v
 		}
 		c.rw.Unlock()
@@ -142,7 +149,21 @@ func (c *ClientConn) newRequest(
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
-	req.Header.Set(HttpHeaderXRequestID, uuid.Must(uuid.NewV7()).String())
+	req.Header.Set(ocpi.HttpHeaderXRequestID, uuid.Must(uuid.NewV7()).String())
+	reqCtx := GetRequestContext(ctx)
+	if reqCtx.FromCountryCode != "" && reqCtx.FromPartyID != "" {
+		req.Header.Set(ocpi.HttpHeaderOCPIFromCountryCode, reqCtx.FromCountryCode)
+		req.Header.Set(ocpi.HttpHeaderOCPIFromPartyID, reqCtx.FromPartyID)
+	}
+	if reqCtx.ToCountryCode != "" && reqCtx.ToPartyID != "" {
+		req.Header.Set(ocpi.HttpHeaderOCPIToCountryCode, reqCtx.ToCountryCode)
+		req.Header.Set(ocpi.HttpHeaderOCPIToPartyID, reqCtx.ToPartyID)
+	}
+	if reqCtx.requestID != "" {
+		req.Header.Set(ocpi.HttpHeaderXCorrelationID, reqCtx.requestID)
+	} else {
+		req.Header.Set(ocpi.HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
+	}
 
 	c.rw.RLock()
 	if c.tokenC != "" {

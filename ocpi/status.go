@@ -18,4 +18,10 @@ const (
 	StatusCodeServerErrorUnableToUseClientAPI StatusCode = 3001 // Unable to use the client's API. For example during the credentials registration: When the initializing party requests data from the other party during the open POST call to its credentials endpoint. If one of the GETs can not be processed, the party should return this error in the POST response.
 	StatusCodeServerErrorUnsupportedVersion   StatusCode = 3002 // Unsupported version
 	StatusCodeServerErrorNoMatchingEndpoints  StatusCode = 3003 // No matching endpoints or expected endpoints missing between parties. Used during the registration process if the two parties do not have any mutual modules or endpoints available, or the minimum expected by the other party implementation.
+
+	// Hub errors: When a server encounters an error, client side error (2xxx) or server side error (3xxx), it sends the status code to the Hub. The Hub SHALL then forward this error to the client which sent the request (when the request was not a Broadcast Push).
+	StatusCodeHubErrorGeneric           StatusCode = 4000 // Generic error
+	StatusCodeHubErrorUnknownReceiver   StatusCode = 4001 // Unknown receiver (TO address is unknown)
+	StatusCodeHubErrorTimeout           StatusCode = 4002 // Timeout on forwarded request (message is forwarded, but request times out)
+	StatusCodeHubErrorConnectionProblem StatusCode = 4003 // Connection problem (receiving party is not connected)
 )

@@ -2,6 +2,7 @@ package ocpi221
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -28,7 +29,7 @@ type EMSP interface {
 	SessionsReceiver
 	TariffsReceiver
 	TokensSender
-	Versions
+	// Versions
 }
 
 type Hub interface {
@@ -78,7 +79,8 @@ type SCSP interface {
 }
 
 type Credentials interface {
-	VerifyToken(ctx context.Context, token string) bool
+	IsClientRegistered(ctx context.Context, token string) bool
+	VerifyCredentialsToken(ctx context.Context, token string) bool
 	StoreVersionDetails(ctx context.Context, endpoints VersionDetails) error
 
 	// (GET /ocpi/2.2.1/credentials)
@@ -123,7 +125,7 @@ type CommandsSender interface {
 }
 type CommandsReceiver interface {
 	// (POST /ocpi/2.2.1/commands/{command})
-	OnPostCommand(ctx context.Context, commandType CommandType) (*CommandResponse, error)
+	OnPostCommand(ctx context.Context, commandType CommandType, body json.RawMessage) (*CommandResponse, error)
 }
 
 type HubClientInfoSender interface {
@@ -221,4 +223,6 @@ type Versions interface {
 type VersionsSender interface {
 }
 type VersionsReceiver interface {
+	// (GET /ocpi/2.2.1/details)
+	OnVersionDetails(ctx context.Context, token string) ([]Endpoint, error)
 }
