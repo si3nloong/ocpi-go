@@ -9,13 +9,17 @@ import (
 )
 
 var (
-	yyyymmddthhmmssRegexp     = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}$`)
 	yyyymmddthhmmsszRegexp    = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}Z$`)
+	yyyymmddthhmmssRegexp     = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}$`)
 	yyyymmddthhmmssnanoRegexp = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+$`)
 )
 
 type DateTime struct {
 	Time time.Time
+}
+
+func (dt *DateTime) String() string {
+	return dt.Time.String()
 }
 
 func (dt *DateTime) IsZero() bool {
@@ -41,6 +45,12 @@ func (dt *DateTime) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("ocpi221: unable to parse DateTime due to %w", err)
 	}
 	switch {
+	case yyyymmddthhmmsszRegexp.MatchString(str):
+		t, err := time.Parse("2006-01-02T15:04:05Z", str)
+		if err != nil {
+			return err
+		}
+		*dt = DateTime{t}
 	case yyyymmddthhmmssnanoRegexp.MatchString(str):
 		t, err := time.Parse("2006-01-02T15:04:05.999999999", str)
 		if err != nil {
@@ -53,14 +63,9 @@ func (dt *DateTime) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		*dt = DateTime{t}
-	case yyyymmddthhmmsszRegexp.MatchString(str):
-		t, err := time.Parse("2006-01-02T15:04:05Z", str)
-		if err != nil {
-			return err
-		}
-		*dt = DateTime{t}
+
 	default:
-		t, err := time.Parse(time.RFC3339, str)
+		t, err := time.ParseInLocation(time.RFC3339Nano, str, time.UTC)
 		if err != nil {
 			return err
 		}
