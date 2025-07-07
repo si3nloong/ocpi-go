@@ -11,7 +11,7 @@ import (
 )
 
 func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsPar
 }
 
 func (c *ClientConn) GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *ClientConn) GetLocation(ctx context.Context, locationID string) (*ocpi.
 }
 
 func (c *ClientConn) GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *ClientConn) GetClientOwnedLocation(ctx context.Context, countryCode str
 }
 
 func (c *ClientConn) PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location Location) (*ocpi.Response[any], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (c *ClientConn) PutClientOwnedLocation(ctx context.Context, countryCode str
 }
 
 func (c *ClientConn) PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location PartialLocation) (*ocpi.Response[any], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}

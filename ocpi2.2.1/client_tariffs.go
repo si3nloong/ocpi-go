@@ -11,7 +11,7 @@ import (
 )
 
 func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams) (*ocpi.PaginationResponse[Tariff], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams)
 }
 
 func (c *ClientConn) GetClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[Tariff], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (c *ClientConn) GetClientOwnedTariff(ctx context.Context, countryCode, part
 }
 
 func (c *ClientConn) PutClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string, tariff Tariff) (*ocpi.Response[any], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (c *ClientConn) PutClientOwnedTariff(ctx context.Context, countryCode, part
 }
 
 func (c *ClientConn) DeleteClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[any], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
+	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
 	if err != nil {
 		return nil, err
 	}
