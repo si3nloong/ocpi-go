@@ -3,6 +3,7 @@ package ocpi221
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -121,7 +122,7 @@ func (c *ClientConn) do(ctx context.Context, token, method, endpoint string, src
 		req.Header.Set(ocpi.HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 	}
 
-	req.Header.Set("Authorization", "Token "+token)
+	req.Header.Set("Authorization", "Token "+base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token))))
 
 	b, _ := httputil.DumpRequest(req, true)
 	log.Println(string(b))
