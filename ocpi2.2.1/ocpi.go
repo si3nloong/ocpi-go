@@ -513,8 +513,8 @@ type CancelReservation struct {
 	ReservationID string `json:"reservation_id"`
 }
 
-// CdrBody defines model for cdrBody.
-type ChargeDetailRecord struct {
+// CDR defines model for ChargeDetailRecord.
+type CDR struct {
 	CountryCode              string           `json:"country_code" validate:"required,len=2"`
 	PartyID                  string           `json:"party_id" validate:"required,len=3"`
 	ID                       string           `json:"id" validate:"required"`
@@ -633,22 +633,6 @@ type EnergySource struct {
 type EnvironmentalImpact struct {
 	Amount   json.Number                 `json:"amount"`
 	Category EnvironmentalImpactCategory `json:"category"`
-}
-
-// CdrResponse defines model for cdrResponse.
-type CdrResponse struct {
-	StatusCode    float32 `json:"status_code"`
-	StatusMessage *string `json:"status_message,omitempty"`
-	TimeStamp     *string `json:"timeStamp,omitempty"`
-	URL           string  `json:"url"`
-}
-
-// CdrsResponse defines model for cdrsResponse.
-type CdrsResponse struct {
-	Cdrs          *ChargeDetailRecord `json:"cdrs,omitempty"`
-	StatusCode    float32             `json:"status_code"`
-	StatusMessage *string             `json:"status_message,omitempty"`
-	TimeStamp     *string             `json:"timeStamp,omitempty"`
 }
 
 // ChargingPreferences defines model for chargingPreferences.

@@ -79,13 +79,13 @@ type Credentials interface {
 
 type CDRsSender interface {
 	// (GET /ocpi/2.2.1/cdrs)
-	OnGetCDRs(ctx context.Context, params GetCdrsParams) (*ocpi.PaginationResponse[ChargeDetailRecord], error)
+	OnGetCDRs(ctx context.Context, params GetCdrsParams) (*ocpi.PaginationResponse[CDR], error)
 }
 type CDRsReceiver interface {
 	// (GET /ocpi/2.2.1/cdrs/{cdr_id})
-	OnGetCDR(ctx context.Context, cdrID string) (*ChargeDetailRecord, error)
+	OnGetCDR(ctx context.Context, cdrID string) (*CDR, error)
 	// (POST /ocpi/2.2.1/cdrs)
-	OnPostCDR(ctx context.Context, body ocpi.RawMessage[ChargeDetailRecord]) (*ChargeDetailRecordResponse, error)
+	OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*ChargeDetailRecordResponse, error)
 }
 
 type ChargingProfilesSender interface {

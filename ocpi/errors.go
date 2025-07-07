@@ -1,6 +1,9 @@
 package ocpi
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 var (
 	ErrClient                           = &OCPIError{StatusCode: StatusCodeClientError}
@@ -31,4 +34,14 @@ func (e *OCPIError) Error() string {
 
 type HTTPError struct {
 	StatusCode int
+}
+
+func (e *HTTPError) Error() string {
+	switch e.StatusCode {
+	case http.StatusBadRequest:
+		return "bad request"
+	case http.StatusMethodNotAllowed:
+		return "method not allowed"
+	}
+	return fmt.Sprintf("http error: %d", e.StatusCode)
 }

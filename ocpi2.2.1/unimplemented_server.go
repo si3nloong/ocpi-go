@@ -105,12 +105,12 @@ func (UnimplementedServer) OnPatchClientOwnedSession(ctx context.Context, countr
 	return ErrNotImplemented
 }
 
-func (UnimplementedServer) OnGetCDR(ctx context.Context, cdrID string) (*ChargeDetailRecord, error) {
+func (UnimplementedServer) OnGetCDR(ctx context.Context, cdrID string) (*CDR, error) {
 	return nil, ErrNotImplemented
 }
 
 // OnPostCDR implements EMSP.
-func (UnimplementedServer) OnPostCDR(ctx context.Context, body ocpi.RawMessage[ChargeDetailRecord]) (*ChargeDetailRecordResponse, error) {
+func (UnimplementedServer) OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*ChargeDetailRecordResponse, error) {
 	return nil, ErrNotImplemented
 }
 

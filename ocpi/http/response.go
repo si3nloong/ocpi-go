@@ -12,13 +12,13 @@ import (
 func Response[T any](w http.ResponseWriter, value T) {
 	switch vi := any(value).(type) {
 	case error:
-		var httpErr ocpi.HTTPError
+		httpErr := &ocpi.HTTPError{}
 		if errors.As(vi, &httpErr) {
 			w.WriteHeader(httpErr.StatusCode)
 			return
 		}
 
-		var ocpiErr ocpi.OCPIError
+		ocpiErr := &ocpi.OCPIError{}
 		if errors.As(vi, &ocpiErr) {
 			w.WriteHeader(http.StatusOK)
 			b, _ := json.Marshal(ocpi.Response[any]{
