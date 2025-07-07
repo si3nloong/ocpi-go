@@ -21,7 +21,7 @@ func (s *Server) GetOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
-	var body json.RawMessage
+	var body ocpi.RawMessage[Credential]
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		ocpihttp.BadRequest(w, r)
 		return
@@ -29,21 +29,66 @@ func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	requestCtx := GetRequestContext(ctx)
-	token := requestCtx.Token()
-	if s.ocpi.IsClientRegistered(ctx, token) {
+	tokenA := requestCtx.Token()
+	if s.ocpi.IsClientRegistered(ctx, tokenA) {
 		// https://github.com/ocpi/ocpi/blob/release-2.2.1-bugfixes/credentials.asciidoc
 		// Refer to sectio 1.2.2
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	credential, err := s.ocpi.OnPostCredential(ctx, token, ocpi.RawMessage[Credential](body))
+	credentialData, err := body.Data()
 	if err != nil {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		ocpihttp.Response(w, err)
 		return
 	}
 
-	ocpihttp.Response(w, credential)
+	// Store token B
+	if err := s.ocpi.StoreCredentialsTokenB(ctx, credentialData); err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+
+	clientConn := NewClientWithTokenA(credentialData.URL, credentialData.Token)
+	versionsResponse, err := clientConn.GetVersions(ctx)
+	if err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+	versions, err := versionsResponse.Data()
+	if err != nil {
+		ocpihttp.Response(w, ocpi.NewOCPIError(ocpi.StatusCodeServerErrorNoMatchingEndpoints, `no version available`))
+		return
+	}
+	latestMutualVersion, ok := versions.LatestMutualVersion(ocpi.VersionNumber221)
+	if !ok {
+		ocpihttp.Response(w, ocpi.NewOCPIError(ocpi.StatusCodeServerErrorNoMatchingEndpoints, `no version available`))
+		return
+	}
+
+	versionDetailsResponse, err := clientConn.GetVersionDetails(ctx, latestMutualVersion)
+	if err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+	versionDetails, err := versionDetailsResponse.Data()
+	if err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+
+	if err := s.ocpi.StoreVersionDetails(ctx, versionDetails); err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+
+	credentialsWithTokenC, err := s.ocpi.GenerateCredentialsTokenC(ctx, tokenA)
+	if err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+
+	ocpihttp.Response(w, credentialsWithTokenC)
 }
 
 func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +108,7 @@ func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: call sender side to get versions and version_details
 	credential, err := s.ocpi.OnPutCredential(ctx, token, ocpi.RawMessage[Credential](body))
 	if err != nil {
 		ocpihttp.Response(w, err)

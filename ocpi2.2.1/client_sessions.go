@@ -11,16 +11,7 @@ import (
 )
 
 func (c *ClientConn) GetSessions(ctx context.Context, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
-	if err != nil {
-		return nil, err
-	}
-
-	u, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	query := u.Query()
+	query := make(url.Values)
 	if len(params) > 0 {
 		p := params[0]
 		if p.DateFrom != nil && p.DateFrom.IsZero() {
@@ -36,70 +27,60 @@ func (c *ClientConn) GetSessions(ctx context.Context, params ...GetSessionsParam
 			query.Set("limit", strconv.FormatUint(uint64(*p.Limit), 10))
 		}
 	}
-	u.RawQuery = query.Encode()
-	var o ocpi.PaginationResponse[Session]
-	if err := c.do(ctx, http.MethodGet, u.String(), nil, &o); err != nil {
+	var res ocpi.PaginationResponse[Session]
+	if err := c.CallEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
+		return endpoint + "?" + query.Encode()
+	}, nil, &res); err != nil {
 		return nil, err
 	}
-	return &o, nil
+	return &res, nil
 }
 
 func (c *ClientConn) GetSession(ctx context.Context, sessionID string) (*ocpi.Response[Session], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
-	if err != nil {
+	var res ocpi.Response[Session]
+	if err := c.CallEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + sessionID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
-	var o ocpi.Response[Session]
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+sessionID, nil, &o); err != nil {
-		return nil, err
-	}
-	return &o, nil
+	return &res, nil
 }
 
 func (c *ClientConn) SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender)
-	if err != nil {
+	var res ocpi.Response[ChargingPreferencesResponse]
+	if err := c.CallEndpoint(ctx, ModuleIDSessions, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/sessions/" + sessionID + "/charging_preferences"
+	}, nil, &res); err != nil {
 		return nil, err
 	}
-
-	var o ocpi.Response[ChargingPreferencesResponse]
-	if err := c.do(ctx, http.MethodGet, endpoint+"/sessions/"+sessionID+"/charging_preferences", nil, &o); err != nil {
-		return nil, err
-	}
-	return &o, nil
+	return &res, nil
 }
 
 func (c *ClientConn) GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
-	if err != nil {
-		return nil, err
-	}
 	var res ocpi.Response[Session]
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, nil, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + sessionID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 func (c *ClientConn) PutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session Session) (*ocpi.Response[any], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
-	if err != nil {
-		return nil, err
-	}
 	var res ocpi.Response[any]
-	if err := c.do(ctx, http.MethodPut, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, session, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver, http.MethodPut, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + sessionID
+	}, session, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 func (c *ClientConn) PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PartialSession) (*ocpi.Response[any], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver)
-	if err != nil {
-		return nil, err
-	}
 	var res ocpi.Response[any]
-	if err := c.do(ctx, http.MethodPatch, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, session, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDSessions, InterfaceRoleReceiver, http.MethodPatch, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + sessionID
+	}, session, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil

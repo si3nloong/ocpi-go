@@ -11,16 +11,7 @@ import (
 )
 
 func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams) (*ocpi.PaginationResponse[Tariff], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender)
-	if err != nil {
-		return nil, err
-	}
-
-	u, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	query := u.Query()
+	query := make(url.Values)
 	query.Set("limit", "100")
 	if len(params) > 0 {
 		p := params[0]
@@ -37,50 +28,42 @@ func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams)
 			query.Set("limit", strconv.FormatUint(uint64(*p.Limit), 10))
 		}
 	}
-	u.RawQuery = query.Encode()
-	var o ocpi.Response[[]Tariff]
-	if err := c.do(ctx, http.MethodGet, u.String(), nil, &o); err != nil {
+	var res ocpi.Response[[]Tariff]
+	if err := c.CallEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
+		return endpoint + "?" + query.Encode()
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &ocpi.PaginationResponse[Tariff]{
-		Response: o,
+		Response: res,
 	}, nil
 }
 
 func (c *ClientConn) GetClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[Tariff], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
-	if err != nil {
-		return nil, err
-	}
-
 	var res ocpi.Response[Tariff]
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+tariffID, nil, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + tariffID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 func (c *ClientConn) PutClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string, tariff Tariff) (*ocpi.Response[any], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
-	if err != nil {
-		return nil, err
-	}
-
 	var res ocpi.Response[any]
-	if err := c.do(ctx, http.MethodPut, endpoint+"/"+countryCode+"/"+partyID+"/"+tariffID, tariff, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver, http.MethodPut, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + tariffID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 func (c *ClientConn) DeleteClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[any], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver)
-	if err != nil {
-		return nil, err
-	}
-
 	var res ocpi.Response[any]
-	if err := c.do(ctx, http.MethodDelete, endpoint+"/"+countryCode+"/"+partyID+"/"+tariffID, nil, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDTariffs, InterfaceRoleReceiver, http.MethodDelete, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + tariffID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil

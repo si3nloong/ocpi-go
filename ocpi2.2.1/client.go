@@ -18,8 +18,13 @@ import (
 type EndpointResolver func(endpoint string) string
 
 type OCPIClient interface {
-	GetCredentialsTokenC(ctx context.Context, versionUrl string) (string, error)
+	GetCredentialsTokenC(ctx context.Context) (string, error)
 	GetEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error)
+}
+
+type ClientTokenA interface {
+	GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error)
+	GetVersionDetails(ctx context.Context, version ocpi.Version) (*ocpi.Response[VersionDetails], error)
 }
 
 type Client interface {
@@ -43,6 +48,7 @@ type Client interface {
 }
 
 type ClientConn struct {
+	tokenA     string
 	ocpi       OCPIClient
 	versionUrl string
 	httpClient *http.Client
@@ -58,31 +64,43 @@ func NewClient(versionUrl string, ocpi OCPIClient) *ClientConn {
 	return c
 }
 
+func NewClientWithTokenA(versionUrl string, tokenA string) ClientTokenA {
+	c := new(ClientConn)
+	c.tokenA = tokenA
+	c.versionUrl = versionUrl
+	c.httpClient = &http.Client{}
+	return c
+}
+
 func (c *ClientConn) CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, method string, resolver EndpointResolver, src, dst any) error {
 	endpoint, err := c.ocpi.GetEndpoint(ctx, mod, role)
 	if err != nil {
 		return err
 	}
 
-	if err := c.do(ctx, method, resolver(endpoint), src, dst); err != nil {
+	tokenC, err := c.ocpi.GetCredentialsTokenC(ctx)
+	if err != nil {
+		return err
+	}
+	if err := c.do(ctx, tokenC, method, resolver(endpoint), src, dst); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientConn) newRequest(ctx context.Context, method, endpoint string, src any) (*http.Request, error) {
+func (c *ClientConn) do(ctx context.Context, token, method, endpoint string, src, dst any) error {
 	var body io.Reader
 	if src != nil {
 		b, err := json.Marshal(src)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		body = bytes.NewBuffer(b)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, method, endpoint, body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	req.Header.Set("Accept", "application/json")
@@ -103,19 +121,7 @@ func (c *ClientConn) newRequest(ctx context.Context, method, endpoint string, sr
 		req.Header.Set(ocpi.HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 	}
 
-	token, err := c.ocpi.GetCredentialsTokenC(ctx, c.versionUrl)
-	if err != nil {
-		return nil, err
-	}
 	req.Header.Set("Authorization", "Token "+token)
-	return req, nil
-}
-
-func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst any) error {
-	req, err := c.newRequest(ctx, method, endpoint, src)
-	if err != nil {
-		return err
-	}
 
 	b, _ := httputil.DumpRequest(req, true)
 	log.Println(string(b))

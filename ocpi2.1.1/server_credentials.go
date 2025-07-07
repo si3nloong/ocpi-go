@@ -5,7 +5,6 @@ import (
 )
 
 func (s *Server) GetOcpiCredentials(w http.ResponseWriter, r *http.Request) {
-
 	w.WriteHeader(http.StatusOK)
 }
 

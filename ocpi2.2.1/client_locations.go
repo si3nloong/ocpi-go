@@ -11,16 +11,7 @@ import (
 )
 
 func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
-	if err != nil {
-		return nil, err
-	}
-
-	u, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	query := u.Query()
+	query := make(url.Values)
 	query.Set("limit", "100")
 	if len(params) > 0 {
 		p := params[0]
@@ -37,64 +28,52 @@ func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsPar
 			query.Set("limit", strconv.FormatUint(uint64(*p.Limit), 10))
 		}
 	}
-	u.RawQuery = query.Encode()
-
-	var o ocpi.Response[[]Location]
-	if err := c.do(ctx, http.MethodGet, u.String(), nil, &o); err != nil {
+	var res ocpi.Response[[]Location]
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
+		return endpoint + "?" + query.Encode()
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &ocpi.PaginationResponse[Location]{
-		Response: o,
+		Response: res,
 	}, nil
 }
 
 func (c *ClientConn) GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
-	if err != nil {
-		return nil, err
-	}
-
 	var res ocpi.Response[Location]
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+locationID, nil, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + locationID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 func (c *ClientConn) GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
-	if err != nil {
-		return nil, err
-	}
-
 	var res ocpi.Response[Location]
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+locationID, nil, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + locationID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 func (c *ClientConn) PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location Location) (*ocpi.Response[any], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
-	if err != nil {
-		return nil, err
-	}
-
 	var res ocpi.Response[any]
-	if err := c.do(ctx, http.MethodPut, endpoint+"/"+countryCode+"/"+partyID+"/"+locationID, location, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender, http.MethodPut, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + locationID
+	}, location, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 func (c *ClientConn) PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location PartialLocation) (*ocpi.Response[any], error) {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender)
-	if err != nil {
-		return nil, err
-	}
-
 	var res ocpi.Response[any]
-	if err := c.do(ctx, http.MethodPatch, endpoint+"/"+countryCode+"/"+partyID+"/"+locationID, location, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, InterfaceRoleSender, http.MethodPatch, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + locationID
+	}, location, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil

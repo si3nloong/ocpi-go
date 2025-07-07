@@ -15,7 +15,9 @@ type TokenResolver func(token string) (string, error)
 type OCPIServer interface {
 	IsClientRegistered(ctx context.Context, tokenA string) bool
 	VerifyCredentialsToken(ctx context.Context, token string) error
-	StoreVersionDetails(ctx context.Context, endpoints VersionDetails) error
+	StoreCredentialsTokenB(ctx context.Context, credentialsTokenB Credential) error
+	StoreVersionDetails(ctx context.Context, versionDetails VersionDetails) error
+	GenerateCredentialsTokenC(ctx context.Context, tokenA string) (*Credential, error)
 	Credentials
 	// Versions
 }
@@ -31,11 +33,11 @@ type ServerOption interface {
 
 type serverOptions struct {
 	baseUrl string
-	logger  *slog.Logger
 }
 
 type Server struct {
 	serverOptions
+	logger                   *slog.Logger
 	errs                     chan error
 	ocpi                     OCPIServer
 	tokenResolver            TokenResolver
@@ -71,10 +73,6 @@ func NewServer(ocpi OCPIServer, cfg ...ServerConfig) *Server {
 		}
 		return token, nil
 	}
-	if len(cfg) > 0 {
-
-	}
-
 	s.roles = make(map[Role]struct{})
 	s.ocpi = ocpi
 	s.errs = make(chan error, 1)
