@@ -934,7 +934,7 @@ type PartialLocation struct {
 	Coordinates        *GeoLocation            `json:"coordinates,omitempty"`
 	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
 	ParkingType        *ParkingType            `json:"parking_type,omitempty"`
-	Evses              []EVSE                  `json:"evses,omitempty"`
+	EVSEs              []EVSE                  `json:"evses,omitempty"`
 	ParkingPlaces      []Parking               `json:"parking_places,omitempty"`
 	Directions         []DisplayText           `json:"directions,omitempty"`
 	Operator           *BusinessDetails        `json:"operator,omitempty"`

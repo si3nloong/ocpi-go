@@ -133,12 +133,12 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	if evseUID != "" && connectorID != "" {
-		if err := s.emsp.OnPatchClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID, ocpi.RawMessage[PartialLocation](body)); err != nil {
+		if err := s.emsp.OnPatchClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID, ocpi.RawMessage[PartialConnector](body)); err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}
 	} else if evseUID != "" {
-		if err := s.emsp.OnPatchClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID, ocpi.RawMessage[PartialLocation](body)); err != nil {
+		if err := s.emsp.OnPatchClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID, ocpi.RawMessage[PartialEVSE](body)); err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}
