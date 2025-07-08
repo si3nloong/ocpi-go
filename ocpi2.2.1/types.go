@@ -18,19 +18,23 @@ type DateTime struct {
 	Time time.Time
 }
 
-func (dt *DateTime) String() string {
+func (dt DateTime) String() string {
 	return dt.Time.String()
 }
 
-func (dt *DateTime) IsZero() bool {
+func (dt DateTime) IsZero() bool {
 	return dt.Time.IsZero()
 }
 
-func (dt *DateTime) UTC() time.Time {
+func (dt DateTime) UTC() time.Time {
 	return dt.Time.UTC()
 }
 
-func (dt *DateTime) Format(layout string) string {
+func (dt DateTime) In(loc *time.Location) time.Time {
+	return dt.Time.In(loc)
+}
+
+func (dt DateTime) Format(layout string) string {
 	return dt.Time.Format(layout)
 }
 
