@@ -36,9 +36,9 @@ type EMSP interface {
 	// (PUT /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id})
 	OnPutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[Location]) error
 	// (PUT /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid})
-	OnPutClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[Location]) error
+	OnPutClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[EVSE]) error
 	// (PUT /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id})
-	OnPutClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[Location]) error
+	OnPutClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[Connector]) error
 	// (PATCH /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id})
 	OnPatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, body ocpi.RawMessage[PartialLocation]) error
 	// (PATCH /ocpi/2.1.1/locations/{country_code}/{party_id}/{location_id}/{evse_uid})
@@ -56,7 +56,7 @@ type EMSP interface {
 	// (GET /ocpi/2.1.1/cdrs/{cdr_id})
 	OnGetCDR(ctx context.Context, cdrID string) (*ChargeDetailRecord, error)
 	// (POST /ocpi/2.1.1/cdrs)
-	OnPostCDR(ctx context.Context, body ocpi.RawMessage[ChargeDetailRecord]) (*ChargeDetailRecordResponse, error)
+	OnPostCDR(ctx context.Context, body ocpi.RawMessage[ChargeDetailRecord]) (*CDRResponse, error)
 
 	// (GET /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
 	OnGetClientOwnedTariff(ctx context.Context, countryCode string, partyID string, sessionID string) (*Tariff, error)

@@ -747,6 +747,19 @@ type Connector struct {
 	LastUpdated        DateTime        `json:"last_updated"`
 }
 
+type PartialConnector struct {
+	ID                 *string          `json:"id,omitempty"`
+	Standard           *ConnectorType   `json:"standard,omitempty"`
+	Format             *ConnectorFormat `json:"format,omitempty"`
+	PowerType          *PowerType       `json:"power_type,omitempty"`
+	MaxVoltage         *int             `json:"max_voltage,omitempty"`
+	MaxAmperage        *int             `json:"max_amperage,omitempty"`
+	MaxElectricPower   *int             `json:"max_electric_power,omitempty"`
+	TariffIDs          []string         `json:"tariff_ids,omitempty"`
+	TermsAndConditions *string          `json:"terms_and_conditions,omitempty"`
+	LastUpdated        DateTime         `json:"last_updated"`
+}
+
 // Image defines model for credentials_data_roles_business_details_logo.
 type Image struct {
 	URL       string        `json:"url" validate:"required"`
@@ -783,6 +796,24 @@ type EVSE struct {
 	StatusSchedule           []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities             []Capability         `json:"capabilities,omitempty"`
 	Connectors               []Connector          `json:"connectors" validate:"required"`
+	FloorLevel               *string              `json:"floor_level,omitempty"`
+	Coordinates              *GeoLocation         `json:"coordinates,omitempty"`
+	PhysicalReference        *string              `json:"physical_reference,omitempty"`
+	Directions               []DisplayText        `json:"directions,omitempty"`
+	ParkingRestrictions      []ParkingRestriction `json:"parking_restrictions,omitempty"`
+	Parking                  []EVSEParking        `json:"parking,omitempty"`
+	Images                   []Image              `json:"images,omitempty"`
+	AcceptedServiceProviders *string              `json:"accepted_service_providers,omitempty"`
+	LastUpdated              DateTime             `json:"last_updated"`
+}
+
+type PartialEVSE struct {
+	UID                      *string              `json:"uid,omitempty"`
+	EVSEID                   *string              `json:"evse_id,omitempty"`
+	Status                   *Status              `json:"status,omitempty"`
+	StatusSchedule           []StatusSchedule     `json:"status_schedule,omitempty"`
+	Capabilities             []Capability         `json:"capabilities,omitempty"`
+	Connectors               []Connector          `json:"connectors"`
 	FloorLevel               *string              `json:"floor_level,omitempty"`
 	Coordinates              *GeoLocation         `json:"coordinates,omitempty"`
 	PhysicalReference        *string              `json:"physical_reference,omitempty"`
@@ -1315,6 +1346,6 @@ type GetTokensParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-type ChargeDetailRecordResponse struct {
+type CDRResponse struct {
 	Location string
 }

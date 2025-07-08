@@ -2,10 +2,12 @@ package http
 
 import (
 	"net/http"
+
+	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func BadRequest(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusBadRequest)
+func BadRequest(w http.ResponseWriter, r *http.Request, errMsg string) {
+	Response(w, &ocpi.HTTPError{StatusCode: http.StatusBadRequest, Message: errMsg})
 }
 
 // func ResponseError(w http.ResponseWriter, err error) {

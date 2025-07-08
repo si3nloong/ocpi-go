@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
 )
@@ -60,7 +59,7 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputil.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, response)
 }
 
 func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +79,7 @@ func (s *Server) GetOcpiSession(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
@@ -100,7 +99,7 @@ func (s *Server) PutOcpiSession(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PatchOcpiSession(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 

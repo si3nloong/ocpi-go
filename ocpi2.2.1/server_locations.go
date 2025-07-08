@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
 )
@@ -18,7 +17,7 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputil.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, response)
 }
 
 func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +77,7 @@ func (s *Server) GetOcpiClientOwnedLocation(w http.ResponseWriter, r *http.Reque
 func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
@@ -90,12 +89,12 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	if evseUID != "" && connectorID != "" {
-		if err := s.locationsReceiver.OnPutClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID, ocpi.RawMessage[Location](body)); err != nil {
+		if err := s.locationsReceiver.OnPutClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID, ocpi.RawMessage[Connector](body)); err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}
 	} else if evseUID != "" {
-		if err := s.locationsReceiver.OnPutClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID, ocpi.RawMessage[Location](body)); err != nil {
+		if err := s.locationsReceiver.OnPutClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID, ocpi.RawMessage[EVSE](body)); err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}
@@ -112,7 +111,7 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
@@ -124,12 +123,12 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 	connectorID := strings.TrimSpace(r.PathValue("connector_id"))
 
 	if evseUID != "" && connectorID != "" {
-		if err := s.locationsReceiver.OnPatchClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID, ocpi.RawMessage[PartialLocation](body)); err != nil {
+		if err := s.locationsReceiver.OnPatchClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID, ocpi.RawMessage[PartialConnector](body)); err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}
 	} else if evseUID != "" {
-		if err := s.locationsReceiver.OnPatchClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID, ocpi.RawMessage[PartialLocation](body)); err != nil {
+		if err := s.locationsReceiver.OnPatchClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID, ocpi.RawMessage[PartialEVSE](body)); err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
 )
@@ -17,7 +16,7 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputil.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, response)
 }
 
 func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +63,7 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
@@ -106,7 +105,7 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
@@ -171,7 +170,7 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 

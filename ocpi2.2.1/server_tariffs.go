@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
 )
@@ -17,7 +16,7 @@ func (s *Server) GetOcpiTariffs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputil.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, response)
 }
 
 func (s *Server) GetOcpiTariff(w http.ResponseWriter, r *http.Request) {

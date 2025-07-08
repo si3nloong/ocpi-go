@@ -65,13 +65,13 @@ func (UnimplementedServer) OnPutClientOwnedLocation(ctx context.Context, country
 	return ErrNotImplemented
 }
 
-// OnPutClientOwnedLocationConnector implements EMSP.
-func (UnimplementedServer) OnPutClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[Location]) error {
+// OnPutClientOwnedLocationEVSE implements EMSP.
+func (UnimplementedServer) OnPutClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[EVSE]) error {
 	return ErrNotImplemented
 }
 
-// OnPutClientOwnedLocationEVSE implements EMSP.
-func (UnimplementedServer) OnPutClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[Location]) error {
+// OnPutClientOwnedLocationConnector implements EMSP.
+func (UnimplementedServer) OnPutClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[Connector]) error {
 	return ErrNotImplemented
 }
 
@@ -80,13 +80,13 @@ func (UnimplementedServer) OnPatchClientOwnedLocation(ctx context.Context, count
 	return ErrNotImplemented
 }
 
-// OnPatchClientOwnedLocationConnector implements EMSP.
-func (UnimplementedServer) OnPatchClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PartialLocation]) error {
+// OnPatchClientOwnedLocationEVSE implements EMSP.
+func (UnimplementedServer) OnPatchClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PartialEVSE]) error {
 	return ErrNotImplemented
 }
 
-// OnPatchClientOwnedLocationEVSE implements EMSP.
-func (UnimplementedServer) OnPatchClientOwnedLocationEVSE(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, body ocpi.RawMessage[PartialLocation]) error {
+// OnPatchClientOwnedLocationConnector implements EMSP.
+func (UnimplementedServer) OnPatchClientOwnedLocationConnector(ctx context.Context, countryCode string, partyID string, locationID string, evseUID string, connectorID string, body ocpi.RawMessage[PartialConnector]) error {
 	return ErrNotImplemented
 }
 
@@ -110,7 +110,7 @@ func (UnimplementedServer) OnGetCDR(ctx context.Context, cdrID string) (*CDR, er
 }
 
 // OnPostCDR implements EMSP.
-func (UnimplementedServer) OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*ChargeDetailRecordResponse, error) {
+func (UnimplementedServer) OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*CDRResponse, error) {
 	return nil, ErrNotImplemented
 }
 

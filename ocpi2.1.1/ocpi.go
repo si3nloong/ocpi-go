@@ -376,6 +376,22 @@ type EVSE struct {
 	LastUpdated         DateTime             `json:"last_updated"`
 }
 
+type PartialEVSE struct {
+	UID                 *string              `json:"uid,omitempty"`
+	EVSEID              *string              `json:"evse_id,omitempty"`
+	Status              *Status              `json:"status,omitempty"`
+	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty"`
+	Capabilities        []Capability         `json:"capabilities,omitempty"`
+	Connectors          []Connector          `json:"connectors" validate:"required"`
+	FloorLevel          *string              `json:"floor_level,omitempty"`
+	Coordinates         *GeoLocation         `json:"coordinates,omitempty"`
+	PhysicalReference   *string              `json:"physical_reference,omitempty"`
+	Directions          []DisplayText        `json:"directions,omitempty"`
+	ParkingRestrictions []ParkingRestriction `json:"parking_restrictions,omitempty"`
+	Images              []Image              `json:"images,omitempty"`
+	LastUpdated         DateTime             `json:"last_updated"`
+}
+
 // Connector defines model for connector.
 type Connector struct {
 	ID                 string          `json:"id" validate:"required"`
@@ -387,6 +403,18 @@ type Connector struct {
 	TariffID           *string         `json:"tariff_id,omitempty"`
 	TermsAndConditions *string         `json:"terms_and_conditions,omitempty"`
 	LastUpdated        DateTime        `json:"last_updated"`
+}
+
+type PartialConnector struct {
+	ID                 *string          `json:"id,omitempty"`
+	Standard           *ConnectorType   `json:"standard,omitempty"`
+	Format             *ConnectorFormat `json:"format,omitempty"`
+	PowerType          *PowerType       `json:"power_type,omitempty"`
+	Voltage            *int             `json:"voltage,omitempty"`
+	Amperage           *int             `json:"amperage,omitempty"`
+	TariffID           *string          `json:"tariff_id,omitempty"`
+	TermsAndConditions *string          `json:"terms_and_conditions,omitempty"`
+	LastUpdated        DateTime         `json:"last_updated"`
 }
 
 type ChargeDetailRecord struct {
@@ -648,7 +676,7 @@ type LocationReferences struct {
 	ConnectorIDs *string `json:"connector_ids,omitempty"`
 }
 
-type ChargeDetailRecordResponse struct {
+type CDRResponse struct {
 	Location string
 }
 

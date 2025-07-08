@@ -15,6 +15,12 @@ func Response[T any](w http.ResponseWriter, value T) {
 		httpErr := &ocpi.HTTPError{}
 		if errors.As(vi, &httpErr) {
 			w.WriteHeader(httpErr.StatusCode)
+			b, _ := json.Marshal(ocpi.Response[any]{
+				StatusCode:    ocpi.StatusCodeClientError,
+				StatusMessage: httpErr.Message,
+				Timestamp:     time.Now().UTC(),
+			})
+			w.Write(b)
 			return
 		}
 
@@ -24,7 +30,7 @@ func Response[T any](w http.ResponseWriter, value T) {
 			b, _ := json.Marshal(ocpi.Response[any]{
 				StatusCode:    ocpiErr.StatusCode,
 				StatusMessage: vi.Error(),
-				Timestamp:     time.Now(),
+				Timestamp:     time.Now().UTC(),
 			})
 			w.Write(b)
 			return
@@ -34,7 +40,7 @@ func Response[T any](w http.ResponseWriter, value T) {
 		b, _ := json.Marshal(ocpi.Response[any]{
 			StatusCode:    ocpi.StatusCodeServerError,
 			StatusMessage: vi.Error(),
-			Timestamp:     time.Now(),
+			Timestamp:     time.Now().UTC(),
 		})
 		w.Write(b)
 

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/si3nloong/ocpi-go/internal/httputil"
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
 )
@@ -17,7 +16,7 @@ func (s *Server) GetOcpiCDRs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputil.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, response)
 }
 
 func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +40,7 @@ func (s *Server) GetOcpiCDR(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
@@ -57,7 +56,7 @@ func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Location", resp.Location)
 	w.Write(b)
+	w.WriteHeader(http.StatusCreated)
 }

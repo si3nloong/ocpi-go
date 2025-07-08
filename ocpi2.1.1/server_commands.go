@@ -11,7 +11,7 @@ import (
 func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
@@ -28,7 +28,7 @@ func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 

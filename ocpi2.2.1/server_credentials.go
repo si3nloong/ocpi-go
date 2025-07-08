@@ -23,7 +23,7 @@ func (s *Server) GetOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 	var body ocpi.RawMessage[Credential]
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
@@ -94,7 +94,7 @@ func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 	var body json.RawMessage
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		ocpihttp.BadRequest(w, r)
+		ocpihttp.BadRequest(w, r, err.Error())
 		return
 	}
 
