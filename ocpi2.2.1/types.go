@@ -50,26 +50,26 @@ func (dt *DateTime) UnmarshalJSON(b []byte) error {
 	}
 	switch {
 	case yyyymmddthhmmsszRegexp.MatchString(str):
-		t, err := time.Parse("2006-01-02T15:04:05Z", str)
+		t, err := time.ParseInLocation("2006-01-02T15:04:05Z", str, time.UTC)
 		if err != nil {
 			return err
 		}
 		*dt = DateTime{t}
 	case yyyymmddthhmmssnanoRegexp.MatchString(str):
-		t, err := time.Parse("2006-01-02T15:04:05.999999999", str)
+		t, err := time.ParseInLocation("2006-01-02T15:04:05.999999999", str, time.UTC)
 		if err != nil {
 			return err
 		}
 		*dt = DateTime{t}
 	case yyyymmddthhmmssRegexp.MatchString(str):
-		t, err := time.Parse("2006-01-02T15:04:05", str)
+		t, err := time.ParseInLocation("2006-01-02T15:04:05", str, time.UTC)
 		if err != nil {
 			return err
 		}
 		*dt = DateTime{t}
 
 	default:
-		t, err := time.ParseInLocation(time.RFC3339Nano, str, time.UTC)
+		t, err := time.Parse(time.RFC3339Nano, str)
 		if err != nil {
 			return err
 		}
