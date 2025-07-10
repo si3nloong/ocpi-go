@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-type TokenResolver func(token string) (string, error)
+type TokenResolver func(token string) string
 
 type OCPIServer interface {
 	IsClientRegistered(ctx context.Context, tokenA string) bool
@@ -57,13 +57,13 @@ func NewServer(ocpi OCPIServer, cfg ...ServerConfig) *Server {
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
-	s.tokenResolver = func(token string) (string, error) {
+	s.tokenResolver = func(token string) string {
 		token = strings.TrimPrefix(token, "Token ")
 		b, err := base64.StdEncoding.DecodeString(token)
 		if err == nil {
-			return string(b), nil
+			return string(b)
 		}
-		return token, nil
+		return token
 	}
 	s.roles = make(map[Role]struct{})
 	s.ocpi = ocpi

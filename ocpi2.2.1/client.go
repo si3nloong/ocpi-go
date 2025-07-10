@@ -52,9 +52,10 @@ type Client interface {
 }
 
 type ClientConn struct {
-	ocpi       OCPIClient
-	versionUrl string
-	httpClient *http.Client
+	ocpi          OCPIClient
+	versionUrl    string
+	httpClient    *http.Client
+	tokenResolver TokenResolver
 }
 
 var _ Client = (*ClientConn)(nil)
@@ -64,6 +65,9 @@ func NewClient(versionUrl string, ocpi OCPIClient) *ClientConn {
 	c.versionUrl = versionUrl
 	c.ocpi = ocpi
 	c.httpClient = &http.Client{}
+	c.tokenResolver = func(token string) string {
+		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
+	}
 	return c
 }
 
@@ -71,6 +75,9 @@ func NewClientWithTokenA(versionUrl string, tokenA string) ClientTokenA {
 	c := new(ClientConn)
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}
+	c.tokenResolver = func(token string) string {
+		return token
+	}
 	c.ocpi = &ocpiClient{conn: c, tokenA: tokenA}
 	return c
 }
@@ -125,7 +132,7 @@ func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst a
 		req.Header.Set(ocpi.HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 	}
 
-	req.Header.Set("Authorization", "Token "+base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token))))
+	req.Header.Set("Authorization", "Token "+c.tokenResolver(token))
 
 	b, _ := httputil.DumpRequest(req, true)
 	log.Println(string(b))
