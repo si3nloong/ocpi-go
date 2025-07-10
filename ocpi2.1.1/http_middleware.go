@@ -24,8 +24,15 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		_ = token
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(WithRequestContext(
+			r.Context(),
+			&RequestContext{
+				token:         token,
+				requestID:     requestID,
+				requestURI:    r.RequestURI,
+				correlationID: correlationID,
+			}),
+		))
 	})
 }

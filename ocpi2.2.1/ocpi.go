@@ -66,24 +66,24 @@ const (
 	AuthorizationAllowedNotAllowed AuthorizationAllowed = "NOT_ALLOWED"
 )
 
-// CdrDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
-type CdrDimensionType string
+// CDRDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
+type CDRDimensionType string
 
-// Defines values for CdrDimensionType.
+// Defines values for CDRDimensionType.
 const (
-	CdrDimensionTypeCurrent         CdrDimensionType = "CURRENT"
-	CdrDimensionTypeEnergy          CdrDimensionType = "ENERGY"
-	CdrDimensionTypeEnergyExport    CdrDimensionType = "ENERGY_EXPORT"
-	CdrDimensionTypeEnergyImport    CdrDimensionType = "ENERGY_IMPORT"
-	CdrDimensionTypeMaxCurrent      CdrDimensionType = "MAX_CURRENT"
-	CdrDimensionTypeMaxPower        CdrDimensionType = "MAX_POWER"
-	CdrDimensionTypeMinCurrent      CdrDimensionType = "MIN_CURRENT"
-	CdrDimensionTypeMinPower        CdrDimensionType = "MIN_POWER"
-	CdrDimensionTypeParkingTime     CdrDimensionType = "PARKING_TIME"
-	CdrDimensionTypePower           CdrDimensionType = "POWER"
-	CdrDimensionTypeReservationTime CdrDimensionType = "RESERVATION_TIME"
-	CdrDimensionTypeStateOfCharge   CdrDimensionType = "STATE_OF_CHARGE"
-	CdrDimensionTypeTime            CdrDimensionType = "TIME"
+	CDRDimensionTypeCurrent         CDRDimensionType = "CURRENT"
+	CDRDimensionTypeEnergy          CDRDimensionType = "ENERGY"
+	CDRDimensionTypeEnergyExport    CDRDimensionType = "ENERGY_EXPORT"
+	CDRDimensionTypeEnergyImport    CDRDimensionType = "ENERGY_IMPORT"
+	CDRDimensionTypeMaxCurrent      CDRDimensionType = "MAX_CURRENT"
+	CDRDimensionTypeMaxPower        CDRDimensionType = "MAX_POWER"
+	CDRDimensionTypeMinCurrent      CDRDimensionType = "MIN_CURRENT"
+	CDRDimensionTypeMinPower        CDRDimensionType = "MIN_POWER"
+	CDRDimensionTypeParkingTime     CDRDimensionType = "PARKING_TIME"
+	CDRDimensionTypePower           CDRDimensionType = "POWER"
+	CDRDimensionTypeReservationTime CDRDimensionType = "RESERVATION_TIME"
+	CDRDimensionTypeStateOfCharge   CDRDimensionType = "STATE_OF_CHARGE"
+	CDRDimensionTypeTime            CDRDimensionType = "TIME"
 )
 
 // EnergySourceCategory defines model for EnergySource.Source.
@@ -1050,13 +1050,13 @@ type PartialSession struct {
 // ChargingPeriod defines model for session_charging_periods.
 type ChargingPeriod struct {
 	StartDateTime DateTime       `json:"start_date_time" validate:"required"`
-	Dimensions    []CdrDimension `json:"dimensions"`
+	Dimensions    []CDRDimension `json:"dimensions"`
 	TariffID      *string        `json:"tariff_id,omitempty"`
 }
 
-// CdrDimension defines model for session_charging_periods_dimensions.
-type CdrDimension struct {
-	Type   CdrDimensionType `json:"type"`
+// CDRDimension defines model for session_charging_periods_dimensions.
+type CDRDimension struct {
+	Type   CDRDimensionType `json:"type"`
 	Volume json.Number      `json:"volume"`
 }
 

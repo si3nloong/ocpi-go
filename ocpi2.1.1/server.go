@@ -1,30 +1,29 @@
 package ocpi211
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
 )
 
-type Handler func(http.ResponseWriter, *http.Request)
-
-type ServerOption interface {
-	apply(*serverConfig)
-}
-
-type serverConfig struct {
-	baseUrl string
+type OCPIServer interface {
+	IsClientRegistered(ctx context.Context, tokenA string) bool
+	VerifyCredentialsToken(ctx context.Context, token string) error
+	StoreCredentialsTokenB(ctx context.Context, credentialsTokenB Credentials) error
+	StoreVersionDetails(ctx context.Context, versionDetails VersionDetails) error
+	GenerateCredentialsTokenC(ctx context.Context, tokenA string) (*Credentials, error)
+	// Versions
 }
 
 type Server struct {
-	serverConfig
 	roles  map[Role]struct{}
 	cpo    CPO
 	emsp   EMSP
 	logger *slog.Logger
 }
 
-func NewServer(options ...ServerOption) *Server {
+func NewServer() *Server {
 	s := new(Server)
 	s.roles = make(map[Role]struct{})
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{

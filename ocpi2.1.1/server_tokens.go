@@ -43,6 +43,7 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// When the eMSP receives a 'real-time' authorization request from a CPO that contains too little information (no LocationReferences provided) to determine if the Token might be used, the eMSP SHOULD respond with the OCPI status: 2002
 	ocpihttp.Response(w, authInfo)
 }
 

@@ -38,7 +38,7 @@ func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := s.emsp.OnPostCDR(r.Context(), ocpi.RawMessage[ChargeDetailRecord](body))
+	resp, err := s.emsp.OnPostCDR(r.Context(), ocpi.RawMessage[CDR](body))
 	if err != nil {
 		ocpihttp.Response(w, err)
 		return
@@ -50,7 +50,7 @@ func (s *Server) PostOcpiCDR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Location", resp.Location)
 	w.Write(b)
+	w.WriteHeader(http.StatusCreated)
 }

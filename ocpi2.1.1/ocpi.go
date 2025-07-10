@@ -199,17 +199,17 @@ const (
 	AuthMethodWhitelist   AuthMethod = "WHITELIST"
 )
 
-// CdrDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
-type CdrDimensionType string
+// CDRDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
+type CDRDimensionType string
 
-// Defines values for CdrDimensionType.
+// Defines values for CDRDimensionType.
 const (
-	CdrDimensionTypeEnergy      CdrDimensionType = "ENERGY"
-	CdrDimensionTypeFlat        CdrDimensionType = "FLAT"
-	CdrDimensionTypeMaxCurrent  CdrDimensionType = "MAX_CURRENT"
-	CdrDimensionTypeMinCurrent  CdrDimensionType = "MIN_CURRENT"
-	CdrDimensionTypeParkingTime CdrDimensionType = "PARKING_TIME"
-	CdrDimensionTypeTime        CdrDimensionType = "TIME"
+	CDRDimensionTypeEnergy      CDRDimensionType = "ENERGY"
+	CDRDimensionTypeFlat        CDRDimensionType = "FLAT"
+	CDRDimensionTypeMaxCurrent  CDRDimensionType = "MAX_CURRENT"
+	CDRDimensionTypeMinCurrent  CDRDimensionType = "MIN_CURRENT"
+	CDRDimensionTypeParkingTime CDRDimensionType = "PARKING_TIME"
+	CDRDimensionTypeTime        CDRDimensionType = "TIME"
 )
 
 // SessionStatus defines model for Session.Status.
@@ -277,6 +277,20 @@ const (
 	AllowedNotAllowed Allowed = "NOT_ALLOWED"
 )
 
+// DayOfWeek defines model for TariffRestrictions.DayOfWeek.
+type DayOfWeek string
+
+// Defines values for DayOfWeek.
+const (
+	DayOfWeekMonday    DayOfWeek = "MONDAY"
+	DayOfWeekTuesday   DayOfWeek = "TUESDAY"
+	DayOfWeekWednesday DayOfWeek = "WEDNESDAY"
+	DayOfWeekThursday  DayOfWeek = "THURSDAY"
+	DayOfWeekFriday    DayOfWeek = "FRIDAY"
+	DayOfWeekSaturday  DayOfWeek = "SATURDAY"
+	DayOfWeekSunday    DayOfWeek = "SUNDAY"
+)
+
 type VersionDetails struct {
 	Endpoints []Endpoint         `json:"endpoints"`
 	Version   ocpi.VersionNumber `json:"version"`
@@ -289,6 +303,14 @@ type Endpoint struct {
 
 	// Url URL to the endpoint.
 	URL string `json:"url"`
+}
+
+type Credentials struct {
+	Token           string          `json:"token" validate:"required,max=64"`
+	URL             string          `json:"url" validate:"required"`
+	BusinessDetails BusinessDetails `json:"business_details"`
+	PartyID         string          `json:"party_id" validate:"required,len=3"`
+	CountryCode     string          `json:"country_code" validate:"required,len=2"`
 }
 
 type Location struct {
@@ -417,7 +439,7 @@ type PartialConnector struct {
 	LastUpdated        DateTime         `json:"last_updated"`
 }
 
-type ChargeDetailRecord struct {
+type CDR struct {
 	ID               string           `json:"id" validate:"required"`
 	StartDateTime    DateTime         `json:"start_date_time" validate:"required"`
 	StopDateTime     DateTime         `json:"stop_date_time" validate:"required"`
@@ -499,31 +521,36 @@ type Tariff struct {
 
 type ChargingPeriod struct {
 	StartDateTime DateTime       `json:"start_date_time" validate:"required"`
-	Dimensions    []CdrDimension `json:"dimensions"`
+	Dimensions    []CDRDimension `json:"dimensions"`
 }
 
-// CdrDimension defines model for session_charging_periods_dimensions.
-type CdrDimension struct {
-	Type   CdrDimensionType `json:"type"`
+// CDRDimension defines model for session_charging_periods_dimensions.
+type CDRDimension struct {
+	Type   CDRDimensionType `json:"type"`
 	Volume json.Number      `json:"volume"`
 }
 
 type TariffElement struct {
-	PriceComponents []PriceComponent    `json:"price_components"`
-	Restrictions    []TariffRestriction `json:"restrictions,omitempty"`
+	PriceComponents []PriceComponent     `json:"price_components"`
+	Restrictions    []TariffRestrictions `json:"restrictions,omitempty"`
 }
 
 type PriceComponent struct {
 	Type string `json:"type" validate:"required"`
 }
 
-type TariffRestriction struct {
-	StartTime *DateTime    `json:"start_time" validate:"required"`
-	EndTime   *DateTime    `json:"end_time,omitempty"`
-	StartDate *string      `json:"start_date" validate:"required"`
-	EndDate   *string      `json:"end_date,omitempty"`
-	MinKwh    *json.Number `json:"min_kwh,omitempty"` // Minimum kWh for this restriction.
-	// Type Type of restriction, e.g. "TIME", "ENERGY", "PARKING_TIME".
+type TariffRestrictions struct {
+	StartTime   *DateTime    `json:"start_time" validate:"required"`
+	EndTime     *DateTime    `json:"end_time,omitempty"`
+	StartDate   *string      `json:"start_date" validate:"required"`
+	EndDate     *string      `json:"end_date,omitempty"`
+	MinKwh      *json.Number `json:"min_kwh,omitempty"`      // Minimum kWh for this restriction.
+	MaxKwh      *json.Number `json:"max_kwh,omitempty"`      // Maximum kWh for this restriction.
+	MinPower    *json.Number `json:"min_power,omitempty"`    // Minimum power for this restriction.
+	MaxPower    *json.Number `json:"max_power,omitempty"`    // Maximum power for this restriction.
+	MinDuration *int         `json:"min_duration,omitempty"` // Minimum duration for this restriction.
+	MaxDuration *int         `json:"max_duration,omitempty"` // Maximum duration for this restriction.
+	DayOfWeek   []DayOfWeek  `json:"day_of_week,omitempty"`
 }
 
 // CommandResponse defines model for commandResponse.

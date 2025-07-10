@@ -11,7 +11,7 @@ type CPO interface {
 	// (GET /ocpi/2.1.1/locations)
 	OnGetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
 	// (GET /ocpi/2.1.1/cdrs)
-	OnGetCDRs(ctx context.Context, params GetCdrsParams) (*ocpi.PaginationResponse[ChargeDetailRecord], error)
+	OnGetCDRs(ctx context.Context, params GetCdrsParams) (*ocpi.PaginationResponse[CDR], error)
 	// (GET /ocpi/2.1.1/sessions)
 	OnGetSessions(ctx context.Context, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
 	// (GET /ocpi/2.1.1/tariffs)
@@ -54,9 +54,9 @@ type EMSP interface {
 	OnPatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, body ocpi.RawMessage[PartialSession]) error
 
 	// (GET /ocpi/2.1.1/cdrs/{cdr_id})
-	OnGetCDR(ctx context.Context, cdrID string) (*ChargeDetailRecord, error)
+	OnGetCDR(ctx context.Context, cdrID string) (*CDR, error)
 	// (POST /ocpi/2.1.1/cdrs)
-	OnPostCDR(ctx context.Context, body ocpi.RawMessage[ChargeDetailRecord]) (*CDRResponse, error)
+	OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*CDRResponse, error)
 
 	// (GET /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
 	OnGetClientOwnedTariff(ctx context.Context, countryCode string, partyID string, sessionID string) (*Tariff, error)

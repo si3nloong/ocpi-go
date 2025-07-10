@@ -16,7 +16,7 @@ import (
 type EndpointResolver func(endpoint string) string
 
 type Client interface {
-	CallEndpoint(ctx context.Context, mod ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
+	CallEndpoint(ctx context.Context, module ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
 }
 
 type Option func(*ClientConn)
