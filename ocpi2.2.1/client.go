@@ -19,17 +19,20 @@ import (
 type EndpointResolver func(endpoint string) string
 
 type OCPIClient interface {
-	GetCredentialsTokenC(ctx context.Context) (string, error)
-	GetEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole) (string, error)
+	GetCredentialsToken(ctx context.Context) (string, error)
+	GetEndpoint(ctx context.Context, module ModuleID, role InterfaceRole) (string, error)
 }
 
 type ClientTokenA interface {
 	GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error)
 	GetVersionDetails(ctx context.Context, version ocpi.Version) (*ocpi.Response[VersionDetails], error)
+	GetCredential(ctx context.Context) (*ocpi.Response[Credential], error)
+	PostCredential(ctx context.Context, req Credential) (*ocpi.Response[Credential], error)
 }
 
 type Client interface {
-	CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, method string, endpointResolver EndpointResolver, src, dst any) error
+	ClientTokenA
+	CallEndpoint(ctx context.Context, module ModuleID, role InterfaceRole, method string, endpointResolver EndpointResolver, src, dst any) error
 	GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
 	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
 	GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error)
@@ -49,7 +52,6 @@ type Client interface {
 }
 
 type ClientConn struct {
-	tokenA     string
 	ocpi       OCPIClient
 	versionUrl string
 	httpClient *http.Client
@@ -67,29 +69,25 @@ func NewClient(versionUrl string, ocpi OCPIClient) *ClientConn {
 
 func NewClientWithTokenA(versionUrl string, tokenA string) ClientTokenA {
 	c := new(ClientConn)
-	c.tokenA = tokenA
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}
+	c.ocpi = &ocpiClient{conn: c, tokenA: tokenA}
 	return c
 }
 
-func (c *ClientConn) CallEndpoint(ctx context.Context, mod ModuleID, role InterfaceRole, method string, resolver EndpointResolver, src, dst any) error {
-	endpoint, err := c.ocpi.GetEndpoint(ctx, mod, role)
+func (c *ClientConn) CallEndpoint(ctx context.Context, module ModuleID, role InterfaceRole, method string, resolver EndpointResolver, src, dst any) error {
+	endpoint, err := c.ocpi.GetEndpoint(ctx, module, role)
 	if err != nil {
 		return err
 	}
 
-	tokenC, err := c.ocpi.GetCredentialsTokenC(ctx)
-	if err != nil {
-		return err
-	}
-	if err := c.do(ctx, tokenC, method, resolver(endpoint), src, dst); err != nil {
+	if err := c.do(ctx, method, resolver(endpoint), src, dst); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientConn) do(ctx context.Context, token, method, endpoint string, src, dst any) error {
+func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst any) error {
 	var body io.Reader
 	if src != nil {
 		b, err := json.Marshal(src)
@@ -100,6 +98,11 @@ func (c *ClientConn) do(ctx context.Context, token, method, endpoint string, src
 	}
 
 	req, err := http.NewRequestWithContext(ctx, method, endpoint, body)
+	if err != nil {
+		return err
+	}
+
+	token, err := c.ocpi.GetCredentialsToken(ctx)
 	if err != nil {
 		return err
 	}
