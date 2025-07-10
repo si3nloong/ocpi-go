@@ -27,17 +27,9 @@ type ServerConfig struct {
 	TokenResolver TokenResolver
 }
 
-type ServerOption interface {
-	apply(*serverOptions)
-}
-
-type serverOptions struct {
-	baseUrl string
-}
-
 type Server struct {
-	serverOptions
 	logger                   *slog.Logger
+	enabledRoleRoute         bool
 	errs                     chan error
 	ocpi                     OCPIServer
 	tokenResolver            TokenResolver
@@ -147,11 +139,11 @@ func (s *Server) SetSCSP(scsp SCSP) {
 func (s *Server) Handler() http.Handler {
 	router := http.NewServeMux()
 
-	router.HandleFunc(s.baseUrl+"/2.2.1/details", s.GetOcpiVersionDetails)
-	router.HandleFunc(s.baseUrl+"/2.2.1/credentials", s.GetOcpiCredentials)
-	router.HandleFunc("POST "+s.baseUrl+"/2.2.1/credentials", s.PostOcpiCredentials)
-	router.HandleFunc("PUT "+s.baseUrl+"/2.2.1/credentials", s.PutOcpiCredentials)
-	router.HandleFunc("DELETE "+s.baseUrl+"/2.2.1/credentials", s.DeleteOcpiCredentials)
+	router.HandleFunc("/2.2.1/details", s.GetOcpiVersionDetails)
+	router.HandleFunc("/2.2.1/credentials", s.GetOcpiCredentials)
+	router.HandleFunc("POST /2.2.1/credentials", s.PostOcpiCredentials)
+	router.HandleFunc("PUT /2.2.1/credentials", s.PutOcpiCredentials)
+	router.HandleFunc("DELETE /2.2.1/credentials", s.DeleteOcpiCredentials)
 
 	if s.hubClientInfoSender != nil {
 		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/hubclientinfo"), s.GetOcpiClientInfos)
@@ -222,6 +214,7 @@ func (s *Server) Handler() http.Handler {
 	if s.commandsSender != nil {
 		router.HandleFunc("POST "+s.withRole(InterfaceRoleSender, "/2.2.1/commands/{command_type}/{uid}"), s.PostOcpiCommandResponse)
 	}
+
 	return s.authorizeMiddleware(router)
 }
 
@@ -234,12 +227,14 @@ func (s *Server) Errors() <-chan error {
 }
 
 func (s *Server) withRole(role InterfaceRole, path string) string {
-	return path
+	if !s.enabledRoleRoute {
+		return path
+	}
 	switch role {
 	case InterfaceRoleSender:
-		return s.baseUrl + "/emsp" + path
+		return "/emsp" + path
 	case InterfaceRoleReceiver:
-		return s.baseUrl + "/cpo" + path
+		return "/cpo" + path
 	default:
 		panic(fmt.Sprintf("ocpi221: invalid role %q", role))
 	}
