@@ -145,6 +145,33 @@ func (s *Server) Handler() http.Handler {
 	router.HandleFunc("PUT /2.2.1/credentials", s.PutOcpiCredentials)
 	router.HandleFunc("DELETE /2.2.1/credentials", s.DeleteOcpiCredentials)
 
+	if s.cdrsSender != nil {
+		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/cdrs"), s.GetOcpiCDRs)
+	}
+	if s.cdrsReceiver != nil {
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/cdrs/{cdr_id}"), s.GetOcpiCDR)
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleReceiver, "/2.2.1/cdrs"), s.PostOcpiCDR)
+	}
+
+	if s.chargingProfilesSender != nil {
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleSender, "/2.2.1/activechargingprofile/{session_id}"), s.PostOcpiActiveChargingProfile)
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleSender, "/2.2.1/chargingprofiles/chargingprofile/{session_id}"), s.PostOcpiChargingProfile)
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleSender, "/2.2.1/clearprofile/{session_id}"), s.PostOcpiClearProfile)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleSender, "/2.2.1/activechargingprofile/{session_id}"), s.PutOcpiActiveChargingProfile)
+	}
+	if s.chargingProfilesReceiver != nil {
+		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/chargingprofiles/{session_id}"), s.GetOcpiActiveChargingProfile)
+		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/chargingprofiles/{session_id}"), s.PutOcpiChargingProfile)
+		router.HandleFunc("DELETE "+s.withRole(InterfaceRoleReceiver, "/2.2.1/chargingprofiles/{session_id}"), s.DeleteOcpiChargingProfile)
+	}
+
+	if s.commandsReceiver != nil {
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleReceiver, "/2.2.1/commands/{command_type}"), s.PostOcpiCommand)
+	}
+	if s.commandsSender != nil {
+		router.HandleFunc("POST "+s.withRole(InterfaceRoleSender, "/2.2.1/commands/{command_type}/{uid}"), s.PostOcpiCommandResponse)
+	}
+
 	if s.hubClientInfoSender != nil {
 		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/hubclientinfo"), s.GetOcpiClientInfos)
 	}
@@ -181,14 +208,6 @@ func (s *Server) Handler() http.Handler {
 		router.HandleFunc("PATCH "+s.withRole(InterfaceRoleReceiver, "/2.2.1/sessions/{country_code}/{party_id}/{session_id}"), s.PatchOcpiSession)
 	}
 
-	if s.cdrsSender != nil {
-		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/cdrs"), s.GetOcpiCDRs)
-	}
-	if s.cdrsReceiver != nil {
-		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/cdrs/{cdr_id}"), s.GetOcpiCDR)
-		router.HandleFunc("POST "+s.withRole(InterfaceRoleReceiver, "/2.2.1/cdrs"), s.PostOcpiCDR)
-	}
-
 	if s.tariffsSender != nil {
 		router.HandleFunc(s.withRole(InterfaceRoleSender, "/2.2.1/tariffs"), s.GetOcpiTariffs)
 	}
@@ -206,13 +225,6 @@ func (s *Server) Handler() http.Handler {
 		router.HandleFunc(s.withRole(InterfaceRoleReceiver, "/2.2.1/tokens/{country_code}/{party_id}/{token_uid}"), s.GetOcpiToken)
 		router.HandleFunc("PUT "+s.withRole(InterfaceRoleReceiver, "/2.2.1/tokens/{country_code}/{party_id}/{token_uid}"), s.PutOcpiToken)
 		router.HandleFunc("PATCH "+s.withRole(InterfaceRoleReceiver, "/2.2.1/tokens/{country_code}/{party_id}/{token_uid}"), s.PatchOcpiToken)
-	}
-
-	if s.commandsReceiver != nil {
-		router.HandleFunc("POST "+s.withRole(InterfaceRoleReceiver, "/2.2.1/commands/{command_type}"), s.PostOcpiCommand)
-	}
-	if s.commandsSender != nil {
-		router.HandleFunc("POST "+s.withRole(InterfaceRoleSender, "/2.2.1/commands/{command_type}/{uid}"), s.PostOcpiCommandResponse)
 	}
 
 	return s.authorizeMiddleware(router)

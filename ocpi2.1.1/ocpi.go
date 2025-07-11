@@ -610,7 +610,7 @@ type GetLocationsParams struct {
 	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-type GetCdrsParams struct {
+type GetCDRsParams struct {
 }
 
 type SessionsResponse = ocpi.Response[[]Session]

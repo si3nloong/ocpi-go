@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Server) GetOcpiCDRs(w http.ResponseWriter, r *http.Request) {
-	params := GetCdrsParams{}
+	params := GetCDRsParams{}
 	response, err := s.cdrsSender.OnGetCDRs(r.Context(), params)
 	if err != nil {
 		ocpihttp.Response(w, err)

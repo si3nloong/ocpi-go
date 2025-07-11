@@ -45,8 +45,9 @@ func NewResponse[T any](value T) *Response[T] {
 
 func NewEmptyResponse() *Response[any] {
 	return &Response[any]{
-		StatusCode: StatusCodeSuccess,
-		Timestamp:  time.Now().UTC(),
+		StatusCode:    StatusCodeSuccess,
+		StatusMessage: StatusCodeSuccess.String(),
+		Timestamp:     time.Now().UTC(),
 	}
 }
 

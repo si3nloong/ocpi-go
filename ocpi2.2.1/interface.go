@@ -79,7 +79,7 @@ type CredentialsReceiver interface {
 
 type CDRsSender interface {
 	// (GET /ocpi/2.2.1/cdrs)
-	OnGetCDRs(ctx context.Context, params GetCdrsParams) (*ocpi.PaginationResponse[CDR], error)
+	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginationResponse[CDR], error)
 }
 type CDRsReceiver interface {
 	// (GET /ocpi/2.2.1/cdrs/{cdr_id})
@@ -89,14 +89,18 @@ type CDRsReceiver interface {
 }
 
 type ChargingProfilesSender interface {
-	// (POST /ocpi/2.2.1/activechargingprofile)
-	OnPostActiveChargingProfile(ctx context.Context, body ocpi.RawMessage[any]) error
-	// (PUT /ocpi/2.2.1/chargingprofiles/{session_id})
+	// (POST /ocpi/2.2.1/activechargingprofile/{session_id})
+	OnPostActiveChargingProfile(ctx context.Context, sessionID string, body ocpi.RawMessage[ActiveChargingProfileResult]) error
+	// (POST /ocpi/2.2.1/chargingprofiles/chargingprofile/{session_id})
+	OnPostChargingProfile(ctx context.Context, sessionID string, body ocpi.RawMessage[ChargingProfileResult]) error
+	// (POST /ocpi/2.2.1/clearprofile/{session_id})
+	OnPostClearProfile(ctx context.Context, sessionID string, body ocpi.RawMessage[ClearProfileResult]) error
+	// (PUT /ocpi/2.2.1/clearprofile/{session_id})
 	OnPutActiveChargingProfile(ctx context.Context, sessionID string, body ocpi.RawMessage[ActiveChargingProfile]) error
 }
 type ChargingProfilesReceiver interface {
 	// (GET /ocpi/2.2.1/chargingprofiles/{session_id}?duration={duration}&response_url={url})
-	OnGetChargingProfile(ctx context.Context, sessionID string, duration int, responseURL string) (*ChargingProfileResponse, error)
+	OnGetActiveChargingProfile(ctx context.Context, sessionID string, duration int, responseURL string) (*ChargingProfileResponse, error)
 	// (PUT /ocpi/2.2.1/chargingprofiles/{session_id})
 	OnPutChargingProfile(ctx context.Context, sessionID string, body ocpi.RawMessage[SetChargingProfile]) (*ChargingProfileResponse, error)
 	// (DELETE /ocpi/2.2.1/chargingprofiles/{session_id}?response_url={url})
@@ -114,7 +118,7 @@ type CommandsReceiver interface {
 
 type HubClientInfoSender interface {
 	// (GET /ocpi/2.2.1/hubclientinfo)
-	OnGetHubClientInfo(ctx context.Context, params GetHubClientInfoParams) (*ocpi.PaginationResponse[ClientInfo], error)
+	OnGetHubClientInfos(ctx context.Context, params GetHubClientInfoParams) (*ocpi.PaginationResponse[ClientInfo], error)
 }
 type HubClientInfoReceiver interface {
 	// (GET /ocpi/2.2.1/clientinfo/{id})

@@ -7,8 +7,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var validate *validator.Validate
-
 // Version defines model for DetailsData.Version.
 type VersionNumber string
 
@@ -17,7 +15,7 @@ const (
 	VersionNumber20  VersionNumber = "2.0"
 	VersionNumber21  VersionNumber = "2.1" // deprecated
 	VersionNumber211 VersionNumber = "2.1.1"
-	VersionNumber22  VersionNumber = "2.2"
+	VersionNumber22  VersionNumber = "2.2" // deprecated
 	VersionNumber221 VersionNumber = "2.2.1"
 	VersionNumber230 VersionNumber = "2.3.0"
 )
@@ -25,6 +23,8 @@ const (
 type HeaderScanner interface {
 	ScanHeader(httpHeader http.Header) error
 }
+
+var validate *validator.Validate
 
 func init() {
 	validate = validator.New()

@@ -9,6 +9,14 @@ import (
 )
 
 func (s *Server) GetOcpiClientInfos(w http.ResponseWriter, r *http.Request) {
+	params := GetHubClientInfoParams{}
+	response, err := s.hubClientInfoSender.OnGetHubClientInfos(r.Context(), params)
+	if err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+
+	ocpihttp.ResponsePagination(w, r, response)
 }
 
 func (s *Server) GetOcpiClientInfo(w http.ResponseWriter, r *http.Request) {

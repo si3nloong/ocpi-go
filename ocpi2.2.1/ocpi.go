@@ -119,6 +119,9 @@ const (
 	ChargingRateUnitWatts   ChargingRateUnit = "W"
 )
 
+// ChargingProfileResponseType Response to the ChargingProfile request from the eMSP to the CPO.
+type ChargingProfileResponseType string
+
 // Defines values for ChargingProfileResponseType.
 const (
 	ChargingProfileResponseTypeAccepted       ChargingProfileResponseType = "ACCEPTED"
@@ -126,20 +129,6 @@ const (
 	ChargingProfileResponseTypeRejected       ChargingProfileResponseType = "REJECTED"
 	ChargingProfileResponseTypeTooOften       ChargingProfileResponseType = "TOO_OFTEN"
 	ChargingProfileResponseTypeUnknownSession ChargingProfileResponseType = "UNKNOWN_SESSION"
-)
-
-// Defines values for ChargingProfileResultResult.
-const (
-	ChargingProfileResultResultAccepted ChargingProfileResultResult = "ACCEPTED"
-	ChargingProfileResultResultRejected ChargingProfileResultResult = "REJECTED"
-	ChargingProfileResultResultUnknown  ChargingProfileResultResult = "UNKNOWN"
-)
-
-// Defines values for ClearProfileResultResult.
-const (
-	ClearProfileResultResultAccepted ClearProfileResultResult = "ACCEPTED"
-	ClearProfileResultResultRejected ClearProfileResultResult = "REJECTED"
-	ClearProfileResultResultUnknown  ClearProfileResultResult = "UNKNOWN"
 )
 
 // ConnectionStatus defines model for ClientInfo.Status.
@@ -481,8 +470,8 @@ type CredentialsRole struct {
 
 // ActiveChargingProfileResult defines model for activeChargingProfileResult.
 type ActiveChargingProfileResult struct {
+	Result  ChargingProfileResultType `json:"result" validate:"required"`
 	Profile *ActiveChargingProfile    `json:"profile,omitempty"`
-	Result  ChargingProfileResultType `json:"result"`
 }
 
 // ActiveChargingProfile defines model for activeChargingProfile.
@@ -645,22 +634,19 @@ type ChargingPreferences struct {
 
 // ChargingProfile defines model for chargingProfile.
 type ChargingProfile struct {
-	ChargingProfilePeriod []ChargingProfilePeriod `json:"charging_profile_period,omitempty"`
-	ChargingRateUnit      ChargingRateUnit        `json:"charging_rate_unit"`
-	Duration              *int                    `json:"duration,omitempty"`
-	MinChargingRate       *json.Number            `json:"min_charging_rate,omitempty"`
 	StartDateTime         *DateTime               `json:"start_date_time,omitempty"`
+	Duration              *int                    `json:"duration,omitempty"`
+	ChargingRateUnit      ChargingRateUnit        `json:"charging_rate_unit" validate:"required"`
+	MinChargingRate       *json.Number            `json:"min_charging_rate,omitempty"`
+	ChargingProfilePeriod []ChargingProfilePeriod `json:"charging_profile_period,omitempty"`
 }
 
 // ChargingProfileResponse defines model for chargingProfileResponse.
 type ChargingProfileResponse struct {
 	// Result Response to the ChargingProfile request from the eMSP to the CPO.
-	Result  ChargingProfileResponseType `json:"result"`
-	Timeout int                         `json:"timeout"`
+	Result  ChargingProfileResponseType `json:"result" validate:"required"`
+	Timeout int                         `json:"timeout" validate:"required"`
 }
-
-// ChargingProfileResponseType Response to the ChargingProfile request from the eMSP to the CPO.
-type ChargingProfileResponseType string
 
 // ChargingProfileResult defines model for chargingProfileResult.
 type ChargingProfileResult struct {
@@ -672,8 +658,8 @@ type ChargingProfileResultResult string
 
 // ChargingProfilePeriod defines model for chargingProfile_charging_profile_period.
 type ChargingProfilePeriod struct {
-	StartPeriod int         `json:"start_period"`
-	Limit       json.Number `json:"limit"`
+	StartPeriod int         `json:"start_period" validate:"required"`
+	Limit       json.Number `json:"limit" validate:"required"`
 }
 
 // ChargingProfilesResponse defines model for chargingProfilesResponse.
@@ -696,25 +682,9 @@ type ClearProfileResultResult string
 type ClientInfo struct {
 	PartyID     string           `json:"party_id" validate:"required,len=3"`
 	CountryCode string           `json:"country_code" validate:"required,len=2"`
-	Role        Role             `json:"role"`
-	Status      ConnectionStatus `json:"status"`
+	Role        Role             `json:"role" valdate:"required"`
+	Status      ConnectionStatus `json:"status" valdate:"required"`
 	LastUpdated DateTime         `json:"last_updated" valdate:"required"`
-}
-
-// ClientInfoResponse defines model for clientInfoResponse.
-type ClientInfoResponse struct {
-	ClientsInfo   *ClientInfo `json:"clients_info,omitempty"`
-	StatusCode    float32     `json:"status_code"`
-	StatusMessage *string     `json:"status_message,omitempty"`
-	TimeStamp     *string     `json:"timeStamp,omitempty"`
-}
-
-// ClientsInfoResponse defines model for clientsInfoResponse.
-type ClientsInfoResponse struct {
-	ClientInfo    ClientInfo `json:"client_info"`
-	StatusCode    float32    `json:"status_code"`
-	StatusMessage *string    `json:"status_message,omitempty"`
-	TimeStamp     *string    `json:"timeStamp,omitempty"`
 }
 
 // CommandResponse defines model for commandResponse.
@@ -1257,13 +1227,13 @@ type UnlockConnector struct {
 	ConnectorID string `json:"connector_id"`
 }
 
-// GetCdrsParams defines parameters for GetOcpiCdrs.
-type GetCdrsParams struct {
+// GetCDRsParams defines parameters for GetOcpiCdrs.
+type GetCDRsParams struct {
 	// DateFrom Return CDRs that have last_updated after or equal to this Date/Time (inclusive).
-	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return CDRs that have last_updated up to this Date/Time, but not including (exclusive).
-	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1275,10 +1245,10 @@ type GetCdrsParams struct {
 // GetHubClientInfoParams defines parameters for GetOcpiHubclientinfo.
 type GetHubClientInfoParams struct {
 	// DateFrom Return ClientInfo that have last_updated after or equal to Date/Time (inclusive).
-	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return ClientInfo that have last_updated up to Date/Time, but not including (exclusive).
-	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
@@ -1335,10 +1305,10 @@ type GetTariffsParams struct {
 // GetTokensParams defines parameters for GetOcpiTokens.
 type GetTokensParams struct {
 	// DateFrom Return tokens that have last_updated after or equal to this Date/Time (inclusive).
-	DateFrom *string `form:"date_from,omitempty" json:"date_from,omitempty"`
+	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
 
 	// DateTo Return tokens that have last_updated up to Date/Time, but not including (exclusive).
-	DateTo *string `form:"date_to,omitempty" json:"date_to,omitempty"`
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
 	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`

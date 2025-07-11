@@ -11,7 +11,7 @@ type CPO interface {
 	// (GET /ocpi/2.1.1/locations)
 	OnGetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
 	// (GET /ocpi/2.1.1/cdrs)
-	OnGetCDRs(ctx context.Context, params GetCdrsParams) (*ocpi.PaginationResponse[CDR], error)
+	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginationResponse[CDR], error)
 	// (GET /ocpi/2.1.1/sessions)
 	OnGetSessions(ctx context.Context, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
 	// (GET /ocpi/2.1.1/tariffs)
