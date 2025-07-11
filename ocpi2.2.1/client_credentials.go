@@ -21,7 +21,7 @@ func (c *ClientConn) GetCredential(ctx context.Context) (*ocpi.Response[Credenti
 
 func (c *ClientConn) PostCredential(ctx context.Context, req Credential) (*ocpi.Response[Credential], error) {
 	var res ocpi.Response[Credential]
-	if err := c.CallEndpoint(ctx, ModuleIDCredentials, InterfaceRoleSender, http.MethodPut, func(endpoint string) string {
+	if err := c.CallEndpoint(ctx, ModuleIDCredentials, InterfaceRoleSender, http.MethodPost, func(endpoint string) string {
 		return endpoint
 	}, req, &res); err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *ClientConn) RegisterCredential(ctx context.Context, req Credential) (*o
 	versions.LatestMutualVersion(ocpi.VersionNumber221)
 
 	var res ocpi.Response[Credential]
-	if err := c.CallEndpoint(ctx, ModuleIDCredentials, InterfaceRoleSender, http.MethodPut, func(endpoint string) string {
+	if err := c.CallEndpoint(ctx, ModuleIDCredentials, InterfaceRoleSender, http.MethodPost, func(endpoint string) string {
 		return endpoint
 	}, req, &res); err != nil {
 		return nil, err
