@@ -2,7 +2,6 @@ package ocpi221
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
@@ -34,7 +33,7 @@ func (c *ClientConn) GetVersionDetails(ctx context.Context) (*ocpi.Response[Vers
 	mutualVersion, ok := c.versions.MutualVersion(ocpi.VersionNumber221)
 	if !ok {
 		c.rw.RUnlock()
-		return nil, fmt.Errorf(`ocpi221: unable to find mutual version`)
+		return nil, ocpi.ErrNoMutualVersion
 	}
 	c.rw.RUnlock()
 	var res ocpi.Response[VersionDetails]

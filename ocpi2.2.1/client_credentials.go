@@ -50,7 +50,7 @@ func (c *ClientConn) RegisterCredential(ctx context.Context, req Credentials) (*
 	}
 	mutualVersion, ok := versions.MutualVersion(ocpi.VersionNumber221)
 	if !ok {
-		return nil, fmt.Errorf(`ocpi221: cannot find mutual version 2.2.1 from version endpoint %s`, c.versionUrl)
+		return nil, ocpi.ErrNoMutualVersion
 	}
 
 	var versionDetailsResponse ocpi.Response[ocpi.Versions]
@@ -86,7 +86,7 @@ func (c *ClientConn) UpdateCredential(ctx context.Context, credentialWithTokenB 
 	sort.Sort(versions)
 	version, ok := versions.MutualVersion(ocpi.VersionNumber221)
 	if !ok {
-		return nil, fmt.Errorf(`ocpi221: cannot find mutual ocpi version`)
+		return nil, ocpi.ErrNoMutualVersion
 	}
 
 	var versionDetailsResponse ocpi.Response[VersionDetails]

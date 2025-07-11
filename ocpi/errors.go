@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	ErrNoMutualVersion                  = fmt.Errorf(`ocpi: no mutual version`)
 	ErrClient                           = &OCPIError{StatusCode: StatusCodeClientError}
 	ErrClientInvalidOrMissingParameters = &OCPIError{StatusCode: StatusCodeClientErrorInvalidOrMissingParameters}
 )
