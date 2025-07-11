@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"sync"
 	"unsafe"
 
 	"github.com/gofrs/uuid/v5"
@@ -25,6 +26,7 @@ type OCPIClient interface {
 
 type ClientTokenA interface {
 	GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error)
+	SetVersion(ctx context.Context, version ocpi.Version) error
 	GetVersionDetails(ctx context.Context, version ocpi.Version) (*ocpi.Response[VersionDetails], error)
 	GetCredential(ctx context.Context) (*ocpi.Response[Credentials], error)
 	PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error)
@@ -52,10 +54,13 @@ type Client interface {
 }
 
 type ClientConn struct {
-	ocpi          OCPIClient
-	versionUrl    string
-	httpClient    *http.Client
-	tokenResolver TokenResolver
+	rw              sync.RWMutex
+	selectedVersion ocpi.Version
+	versions        ocpi.Versions
+	ocpi            OCPIClient
+	versionUrl      string
+	httpClient      *http.Client
+	tokenResolver   TokenResolver
 }
 
 var _ Client = (*ClientConn)(nil)

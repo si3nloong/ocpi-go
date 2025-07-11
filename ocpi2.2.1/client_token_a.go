@@ -23,19 +23,24 @@ func (c *ocpiClient) GetEndpoint(ctx context.Context, module ModuleID, role Inte
 	c.rw.RLock()
 	if c.endpoints == nil {
 		c.rw.RUnlock()
-		versionsResponse, err := c.conn.GetVersions(ctx)
-		if err != nil {
-			return "", err
+		if c.conn.selectedVersion.Version == "" {
+			versionsResponse, err := c.conn.GetVersions(ctx)
+			if err != nil {
+				return "", err
+			}
+			versions, err := versionsResponse.Data()
+			if err != nil {
+				return "", err
+			}
+			mutualVersion, ok := versions.LatestMutualVersion(ocpi.VersionNumber221)
+			if !ok {
+				return "", fmt.Errorf(`ocpi221: cannot find mutual version for %s client`, ocpi.VersionNumber221)
+			}
+			if err := c.conn.SetVersion(ctx, mutualVersion); err != nil {
+				return "", err
+			}
 		}
-		versions, err := versionsResponse.Data()
-		if err != nil {
-			return "", err
-		}
-		mutualVersion, ok := versions.LatestMutualVersion(ocpi.VersionNumber221)
-		if !ok {
-			return "", fmt.Errorf(`ocpi221: cannot find mutual version for %s client`, ocpi.VersionNumber221)
-		}
-		versionDetailsResponse, err := c.conn.GetVersionDetails(ctx, mutualVersion)
+		versionDetailsResponse, err := c.conn.GetVersionDetails(ctx, c.conn.selectedVersion)
 		if err != nil {
 			return "", err
 		}
