@@ -66,13 +66,13 @@ type SCSP interface {
 	SessionsReceiver
 }
 
-type Credentials interface {
+type CredentialsReceiver interface {
 	// (GET /ocpi/2.2.1/credentials)
-	OnGetCredential(ctx context.Context, tokenC string) (*Credential, error)
+	OnGetCredential(ctx context.Context, tokenC string) (*Credentials, error)
 	// (POST /ocpi/2.2.1/credentials)
-	OnPostCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credential]) (*Credential, error)
+	OnPostCredential(ctx context.Context, tokenA string, body ocpi.RawMessage[Credentials]) (*Credentials, error)
 	// (PUT /ocpi/2.2.1/credentials)
-	OnPutCredential(ctx context.Context, tokenC string, body ocpi.RawMessage[Credential]) (*Credential, error)
+	OnPutCredential(ctx context.Context, tokenC string, body ocpi.RawMessage[Credentials]) (*Credentials, error)
 	// (DELETE /ocpi/2.2.1/credentials)
 	OnDeleteCredential(ctx context.Context, tokenC string) error
 }
@@ -200,10 +200,6 @@ type TokensReceiver interface {
 	OnPatchClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, body ocpi.RawMessage[PartialToken], tokenType ...TokenType) error
 }
 
-type Versions interface {
-	VersionsSender
-	VersionsReceiver
-}
 type VersionsSender interface {
 }
 type VersionsReceiver interface {

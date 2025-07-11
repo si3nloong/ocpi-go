@@ -9,8 +9,8 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetCredential(ctx context.Context) (*ocpi.Response[Credential], error) {
-	var res ocpi.Response[Credential]
+func (c *ClientConn) GetCredential(ctx context.Context) (*ocpi.Response[Credentials], error) {
+	var res ocpi.Response[Credentials]
 	if err := c.CallEndpoint(ctx, ModuleIDCredentials, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
 		return endpoint
 	}, nil, &res); err != nil {
@@ -19,8 +19,8 @@ func (c *ClientConn) GetCredential(ctx context.Context) (*ocpi.Response[Credenti
 	return &res, nil
 }
 
-func (c *ClientConn) PostCredential(ctx context.Context, req Credential) (*ocpi.Response[Credential], error) {
-	var res ocpi.Response[Credential]
+func (c *ClientConn) PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error) {
+	var res ocpi.Response[Credentials]
 	if err := c.CallEndpoint(ctx, ModuleIDCredentials, InterfaceRoleSender, http.MethodPost, func(endpoint string) string {
 		return endpoint
 	}, req, &res); err != nil {
@@ -29,8 +29,8 @@ func (c *ClientConn) PostCredential(ctx context.Context, req Credential) (*ocpi.
 	return &res, nil
 }
 
-func (c *ClientConn) PutCredential(ctx context.Context, req Credential) (*ocpi.Response[Credential], error) {
-	var res ocpi.Response[Credential]
+func (c *ClientConn) PutCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error) {
+	var res ocpi.Response[Credentials]
 	if err := c.CallEndpoint(ctx, ModuleIDCredentials, InterfaceRoleSender, http.MethodPut, func(endpoint string) string {
 		return endpoint
 	}, req, &res); err != nil {
@@ -39,7 +39,7 @@ func (c *ClientConn) PutCredential(ctx context.Context, req Credential) (*ocpi.R
 	return &res, nil
 }
 
-func (c *ClientConn) RegisterCredential(ctx context.Context, req Credential) (*ocpi.Response[Credential], error) {
+func (c *ClientConn) RegisterCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error) {
 	var versionsResponse ocpi.Response[ocpi.Versions]
 	if err := c.do(ctx, http.MethodGet, c.versionUrl, nil, &versionsResponse); err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (c *ClientConn) RegisterCredential(ctx context.Context, req Credential) (*o
 	}
 	versions.LatestMutualVersion(ocpi.VersionNumber221)
 
-	var res ocpi.Response[Credential]
+	var res ocpi.Response[Credentials]
 	if err := c.CallEndpoint(ctx, ModuleIDCredentials, InterfaceRoleSender, http.MethodPost, func(endpoint string) string {
 		return endpoint
 	}, req, &res); err != nil {
@@ -63,7 +63,7 @@ func (c *ClientConn) RegisterCredential(ctx context.Context, req Credential) (*o
 //   - Updating to a newer version
 //   - Changing endpoints for the current version
 //   - Updating the credentials and resetting the credentials token
-func (c *ClientConn) UpdateCredential(ctx context.Context, credentialWithTokenB Credential, storeCallback func(VersionDetails) error) (*ocpi.Response[Credential], error) {
+func (c *ClientConn) UpdateCredential(ctx context.Context, credentialWithTokenB Credentials, storeCallback func(VersionDetails) error) (*ocpi.Response[Credentials], error) {
 	var versionResponse ocpi.Response[ocpi.Versions]
 	if err := c.do(ctx, http.MethodGet, c.versionUrl, nil, &versionResponse); err != nil {
 		return nil, err

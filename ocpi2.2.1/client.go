@@ -26,8 +26,8 @@ type OCPIClient interface {
 type ClientTokenA interface {
 	GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error)
 	GetVersionDetails(ctx context.Context, version ocpi.Version) (*ocpi.Response[VersionDetails], error)
-	GetCredential(ctx context.Context) (*ocpi.Response[Credential], error)
-	PostCredential(ctx context.Context, req Credential) (*ocpi.Response[Credential], error)
+	GetCredential(ctx context.Context) (*ocpi.Response[Credentials], error)
+	PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error)
 }
 
 type Client interface {
@@ -76,7 +76,7 @@ func NewClientWithTokenA(versionUrl string, tokenA string) ClientTokenA {
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}
 	c.tokenResolver = func(token string) string {
-		return token
+		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
 	}
 	c.ocpi = &ocpiClient{conn: c, tokenA: tokenA}
 	return c

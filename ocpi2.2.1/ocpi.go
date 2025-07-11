@@ -466,7 +466,7 @@ const (
 	ChargingPreferencesResponseProfileTypeNotSupported ChargingPreferencesResponse = "PROFILE_TYPE_NOT_SUPPORTED"
 )
 
-type Credential struct {
+type Credentials struct {
 	Token string            `json:"token"`
 	URL   string            `json:"url"`
 	Roles []CredentialsRole `json:"roles"`

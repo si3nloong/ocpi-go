@@ -19,6 +19,13 @@ type Client interface {
 	CallEndpoint(ctx context.Context, module ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
 }
 
+type ClientTokenA interface {
+	GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error)
+	GetVersionDetails(ctx context.Context, version ocpi.Version) (*ocpi.Response[VersionDetails], error)
+	GetCredential(ctx context.Context) (*ocpi.Response[Credentials], error)
+	PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error)
+}
+
 type Option func(*ClientConn)
 
 type ClientConn struct {
@@ -45,6 +52,14 @@ func NewClient(versionUrl string, options ...Option) *ClientConn {
 	for _, opt := range options {
 		opt(c)
 	}
+	return c
+}
+
+func NewClientWithTokenA(versionUrl string, tokenA string) ClientTokenA {
+	c := new(ClientConn)
+	c.versionUrl = versionUrl
+	c.httpClient = &http.Client{}
+	c.tokenA = tokenA
 	return c
 }
 
@@ -107,11 +122,7 @@ func (c *ClientConn) getEndpoint(ctx context.Context, module ModuleID) (string, 
 	return "", fmt.Errorf(`ocpi211: missing endpoint for module id %q`, module)
 }
 
-func (c *ClientConn) newRequest(
-	ctx context.Context,
-	method, endpoint string,
-	src any,
-) (*http.Request, error) {
+func (c *ClientConn) newRequest(ctx context.Context, method, endpoint string, src any) (*http.Request, error) {
 	var body io.Reader
 	if src != nil {
 		b, err := json.Marshal(src)
@@ -139,11 +150,7 @@ func (c *ClientConn) newRequest(
 	return req, nil
 }
 
-func (c *ClientConn) do(
-	ctx context.Context,
-	method, endpoint string,
-	src, dst any,
-) error {
+func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst any) error {
 	req, err := c.newRequest(ctx, method, endpoint, src)
 	if err != nil {
 		return err

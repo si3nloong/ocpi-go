@@ -26,17 +26,17 @@ func (UnimplementedServer) StoreVersionDetails(ctx context.Context, token Versio
 }
 
 // GetCredential implements Credentials.
-func (UnimplementedServer) OnGetCredential(ctx context.Context, token string) (*Credential, error) {
+func (UnimplementedServer) OnGetCredential(ctx context.Context, token string) (*Credentials, error) {
 	return nil, ErrNotImplemented
 }
 
 // PostCredential implements Credentials.
-func (UnimplementedServer) OnPostCredential(ctx context.Context, token string, body ocpi.RawMessage[Credential]) (*Credential, error) {
+func (UnimplementedServer) OnPostCredential(ctx context.Context, token string, body ocpi.RawMessage[Credentials]) (*Credentials, error) {
 	return nil, ErrNotImplemented
 }
 
 // PutCredential implements Credentials.
-func (UnimplementedServer) OnPutCredential(ctx context.Context, token string, body ocpi.RawMessage[Credential]) (*Credential, error) {
+func (UnimplementedServer) OnPutCredential(ctx context.Context, token string, body ocpi.RawMessage[Credentials]) (*Credentials, error) {
 	return nil, ErrNotImplemented
 }
 

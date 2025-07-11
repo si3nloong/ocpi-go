@@ -15,10 +15,10 @@ type TokenResolver func(token string) string
 type OCPIServer interface {
 	IsClientRegistered(ctx context.Context, tokenA string) bool
 	VerifyCredentialsToken(ctx context.Context, token string) error
-	StoreCredentialsTokenB(ctx context.Context, credentialsTokenB Credential) error
+	StoreCredentialsTokenB(ctx context.Context, credentialsTokenB Credentials) error
 	StoreVersionDetails(ctx context.Context, versionDetails VersionDetails) error
-	GenerateCredentialsTokenC(ctx context.Context, tokenA string) (*Credential, error)
-	Credentials
+	GenerateCredentialsTokenC(ctx context.Context, tokenA string) (*Credentials, error)
+	CredentialsReceiver
 	// Versions
 }
 

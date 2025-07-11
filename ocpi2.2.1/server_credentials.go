@@ -21,7 +21,7 @@ func (s *Server) GetOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
-	var body ocpi.RawMessage[Credential]
+	var body ocpi.RawMessage[Credentials]
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		ocpihttp.BadRequest(w, r, err.Error())
 		return
@@ -109,7 +109,7 @@ func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: call sender side to get versions and version_details
-	credential, err := s.ocpi.OnPutCredential(ctx, token, ocpi.RawMessage[Credential](body))
+	credential, err := s.ocpi.OnPutCredential(ctx, token, ocpi.RawMessage[Credentials](body))
 	if err != nil {
 		ocpihttp.Response(w, err)
 		return
