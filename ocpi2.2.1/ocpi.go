@@ -398,14 +398,14 @@ const (
 	TariffTypeRegular      TariffType = "REGULAR"
 )
 
-type PriceComponentType string
+type TariffDimensionType string
 
 // Defines values for PriceComponent.
 const (
-	PriceComponentTypeEnergy      PriceComponentType = "ENERGY"
-	PriceComponentTypeFlat        PriceComponentType = "FLAT"
-	PriceComponentTypeParkingTime PriceComponentType = "PARKING_TIME"
-	PriceComponentTypeTime        PriceComponentType = "TIME"
+	TariffDimensionTypeEnergy      TariffDimensionType = "ENERGY"
+	TariffDimensionTypeFlat        TariffDimensionType = "FLAT"
+	TariffDimensionTypeParkingTime TariffDimensionType = "PARKING_TIME"
+	TariffDimensionTypeTime        TariffDimensionType = "TIME"
 )
 
 // DayOfWeek defines model for TariffRestrictions.DayOfWeek.
@@ -1123,9 +1123,10 @@ type TariffElement struct {
 
 // PriceComponent defines model for TariffElement.PriceComponents.
 type PriceComponent struct {
-	Type     PriceComponentType `json:"type"`
-	StepSize uint16             `json:"step_size"`
-	Price    json.Number        `json:"price"`
+	Type     TariffDimensionType `json:"type" validate:"required"`
+	Price    json.Number         `json:"price" validate:"required"`
+	Vat      *json.Number        `json:"vat,omitempty"`
+	StepSize int                 `json:"step_size" validate:"required"`
 }
 
 // TariffRestrictions defines model for tariff_elements_restrictions.
