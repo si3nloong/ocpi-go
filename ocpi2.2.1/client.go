@@ -24,16 +24,15 @@ type OCPIClient interface {
 	GetEndpoint(ctx context.Context, module ModuleID, role InterfaceRole) (string, error)
 }
 
-type ClientTokenA interface {
+type TokenAClient interface {
 	GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error)
-	SetVersion(ctx context.Context, version ocpi.Version) error
-	GetVersionDetails(ctx context.Context, version ocpi.Version) (*ocpi.Response[VersionDetails], error)
+	GetVersionDetails(ctx context.Context) (*ocpi.Response[VersionDetails], error)
 	GetCredential(ctx context.Context) (*ocpi.Response[Credentials], error)
 	PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error)
 }
 
 type Client interface {
-	ClientTokenA
+	TokenAClient
 	CallEndpoint(ctx context.Context, module ModuleID, role InterfaceRole, method string, endpointResolver EndpointResolver, src, dst any) error
 	GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
 	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
@@ -54,13 +53,13 @@ type Client interface {
 }
 
 type ClientConn struct {
-	rw              sync.RWMutex
-	selectedVersion ocpi.Version
-	versions        ocpi.Versions
-	ocpi            OCPIClient
-	versionUrl      string
-	httpClient      *http.Client
-	tokenResolver   TokenResolver
+	rw             sync.RWMutex
+	versionDetails *VersionDetails
+	versions       ocpi.Versions
+	ocpi           OCPIClient
+	versionUrl     string
+	httpClient     *http.Client
+	tokenResolver  TokenResolver
 }
 
 var _ Client = (*ClientConn)(nil)
@@ -76,15 +75,16 @@ func NewClient(versionUrl string, ocpi OCPIClient) *ClientConn {
 	return c
 }
 
-func NewClientWithTokenA(versionUrl string, tokenA string) ClientTokenA {
+func NewClientWithTokenA(versionUrl string, tokenA string) TokenAClient {
 	c := new(ClientConn)
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}
 	c.tokenResolver = func(token string) string {
 		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
 	}
-	c.ocpi = &ocpiClient{conn: c, tokenA: tokenA}
-	return c
+	client := &unregisteredClient{ClientConn: c, tokenA: tokenA}
+	c.ocpi = client
+	return client
 }
 
 func (c *ClientConn) CallEndpoint(ctx context.Context, module ModuleID, role InterfaceRole, method string, resolver EndpointResolver, src, dst any) error {

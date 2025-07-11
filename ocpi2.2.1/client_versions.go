@@ -22,39 +22,30 @@ func (c *ClientConn) GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versi
 	return &res, nil
 }
 
-func (c *ClientConn) SetVersion(ctx context.Context, version ocpi.Version) error {
+func (c *ClientConn) GetVersionDetails(ctx context.Context) (*ocpi.Response[VersionDetails], error) {
 	c.rw.RLock()
 	if c.versions == nil {
 		c.rw.RUnlock()
-		var res ocpi.Response[ocpi.Versions]
-		if err := c.do(ctx, http.MethodGet, c.versionUrl, nil, &res); err != nil {
-			return err
+		if _, err := c.GetVersions(ctx); err != nil {
+			return nil, err
 		}
-		versions, err := res.Data()
-		if err != nil {
-			return err
-		}
-
-		c.rw.Lock()
-		c.versions = versions
-		c.rw.Unlock()
 		c.rw.RLock()
 	}
-	selectedVersion, ok := c.versions.LatestMutualVersion(version.Version)
-	c.rw.RUnlock()
+	mutualVersion, ok := c.versions.MutualVersion(ocpi.VersionNumber221)
 	if !ok {
-		return fmt.Errorf(`ocpi221: missing mutual version for version %q`, version.Version)
+		c.rw.RUnlock()
+		return nil, fmt.Errorf(`ocpi221: unable to find mutual version`)
 	}
-	c.rw.Lock()
-	c.selectedVersion = selectedVersion
-	c.rw.Unlock()
-	return nil
-}
-
-func (c *ClientConn) GetVersionDetails(ctx context.Context, version ocpi.Version) (*ocpi.Response[VersionDetails], error) {
+	c.rw.RUnlock()
 	var res ocpi.Response[VersionDetails]
-	if err := c.do(ctx, http.MethodGet, version.URL, nil, &res); err != nil {
+	if err := c.do(ctx, http.MethodGet, mutualVersion.URL, nil, &res); err != nil {
 		return nil, err
 	}
+	c.rw.Lock()
+	versionDetails, err := res.Data()
+	if err == nil {
+		c.versionDetails = &versionDetails
+	}
+	c.rw.Unlock()
 	return &res, nil
 }

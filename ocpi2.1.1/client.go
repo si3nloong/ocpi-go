@@ -19,9 +19,9 @@ type Client interface {
 	CallEndpoint(ctx context.Context, module ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
 }
 
-type ClientTokenA interface {
+type TokenAClient interface {
 	GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error)
-	GetVersionDetails(ctx context.Context, version ocpi.Version) (*ocpi.Response[VersionDetails], error)
+	GetVersionDetails(ctx context.Context) (*ocpi.Response[VersionDetails], error)
 	GetCredential(ctx context.Context) (*ocpi.Response[Credentials], error)
 	PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error)
 }
@@ -29,12 +29,14 @@ type ClientTokenA interface {
 type Option func(*ClientConn)
 
 type ClientConn struct {
-	rw           sync.RWMutex
-	tokenA       string
-	tokenC       string
-	versionUrl   string
-	httpClient   *http.Client
-	endpointDict map[string]Endpoint
+	rw             sync.RWMutex
+	versionDetails *VersionDetails
+	versions       ocpi.Versions
+	tokenA         string
+	tokenC         string
+	versionUrl     string
+	httpClient     *http.Client
+	endpointDict   map[string]Endpoint
 }
 
 var _ Client = (*ClientConn)(nil)
@@ -55,7 +57,7 @@ func NewClient(versionUrl string, options ...Option) *ClientConn {
 	return c
 }
 
-func NewClientWithTokenA(versionUrl string, tokenA string) ClientTokenA {
+func NewClientWithTokenA(versionUrl string, tokenA string) TokenAClient {
 	c := new(ClientConn)
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}

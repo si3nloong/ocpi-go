@@ -14,13 +14,12 @@ type Version struct {
 
 type Versions []Version
 
-func (vs Versions) LatestMutualVersion(version VersionNumber) (Version, bool) {
+func (vs Versions) MutualVersion(version VersionNumber) (Version, bool) {
 	if len(vs) == 0 {
 		return Version{}, false
 	}
-	mm := semver.MajorMinor("v" + string(version))
 	for _, v := range vs {
-		if semver.MajorMinor("v"+string(v.Version)) == mm {
+		if version == v.Version {
 			return v, true
 		}
 	}
