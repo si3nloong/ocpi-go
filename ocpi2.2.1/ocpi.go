@@ -510,7 +510,7 @@ type CDR struct {
 	StartDateTime            DateTime         `json:"start_date_time" validate:"required"`
 	EndDateTime              DateTime         `json:"end_date_time" validate:"required"`
 	SessionID                *string          `json:"session_id,omitempty"`
-	CdrToken                 CdrToken         `json:"cdr_token" validate:"required"`
+	CDRToken                 CDRToken         `json:"cdr_token" validate:"required"`
 	AuthMethod               AuthMethod       `json:"auth_method" validate:"required"`
 	AuthorizationReference   *string          `json:"authorization_reference,omitempty"`
 	CdrLocation              CdrLocation      `json:"cdr_location" validate:"required"`
@@ -560,8 +560,8 @@ type GeoLocation struct {
 	Longitude string `json:"longitude"`
 }
 
-// CdrToken defines model for cdrBody_cdr_token.
-type CdrToken struct {
+// CDRTokendefines model for cdrBody_cdr_token.
+type CDRToken struct {
 	CountryCode string    `json:"country_code"`
 	PartyID     string    `json:"party_id"`
 	UID         string    `json:"uid"`
@@ -982,7 +982,7 @@ type Session struct {
 	StartDateTime          DateTime         `json:"start_date_time" validate:"required"`
 	EndDateTime            *DateTime        `json:"end_date_time,omitempty"`
 	Kwh                    json.Number      `json:"kwh" validate:"required"`
-	CdrToken               CdrToken         `json:"cdr_token"`
+	CDRToken               CDRToken         `json:"cdr_token"`
 	AuthMethod             AuthMethod       `json:"auth_method" validate:"required"`
 	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
 	LocationID             string           `json:"location_id" validate:"required"`
@@ -997,24 +997,24 @@ type Session struct {
 }
 
 type PartialSession struct {
-	LastUpdated            DateTime        `json:"last_updated" validate:"required"`
-	AuthMethod             *AuthMethod     `json:"auth_method,omitempty"`
-	AuthorizationReference *string         `json:"authorization_reference,omitempty"`
-	CdrToken               *CdrToken       `json:"cdr_token,omitempty"`
-	ChargingPeriods        *ChargingPeriod `json:"charging_periods,omitempty"`
-	ConnectorID            *string         `json:"connector_id,omitempty"`
-	CountryCode            *string         `json:"country_code,omitempty"`
-	Currency               *string         `json:"currency,omitempty"`
-	EndDateTime            *DateTime       `json:"end_date_time,omitempty"`
-	EVSEUID                *string         `json:"evse_uid,omitempty"`
-	ID                     *string         `json:"id,omitempty"`
-	Kwh                    *json.Number    `json:"kwh,omitempty"`
-	LocationID             *string         `json:"location_id,omitempty"`
-	MeterID                *string         `json:"meter_id,omitempty"`
-	PartyID                *string         `json:"party_id,omitempty"`
-	StartDateTime          *DateTime       `json:"start_date_time,omitempty"`
-	Status                 *SessionStatus  `json:"status,omitempty"`
-	TotalCost              *Price          `json:"total_cost,omitempty"`
+	AuthMethod             *AuthMethod      `json:"auth_method,omitempty"`
+	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
+	CDRToken               *CDRToken        `json:"cdr_token,omitempty"`
+	ChargingPeriods        []ChargingPeriod `json:"charging_periods,omitempty"`
+	ConnectorID            *string          `json:"connector_id,omitempty"`
+	CountryCode            *string          `json:"country_code,omitempty"`
+	Currency               *string          `json:"currency,omitempty"`
+	EndDateTime            *DateTime        `json:"end_date_time,omitempty"`
+	EVSEUID                *string          `json:"evse_uid,omitempty"`
+	ID                     *string          `json:"id,omitempty"`
+	Kwh                    *json.Number     `json:"kwh,omitempty"`
+	LocationID             *string          `json:"location_id,omitempty"`
+	MeterID                *string          `json:"meter_id,omitempty"`
+	PartyID                *string          `json:"party_id,omitempty"`
+	StartDateTime          *DateTime        `json:"start_date_time,omitempty"`
+	Status                 *SessionStatus   `json:"status,omitempty"`
+	TotalCost              *Price           `json:"total_cost,omitempty"`
+	LastUpdated            DateTime         `json:"last_updated" validate:"required"`
 }
 
 // ChargingPeriod defines model for session_charging_periods.
