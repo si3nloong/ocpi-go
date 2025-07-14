@@ -550,7 +550,7 @@ type CdrLocation struct {
 	Country            string          `json:"country" validate:"required,len=3"`
 	Coordinates        GeoLocation     `json:"coordinates"`
 	EvseUID            string          `json:"evse_uid" validate:"required,max=36"`
-	EVSEID             string          `json:"evse_id" validate:"required,max=48"`
+	EvseID             string          `json:"evse_id" validate:"required,max=48"`
 	ConnectorID        string          `json:"connector_id"`
 	ConnectorType      ConnectorType   `json:"connector_standard" validate:"required"`
 	ConnectorFormat    ConnectorFormat `json:"connector_format" validate:"required"`
@@ -764,7 +764,7 @@ type Endpoint struct {
 // EVSE defines model for evse.
 type EVSE struct {
 	UID                      string               `json:"uid" validate:"required"`
-	EVSEID                   *string              `json:"evse_id,omitempty"`
+	EvseID                   *string              `json:"evse_id,omitempty"`
 	Status                   Status               `json:"status" validate:"required"`
 	StatusSchedule           []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities             []Capability         `json:"capabilities,omitempty"`
@@ -782,7 +782,7 @@ type EVSE struct {
 
 type PartialEVSE struct {
 	UID                      *string              `json:"uid,omitempty"`
-	EVSEID                   *string              `json:"evse_id,omitempty"`
+	EvseID                   *string              `json:"evse_id,omitempty"`
 	Status                   *Status              `json:"status,omitempty"`
 	StatusSchedule           []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities             []Capability         `json:"capabilities,omitempty"`

@@ -384,7 +384,7 @@ type PartialLocation struct {
 // EVSE defines model for evse.
 type EVSE struct {
 	UID                 string               `json:"uid" validate:"required"`
-	EVSEID              *string              `json:"evse_id,omitempty"`
+	EvseID              *string              `json:"evse_id,omitempty"`
 	Status              Status               `json:"status" validate:"required"`
 	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities        []Capability         `json:"capabilities,omitempty"`
@@ -400,7 +400,7 @@ type EVSE struct {
 
 type PartialEVSE struct {
 	UID                 *string              `json:"uid,omitempty"`
-	EVSEID              *string              `json:"evse_id,omitempty"`
+	EvseID              *string              `json:"evse_id,omitempty"`
 	Status              *Status              `json:"status,omitempty"`
 	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities        []Capability         `json:"capabilities,omitempty"`
