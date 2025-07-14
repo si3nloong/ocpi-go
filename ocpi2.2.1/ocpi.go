@@ -66,24 +66,24 @@ const (
 	AuthorizationAllowedNotAllowed AuthorizationAllowed = "NOT_ALLOWED"
 )
 
-// CDRDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
-type CDRDimensionType string
+// CdrDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
+type CdrDimensionType string
 
-// Defines values for CDRDimensionType.
+// Defines values for CdrDimensionType.
 const (
-	CDRDimensionTypeCurrent         CDRDimensionType = "CURRENT"
-	CDRDimensionTypeEnergy          CDRDimensionType = "ENERGY"
-	CDRDimensionTypeEnergyExport    CDRDimensionType = "ENERGY_EXPORT"
-	CDRDimensionTypeEnergyImport    CDRDimensionType = "ENERGY_IMPORT"
-	CDRDimensionTypeMaxCurrent      CDRDimensionType = "MAX_CURRENT"
-	CDRDimensionTypeMaxPower        CDRDimensionType = "MAX_POWER"
-	CDRDimensionTypeMinCurrent      CDRDimensionType = "MIN_CURRENT"
-	CDRDimensionTypeMinPower        CDRDimensionType = "MIN_POWER"
-	CDRDimensionTypeParkingTime     CDRDimensionType = "PARKING_TIME"
-	CDRDimensionTypePower           CDRDimensionType = "POWER"
-	CDRDimensionTypeReservationTime CDRDimensionType = "RESERVATION_TIME"
-	CDRDimensionTypeStateOfCharge   CDRDimensionType = "STATE_OF_CHARGE"
-	CDRDimensionTypeTime            CDRDimensionType = "TIME"
+	CdrDimensionTypeCurrent         CdrDimensionType = "CURRENT"
+	CdrDimensionTypeEnergy          CdrDimensionType = "ENERGY"
+	CdrDimensionTypeEnergyExport    CdrDimensionType = "ENERGY_EXPORT"
+	CdrDimensionTypeEnergyImport    CdrDimensionType = "ENERGY_IMPORT"
+	CdrDimensionTypeMaxCurrent      CdrDimensionType = "MAX_CURRENT"
+	CdrDimensionTypeMaxPower        CdrDimensionType = "MAX_POWER"
+	CdrDimensionTypeMinCurrent      CdrDimensionType = "MIN_CURRENT"
+	CdrDimensionTypeMinPower        CdrDimensionType = "MIN_POWER"
+	CdrDimensionTypeParkingTime     CdrDimensionType = "PARKING_TIME"
+	CdrDimensionTypePower           CdrDimensionType = "POWER"
+	CdrDimensionTypeReservationTime CdrDimensionType = "RESERVATION_TIME"
+	CdrDimensionTypeStateOfCharge   CdrDimensionType = "STATE_OF_CHARGE"
+	CdrDimensionTypeTime            CdrDimensionType = "TIME"
 )
 
 // EnergySourceCategory defines model for EnergySource.Source.
@@ -261,6 +261,9 @@ const (
 	CapabilityTokenGroupCapable             Capability = "TOKEN_GROUP_CAPABLE"
 	CapabilityUnlockCapable                 Capability = "UNLOCK_CAPABLE"
 )
+
+// ParkingRestriction defines model for Evse.ParkingRestriction.
+type ParkingRestriction string
 
 // Defines values for ParkingRestriction.
 const (
@@ -510,7 +513,7 @@ type CDR struct {
 	StartDateTime            DateTime         `json:"start_date_time" validate:"required"`
 	EndDateTime              DateTime         `json:"end_date_time" validate:"required"`
 	SessionID                *string          `json:"session_id,omitempty"`
-	CDRToken                 CDRToken         `json:"cdr_token" validate:"required"`
+	CdrToken                 CdrToken         `json:"cdr_token" validate:"required"`
 	AuthMethod               AuthMethod       `json:"auth_method" validate:"required"`
 	AuthorizationReference   *string          `json:"authorization_reference,omitempty"`
 	CdrLocation              CdrLocation      `json:"cdr_location" validate:"required"`
@@ -546,7 +549,7 @@ type CdrLocation struct {
 	State              *string         `json:"state,omitempty"`
 	Country            string          `json:"country" validate:"required,len=3"`
 	Coordinates        GeoLocation     `json:"coordinates"`
-	EVSEUID            string          `json:"evse_uid" validate:"required,max=36"`
+	EvseUID            string          `json:"evse_uid" validate:"required,max=36"`
 	EVSEID             string          `json:"evse_id" validate:"required,max=48"`
 	ConnectorID        string          `json:"connector_id"`
 	ConnectorType      ConnectorType   `json:"connector_standard" validate:"required"`
@@ -560,8 +563,8 @@ type GeoLocation struct {
 	Longitude string `json:"longitude"`
 }
 
-// CDRTokendefines model for cdrBody_cdr_token.
-type CDRToken struct {
+// CdrTokendefines model for cdrBody_cdr_token.
+type CdrToken struct {
 	CountryCode string    `json:"country_code"`
 	PartyID     string    `json:"party_id"`
 	UID         string    `json:"uid"`
@@ -811,9 +814,6 @@ const (
 // Capability defines model for Evse.Capabilities.
 type Capability string
 
-// ParkingRestriction defines model for Evse.ParkingRestriction.
-type ParkingRestriction string
-
 // StatusSchedule defines model for evse_status_schedule.
 type StatusSchedule struct {
 	PeriodBegin string               `json:"period_begin"`
@@ -826,7 +826,7 @@ type StatusScheduleStatus string
 
 // LocationReferences defines model for locationReferences.
 type LocationReferences struct {
-	EVSEUIDs   *string `json:"evse_uids,omitempty"`
+	EvseUIDs   *string `json:"evse_uids,omitempty"`
 	LocationID string  `json:"location_id"`
 }
 
@@ -970,7 +970,7 @@ type ReserveNow struct {
 	ExpiryDate             DateTime `json:"expiry_date" validate:"required"`
 	ReservationID          string   `json:"reservation_id" validate:"required"`
 	LocationID             string   `json:"location_id" validate:"required"`
-	EVSEUID                *string  `json:"evse_uid,omitempty"`
+	EvseUID                *string  `json:"evse_uid,omitempty"`
 	AuthorizationReference *string  `json:"authorization_reference,omitempty"`
 }
 
@@ -982,11 +982,11 @@ type Session struct {
 	StartDateTime          DateTime         `json:"start_date_time" validate:"required"`
 	EndDateTime            *DateTime        `json:"end_date_time,omitempty"`
 	Kwh                    json.Number      `json:"kwh" validate:"required"`
-	CDRToken               CDRToken         `json:"cdr_token"`
+	CdrToken               CdrToken         `json:"cdr_token"`
 	AuthMethod             AuthMethod       `json:"auth_method" validate:"required"`
 	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
 	LocationID             string           `json:"location_id" validate:"required"`
-	EVSEUID                string           `json:"evse_uid" validate:"required"`
+	EvseUID                string           `json:"evse_uid" validate:"required"`
 	ConnectorID            string           `json:"connector_id" validate:"required"`
 	MeterID                *string          `json:"meter_id,omitempty"`
 	Currency               string           `json:"currency" validate:"required,len=3"`
@@ -999,13 +999,13 @@ type Session struct {
 type PartialSession struct {
 	AuthMethod             *AuthMethod      `json:"auth_method,omitempty"`
 	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
-	CDRToken               *CDRToken        `json:"cdr_token,omitempty"`
+	CdrToken               *CdrToken        `json:"cdr_token,omitempty"`
 	ChargingPeriods        []ChargingPeriod `json:"charging_periods,omitempty"`
 	ConnectorID            *string          `json:"connector_id,omitempty"`
 	CountryCode            *string          `json:"country_code,omitempty"`
 	Currency               *string          `json:"currency,omitempty"`
 	EndDateTime            *DateTime        `json:"end_date_time,omitempty"`
-	EVSEUID                *string          `json:"evse_uid,omitempty"`
+	EvseUID                *string          `json:"evse_uid,omitempty"`
 	ID                     *string          `json:"id,omitempty"`
 	Kwh                    *json.Number     `json:"kwh,omitempty"`
 	LocationID             *string          `json:"location_id,omitempty"`
@@ -1020,27 +1020,27 @@ type PartialSession struct {
 // ChargingPeriod defines model for session_charging_periods.
 type ChargingPeriod struct {
 	StartDateTime DateTime       `json:"start_date_time" validate:"required"`
-	Dimensions    []CDRDimension `json:"dimensions"`
+	Dimensions    []CdrDimension `json:"dimensions"`
 	TariffID      *string        `json:"tariff_id,omitempty"`
 }
 
-// CDRDimension defines model for session_charging_periods_dimensions.
-type CDRDimension struct {
-	Type   CDRDimensionType `json:"type"`
+// CdrDimension defines model for session_charging_periods_dimensions.
+type CdrDimension struct {
+	Type   CdrDimensionType `json:"type"`
 	Volume json.Number      `json:"volume"`
 }
 
 // SetChargingProfile defines model for setChargingProfile.
 type SetChargingProfile struct {
 	ChargingProfile ChargingProfile `json:"charging_profile"`
-	ResponseUrl     string          `json:"response_url"`
+	ResponseURL     string          `json:"response_url"`
 }
 
 // StartSessionRequest defines model for startSession.
 type StartSession struct {
 	AuthorizationReference *string `json:"authorization_reference,omitempty"`
 	ConnectorID            *string `json:"connector_id,omitempty"`
-	EVSEUID                *string `json:"evse_uid,omitempty"`
+	EvseUID                *string `json:"evse_uid,omitempty"`
 	LocationID             string  `json:"location_id" validate:"required"`
 	ResponseURL            string  `json:"response_url" validate:"required"`
 	Token                  Token   `json:"token"`
@@ -1068,21 +1068,6 @@ type Tariff struct {
 	EndDateTime   *DateTime       `json:"end_date_time,omitempty"`
 	EnergyMix     *EnergyMix      `json:"energy_mix,omitempty"`
 	LastUpdated   DateTime        `json:"last_updated" validate:"required"`
-}
-
-// TariffDeleteResponse defines model for tariffDeleteResponse.
-type TariffDeleteResponse struct {
-	StatusCode    float32 `json:"status_code"`
-	StatusMessage *string `json:"status_message,omitempty"`
-	TimeStamp     string  `json:"timeStamp"`
-}
-
-// TariffResponse defines model for tariffResponse.
-type TariffResponse struct {
-	StatusCode    float32 `json:"status_code"`
-	StatusMessage *string `json:"status_message,omitempty"`
-	Tariff        Tariff  `json:"tariff"`
-	TimeStamp     *string `json:"timeStamp,omitempty"`
 }
 
 // TariffElement defines model for tariff_elements.
@@ -1139,7 +1124,7 @@ type Terminal struct {
 	InvoiceCreator    *InvoiceCreator `json:"invoice_creator,omitempty"`
 	Reference         *string         `json:"reference,omitempty"`
 	LocationIDs       []string        `json:"location_ids,omitempty"`
-	EVSEUIDs          []string        `json:"evse_uids,omitempty"`
+	EvseUIDs          []string        `json:"evse_uids,omitempty"`
 	LastUpdated       DateTime        `json:"last_updated"`
 }
 
@@ -1197,14 +1182,6 @@ type PartialToken struct {
 	Whitelist          WhitelistType        `json:"whitelist"`
 }
 
-// TokenResponse defines model for tokenResponse.
-type TokenResponse struct {
-	StatusCode    float32 `json:"status_code"`
-	StatusMessage *string `json:"status_message,omitempty"`
-	TimeStamp     *string `json:"timeStamp,omitempty"`
-	Token         Token   `json:"token"`
-}
-
 // TokenEnergyContract defines model for token_energy_contract.
 type TokenEnergyContract struct {
 	ContractID   *string `json:"contract_id,omitempty"`
@@ -1223,7 +1200,7 @@ type TokensResponse struct {
 type UnlockConnector struct {
 	ResponseURL string `json:"response_url"`
 	LocationID  string `json:"location_id"`
-	EVSEUID     string `json:"evse_uid"`
+	EvseUID     string `json:"evse_uid"`
 	ConnectorID string `json:"connector_id"`
 }
 

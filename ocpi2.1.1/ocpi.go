@@ -199,17 +199,17 @@ const (
 	AuthMethodWhitelist   AuthMethod = "WHITELIST"
 )
 
-// CDRDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
-type CDRDimensionType string
+// CdrDimensionType defines model for CdrBodyChargingPeriodsDimensions.Type.
+type CdrDimensionType string
 
-// Defines values for CDRDimensionType.
+// Defines values for CdrDimensionType.
 const (
-	CDRDimensionTypeEnergy      CDRDimensionType = "ENERGY"
-	CDRDimensionTypeFlat        CDRDimensionType = "FLAT"
-	CDRDimensionTypeMaxCurrent  CDRDimensionType = "MAX_CURRENT"
-	CDRDimensionTypeMinCurrent  CDRDimensionType = "MIN_CURRENT"
-	CDRDimensionTypeParkingTime CDRDimensionType = "PARKING_TIME"
-	CDRDimensionTypeTime        CDRDimensionType = "TIME"
+	CdrDimensionTypeEnergy      CdrDimensionType = "ENERGY"
+	CdrDimensionTypeFlat        CdrDimensionType = "FLAT"
+	CdrDimensionTypeMaxCurrent  CdrDimensionType = "MAX_CURRENT"
+	CdrDimensionTypeMinCurrent  CdrDimensionType = "MIN_CURRENT"
+	CdrDimensionTypeParkingTime CdrDimensionType = "PARKING_TIME"
+	CdrDimensionTypeTime        CdrDimensionType = "TIME"
 )
 
 // SessionStatus defines model for Session.Status.
@@ -521,12 +521,12 @@ type Tariff struct {
 
 type ChargingPeriod struct {
 	StartDateTime DateTime       `json:"start_date_time" validate:"required"`
-	Dimensions    []CDRDimension `json:"dimensions"`
+	Dimensions    []CdrDimension `json:"dimensions"`
 }
 
-// CDRDimension defines model for session_charging_periods_dimensions.
-type CDRDimension struct {
-	Type   CDRDimensionType `json:"type"`
+// CdrDimension defines model for session_charging_periods_dimensions.
+type CdrDimension struct {
+	Type   CdrDimensionType `json:"type"`
 	Volume json.Number      `json:"volume"`
 }
 
@@ -637,7 +637,7 @@ type StartSession struct {
 	ResponseURL string  `json:"response_url" validate:"required"`
 	Token       Token   `json:"token" validate:"required"`
 	LocationID  string  `json:"location_id" validate:"required,max=39"`
-	EVSEUID     *string `json:"evse_uid,omitempty" validate:"omitempty,required,max=39"`
+	EvseUID     *string `json:"evse_uid,omitempty" validate:"omitempty,required,max=39"`
 }
 
 type StopSession struct {
@@ -651,13 +651,13 @@ type ReserveNow struct {
 	ExpiryDate    DateTime `json:"expiry_date" validate:"required"`
 	ReservationID int      `json:"reservation_id" validate:"required"`
 	LocationID    string   `json:"location_id" validate:"required,max=39"`
-	EVSEUID       *string  `json:"evse_uid,omitempty" validate:"omitempty,required,max=39"`
+	EvseUID       *string  `json:"evse_uid,omitempty" validate:"omitempty,required,max=39"`
 }
 
 type UnlockConnector struct {
 	ResponseURL string `json:"response_url" validate:"required"`
 	LocationID  string `json:"location_id" validate:"required,max=39"`
-	EVSEUID     string `json:"evse_uid" validate:"required,max=39"`
+	EvseUID     string `json:"evse_uid" validate:"required,max=39"`
 	ConnectorID string `json:"connector_id" validate:"required,max=36"`
 }
 
@@ -699,7 +699,7 @@ type AuthorizationInfo struct {
 // LocationReferences defines model for locationReferences.
 type LocationReferences struct {
 	LocationID   string  `json:"location_id"`
-	EVSEUIDs     *string `json:"evse_uids,omitempty"`
+	EvseUIDs     *string `json:"evse_uids,omitempty"`
 	ConnectorIDs *string `json:"connector_ids,omitempty"`
 }
 
