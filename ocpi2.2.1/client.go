@@ -7,9 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
-	"net/http/httputil"
 	"sync"
 	"unsafe"
 
@@ -52,6 +50,18 @@ type Client interface {
 	SetSessionChargingPreferences(ctx context.Context, sessionID string) (*ocpi.Response[ChargingPreferencesResponse], error)
 }
 
+var defaultClientOptions = ClientOptions{
+	HttpClient: http.DefaultClient,
+	TokenResolver: func(token string) string {
+		return token
+	},
+}
+
+type ClientOptions struct {
+	HttpClient    *http.Client
+	TokenResolver TokenResolver
+}
+
 type ClientConn struct {
 	rw             sync.RWMutex
 	versionDetails *VersionDetails
@@ -64,26 +74,32 @@ type ClientConn struct {
 
 var _ Client = (*ClientConn)(nil)
 
-func NewClient(versionUrl string, ocpi OCPIClient) *ClientConn {
+func NewClient(versionUrl string, ocpi OCPIClient, opts *ClientOptions) *ClientConn {
+	if opts == nil {
+		opts = &defaultClientOptions
+	}
 	c := new(ClientConn)
 	c.versionUrl = versionUrl
 	c.ocpi = ocpi
-	c.httpClient = &http.Client{}
-	c.tokenResolver = func(token string) string {
-		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
+	if opts.HttpClient == nil {
+		c.httpClient = &http.Client{}
+	} else {
+		c.httpClient = opts.HttpClient
+	}
+	if opts.TokenResolver != nil {
+		c.tokenResolver = opts.TokenResolver
+	} else {
+		c.tokenResolver = func(token string) string {
+			return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
+		}
 	}
 	return c
 }
 
-func NewClientWithTokenA(versionUrl string, tokenA string) TokenAClient {
-	c := new(ClientConn)
-	c.versionUrl = versionUrl
-	c.httpClient = &http.Client{}
-	c.tokenResolver = func(token string) string {
-		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
-	}
-	client := &unregisteredClient{ClientConn: c, tokenA: tokenA}
-	c.ocpi = client
+func NewClientWithTokenA(versionUrl string, tokenA string, opts *ClientOptions) TokenAClient {
+	c := &unregisteredClient{tokenA: tokenA}
+	client := NewClient(versionUrl, c, opts)
+	c.ClientConn = client
 	return client
 }
 
@@ -139,21 +155,12 @@ func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst a
 
 	req.Header.Set("Authorization", "Token "+c.tokenResolver(token))
 
-	b, _ := httputil.DumpRequest(req, true)
-	log.Println(string(b))
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
 	defer res.Body.Close()
 
-	b, _ = httputil.DumpResponse(res, true)
-	log.Println(string(b))
-	if scanner, ok := dst.(ocpi.HeaderScanner); ok {
-		if err := scanner.ScanHeader(res.Header); err != nil {
-			return fmt.Errorf(`ocpi221: unable to scan header: %w`, err)
-		}
-	}
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		b, _ := io.ReadAll(res.Body)
 		return fmt.Errorf(`ocpi221: encounter status code (%d) due to %s`, res.StatusCode, unsafe.String(unsafe.SliceData(b), len(b)))

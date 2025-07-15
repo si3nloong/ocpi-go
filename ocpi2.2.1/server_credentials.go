@@ -49,7 +49,7 @@ func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	clientConn := NewClientWithTokenA(credentialData.URL, credentialData.Token)
+	clientConn := NewClientWithTokenA(credentialData.URL, credentialData.Token, nil)
 	versionsResponse, err := clientConn.GetVersions(ctx)
 	if err != nil {
 		ocpihttp.Response(w, err)

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"unsafe"
 )
 
 type TokenResolver func(token string) string
@@ -22,14 +23,20 @@ type OCPIServer interface {
 	// Versions
 }
 
-type ServerConfig struct {
-	OmitRole      bool
+var defaultServerOptions = ServerOptions{
+	TokenResolver: func(token string) string {
+		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
+	},
+}
+
+type ServerOptions struct {
+	EnabledRole   bool
 	TokenResolver TokenResolver
 }
 
 type Server struct {
 	logger                   *slog.Logger
-	enabledRoleRoute         bool
+	enabledRole              bool
 	errs                     chan error
 	ocpi                     OCPIServer
 	tokenResolver            TokenResolver
@@ -52,18 +59,26 @@ type Server struct {
 	tokensReceiver           TokensReceiver
 }
 
-func NewServer(ocpi OCPIServer, cfg ...ServerConfig) *Server {
+func NewServer(ocpi OCPIServer, opts *ServerOptions) *Server {
+	if opts == nil {
+		opts = &defaultServerOptions
+	}
 	s := new(Server)
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
-	s.tokenResolver = func(token string) string {
-		token = strings.TrimPrefix(token, "Token ")
-		b, err := base64.StdEncoding.DecodeString(token)
-		if err == nil {
-			return string(b)
+	s.enabledRole = opts.EnabledRole
+	if opts.TokenResolver == nil {
+		s.tokenResolver = func(token string) string {
+			token = strings.TrimPrefix(token, "Token ")
+			b, err := base64.StdEncoding.DecodeString(token)
+			if err == nil {
+				return string(b)
+			}
+			return token
 		}
-		return token
+	} else {
+		s.tokenResolver = opts.TokenResolver
 	}
 	s.roles = make(map[Role]struct{})
 	s.ocpi = ocpi
@@ -239,7 +254,7 @@ func (s *Server) Errors() <-chan error {
 }
 
 func (s *Server) withRole(role InterfaceRole, path string) string {
-	if !s.enabledRoleRoute {
+	if !s.enabledRole {
 		return path
 	}
 	switch role {
