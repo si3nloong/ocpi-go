@@ -49,6 +49,12 @@ func Response[T any](w http.ResponseWriter, value T) {
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
 
+	// Empty response
+	case *ocpi.Response[any]:
+		b, _ := json.Marshal(vi)
+		w.WriteHeader(http.StatusOK)
+		w.Write(b)
+
 	default:
 		b, _ := json.Marshal(ocpi.NewResponse(value))
 		w.WriteHeader(http.StatusOK)
