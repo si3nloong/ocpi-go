@@ -291,6 +291,16 @@ const (
 	DayOfWeekSunday    DayOfWeek = "SUNDAY"
 )
 
+type TariffDimensionType string
+
+// Defines values for PriceComponent.
+const (
+	TariffDimensionTypeEnergy      TariffDimensionType = "ENERGY"
+	TariffDimensionTypeFlat        TariffDimensionType = "FLAT"
+	TariffDimensionTypeParkingTime TariffDimensionType = "PARKING_TIME"
+	TariffDimensionTypeTime        TariffDimensionType = "TIME"
+)
+
 type VersionDetails struct {
 	Endpoints []Endpoint         `json:"endpoints"`
 	Version   ocpi.VersionNumber `json:"version"`
@@ -536,7 +546,9 @@ type TariffElement struct {
 }
 
 type PriceComponent struct {
-	Type string `json:"type" validate:"required"`
+	Type     TariffDimensionType `json:"type" validate:"required"`
+	Price    json.Number         `json:"price" validate:"required"`
+	StepSize int                 `json:"step_size"`
 }
 
 type TariffRestrictions struct {
