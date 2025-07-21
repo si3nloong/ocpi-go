@@ -12,7 +12,7 @@ func GetHostname(r *http.Request) string {
 		return hostname
 	}
 	scheme := r.Header.Get("X-Forwarded-Proto")
-	if scheme == "https" {
+	if scheme == "https" || r.URL.Scheme == "https" {
 		hostname = "https://" + r.Host
 		return hostname
 	}

@@ -573,8 +573,8 @@ type StatusSchedule struct {
 
 // AdditionalGeoLocation defines model for locations_data_related_locations.
 type AdditionalGeoLocation struct {
-	Latitude  float64      `json:"latitude,string"`
-	Longitude float64      `json:"longitude,string"`
+	Latitude  string       `json:"latitude"`
+	Longitude string       `json:"longitude"`
 	Name      *DisplayText `json:"name,omitempty"`
 }
 
@@ -604,7 +604,7 @@ type GetLocationsParams struct {
 	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
-	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
+	Offset *uint `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Limit Maximum number of objects to GET.
 	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
@@ -625,10 +625,10 @@ type GetTariffsParams struct {
 	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
-	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
+	Offset *uint `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Limit Maximum number of objects to GET.
-	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 type TariffsResponse = ocpi.Response[[]Tariff]
@@ -683,7 +683,7 @@ type GetTokensParams struct {
 	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
 
 	// Offset The offset of the first object returned. Default is 0.
-	Offset *uint64 `form:"offset,omitempty" json:"offset,omitempty"`
+	Offset *uint `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Limit Maximum number of objects to GET.
 	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`

@@ -36,10 +36,11 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 			ocpihttp.Response(w, err)
 			return
 		}
-		params.Offset = &offset
+		u := uint(offset)
+		params.Offset = &u
 	}
 	if queryString.Has("limit") {
-		limit, err := strconv.ParseUint(queryString.Get("limit"), 10, 32)
+		limit, err := strconv.ParseUint(queryString.Get("limit"), 10, 16)
 		if err != nil {
 			ocpihttp.Response(w, err)
 			return
