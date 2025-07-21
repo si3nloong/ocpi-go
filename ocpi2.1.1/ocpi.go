@@ -531,8 +531,8 @@ type CdrDimension struct {
 }
 
 type TariffElement struct {
-	PriceComponents []PriceComponent     `json:"price_components"`
-	Restrictions    []TariffRestrictions `json:"restrictions,omitempty"`
+	PriceComponents []PriceComponent    `json:"price_components"`
+	Restrictions    *TariffRestrictions `json:"restrictions,omitempty"`
 }
 
 type PriceComponent struct {
@@ -540,8 +540,8 @@ type PriceComponent struct {
 }
 
 type TariffRestrictions struct {
-	StartTime   *DateTime    `json:"start_time" validate:"required"`
-	EndTime     *DateTime    `json:"end_time,omitempty"`
+	StartTime   *string      `json:"start_time" validate:"required"`
+	EndTime     *string      `json:"end_time,omitempty"`
 	StartDate   *string      `json:"start_date" validate:"required"`
 	EndDate     *string      `json:"end_date,omitempty"`
 	MinKwh      *json.Number `json:"min_kwh,omitempty"`      // Minimum kWh for this restriction.
