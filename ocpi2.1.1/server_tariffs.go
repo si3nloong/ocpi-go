@@ -63,7 +63,7 @@ func (s *Server) PatchOcpiTariff(w http.ResponseWriter, r *http.Request) {
 	partyID := r.PathValue("party_id")
 	tariffID := r.PathValue("tariff_id")
 
-	if err := s.emsp.OnPatchClientOwnedTariff(r.Context(), countryCode, partyID, tariffID, ocpi.RawMessage[Tariff](body)); err != nil {
+	if err := s.emsp.OnPatchClientOwnedTariff(r.Context(), countryCode, partyID, tariffID, ocpi.RawMessage[PartialTariff](body)); err != nil {
 		ocpihttp.Response(w, err)
 		return
 	}

@@ -356,9 +356,9 @@ type Hours struct {
 
 // HoursRegularHours defines model for locations_data_opening_times_regular_hours.
 type RegularHours struct {
+	Weekday     int    `json:"weekday"`
 	PeriodBegin string `json:"period_begin"`
 	PeriodEnd   string `json:"period_end"`
-	Weekday     int    `json:"weekday"`
 }
 
 // HoursExceptionalOpenings defines model for locations_data_opening_times_exceptional_openings.
@@ -522,11 +522,21 @@ type PartialSession struct {
 type Tariff struct {
 	ID            string          `json:"id" validate:"required"`
 	Currency      string          `json:"currency" validate:"required,len=3"`
-	TariffAltText []string        `json:"tariff_alt_text,omitempty"`
+	TariffAltText []DisplayText   `json:"tariff_alt_text,omitempty"`
 	TariffAltURL  *string         `json:"tariff_alt_url,omitempty"`
 	Elements      []TariffElement `json:"elements"`
 	EnergyMix     *EnergyMix      `json:"energy_mix" validate:"required"`
 	LastUpdated   DateTime        `json:"last_updated" validate:"required"`
+}
+
+type PartialTariff struct {
+	ID            *string         `json:"id,omitempty"`
+	Currency      *string         `json:"currency,omitempty" validate:"omitempty,len=3"`
+	TariffAltText []DisplayText   `json:"tariff_alt_text,omitempty"`
+	TariffAltURL  *string         `json:"tariff_alt_url,omitempty"`
+	Elements      []TariffElement `json:"elements,omitempty"`
+	EnergyMix     *EnergyMix      `json:"energy_mix,omitempty"`
+	LastUpdated   *DateTime       `json:"last_updated,omitempty"`
 }
 
 type ChargingPeriod struct {

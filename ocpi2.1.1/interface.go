@@ -63,7 +63,7 @@ type EMSP interface {
 	// (PUT /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
 	OnPutClientOwnedTariff(ctx context.Context, countryCode string, partyID string, tariffID string, body ocpi.RawMessage[Tariff]) error
 	// (PATCH /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
-	OnPatchClientOwnedTariff(ctx context.Context, countryCode string, partyID string, tariffID string, body ocpi.RawMessage[Tariff]) error
+	OnPatchClientOwnedTariff(ctx context.Context, countryCode string, partyID string, tariffID string, body ocpi.RawMessage[PartialTariff]) error
 	// (DELETE /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
 	OnDeleteClientOwnedTariff(ctx context.Context, countryCode string, partyID string, tariffID string) error
 
