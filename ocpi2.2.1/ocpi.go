@@ -858,7 +858,6 @@ type Location struct {
 	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
 	Images             []Image                 `json:"images,omitempty"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
-	HelpPhone          *string                 `json:"help_phone,omitempty"`
 	LastUpdated        DateTime                `json:"last_updated" validate:"required"`
 }
 
@@ -916,7 +915,6 @@ type PartialLocation struct {
 	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
 	Images             []Image                 `json:"images,omitempty"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
-	HelpPhone          *string                 `json:"help_phone,omitempty"`
 	LastUpdated        DateTime                `json:"last_updated"`
 }
 
