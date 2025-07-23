@@ -816,8 +816,8 @@ type Capability string
 
 // StatusSchedule defines model for evse_status_schedule.
 type StatusSchedule struct {
-	PeriodBegin string               `json:"period_begin"`
-	PeriodEnd   *string              `json:"period_end,omitempty"`
+	PeriodBegin DateTime             `json:"period_begin"`
+	PeriodEnd   *DateTime            `json:"period_end,omitempty"`
 	Status      StatusScheduleStatus `json:"status"`
 }
 
