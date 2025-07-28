@@ -10,13 +10,15 @@ import (
 	"sync"
 	"unsafe"
 
+	"github.com/gofrs/uuid/v5"
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
 type EndpointResolver func(endpoint string) string
 
-type Client interface {
-	CallEndpoint(ctx context.Context, module ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
+type OCPIClient interface {
+	GetCredentialsToken(ctx context.Context) (string, error)
+	GetEndpoint(ctx context.Context, module ModuleID) (string, error)
 }
 
 type TokenAClient interface {
@@ -26,33 +28,41 @@ type TokenAClient interface {
 	PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error)
 }
 
-type Option func(*ClientConn)
+type Client interface {
+	TokenAClient
+	CallEndpoint(ctx context.Context, module ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
+}
+
+var defaultClientOptions = ClientOptions{
+	HttpClient: http.DefaultClient,
+}
+
+type ClientOptions struct {
+	HttpClient *http.Client
+}
 
 type ClientConn struct {
 	rw             sync.RWMutex
+	ocpi           OCPIClient
 	versionDetails *VersionDetails
 	versions       ocpi.Versions
-	tokenA         string
-	tokenC         string
 	versionUrl     string
 	httpClient     *http.Client
-	endpointDict   map[string]Endpoint
 }
 
 var _ Client = (*ClientConn)(nil)
 
-func WithTokenC(tokenC string) Option {
-	return func(c *ClientConn) {
-		c.tokenC = tokenC
+func NewClient(versionUrl string, ocpi OCPIClient, opts *ClientOptions) *ClientConn {
+	if opts == nil {
+		opts = &defaultClientOptions
 	}
-}
-
-func NewClient(versionUrl string, options ...Option) *ClientConn {
 	c := new(ClientConn)
 	c.versionUrl = versionUrl
-	c.httpClient = &http.Client{}
-	for _, opt := range options {
-		opt(c)
+	c.ocpi = ocpi
+	if opts.HttpClient == nil {
+		c.httpClient = &http.Client{}
+	} else {
+		c.httpClient = opts.HttpClient
 	}
 	return c
 }
@@ -61,102 +71,60 @@ func NewClientWithTokenA(versionUrl string, tokenA string) TokenAClient {
 	c := new(ClientConn)
 	c.versionUrl = versionUrl
 	c.httpClient = &http.Client{}
-	c.tokenA = tokenA
 	return c
 }
 
-func (c *ClientConn) CallEndpoint(
-	ctx context.Context,
-	module ModuleID,
-	method string,
-	endpointResolver EndpointResolver,
-	src, dst any,
-) error {
-	endpoint, err := c.getEndpoint(ctx, module)
+func (c *ClientConn) CallEndpoint(ctx context.Context, module ModuleID, method string, resolver EndpointResolver, src, dst any) error {
+	endpoint, err := c.ocpi.GetEndpoint(ctx, module)
 	if err != nil {
 		return err
 	}
-	if err := c.do(ctx, method, endpointResolver(endpoint), src, dst); err != nil {
+
+	if err := c.do(ctx, method, resolver(endpoint), src, dst); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientConn) getEndpoint(ctx context.Context, module ModuleID) (string, error) {
-	c.rw.RLock()
-	if c.endpointDict == nil {
-		c.rw.RUnlock()
-		versionsResponse, err := c.GetVersions(ctx)
-		if err != nil {
-			return "", err
-		}
-		versions, err := versionsResponse.Data()
-		if err != nil {
-			return "", err
-		}
-		if len(versions) == 0 {
-			return "", fmt.Errorf("ocpi211: no versions found at %s", c.versionUrl)
-		}
-
-		version := versions[0]
-		var o ocpi.Response[VersionDetails]
-		if err := c.do(ctx, http.MethodGet, version.URL, nil, &o); err != nil {
-			return "", err
-		}
-		versionDetails, err := o.Data()
-		if err != nil {
-			return "", err
-		}
-
-		c.rw.Lock()
-		c.endpointDict = make(map[string]Endpoint)
-		for _, v := range versionDetails.Endpoints {
-			c.endpointDict[string(v.Identifier)] = v
-		}
-		c.rw.Unlock()
-		c.rw.RLock()
-	}
-	defer c.rw.RUnlock()
-	v, ok := c.endpointDict[string(module)]
-	if ok {
-		return v.URL, nil
-	}
-	return "", fmt.Errorf(`ocpi211: missing endpoint for module id %q`, module)
-}
-
-func (c *ClientConn) newRequest(ctx context.Context, method, endpoint string, src any) (*http.Request, error) {
+func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst any) error {
 	var body io.Reader
 	if src != nil {
 		b, err := json.Marshal(src)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		body = bytes.NewBuffer(b)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, method, endpoint, body)
 	if err != nil {
-		return nil, err
+		return err
+	}
+
+	token, err := c.ocpi.GetCredentialsToken(ctx)
+	if err != nil {
+		return err
 	}
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
-
-	c.rw.RLock()
-	if c.tokenC != "" {
-		req.Header.Set("Authorization", "Token "+c.tokenC)
+	req.Header.Set(ocpi.HttpHeaderXRequestID, uuid.Must(uuid.NewV7()).String())
+	reqCtx := GetRequestContext(ctx)
+	// if reqCtx.FromCountryCode != "" && reqCtx.FromPartyID != "" {
+	// 	req.Header.Set(ocpi.HttpHeaderOCPIFromCountryCode, reqCtx.FromCountryCode)
+	// 	req.Header.Set(ocpi.HttpHeaderOCPIFromPartyID, reqCtx.FromPartyID)
+	// }
+	// if reqCtx.ToCountryCode != "" && reqCtx.ToPartyID != "" {
+	// 	req.Header.Set(ocpi.HttpHeaderOCPIToCountryCode, reqCtx.ToCountryCode)
+	// 	req.Header.Set(ocpi.HttpHeaderOCPIToPartyID, reqCtx.ToPartyID)
+	// }
+	if reqCtx.requestID != "" {
+		req.Header.Set(ocpi.HttpHeaderXCorrelationID, reqCtx.requestID)
 	} else {
-		req.Header.Set("Authorization", "Token "+c.tokenA)
+		req.Header.Set(ocpi.HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 	}
-	c.rw.RUnlock()
-	return req, nil
-}
 
-func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst any) error {
-	req, err := c.newRequest(ctx, method, endpoint, src)
-	if err != nil {
-		return err
-	}
+	req.Header.Set("Authorization", "Token "+token)
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {

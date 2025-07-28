@@ -56,7 +56,7 @@ type EMSP interface {
 	// (GET /ocpi/2.1.1/cdrs/{cdr_id})
 	OnGetCDR(ctx context.Context, cdrID string) (*CDR, error)
 	// (POST /ocpi/2.1.1/cdrs)
-	OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*CDRResponse, error)
+	OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*ChargeDetailRecordResponse, error)
 
 	// (GET /ocpi/2.1.1/tariffs/{country_code}/{party_id}/{tariff_id})
 	OnGetClientOwnedTariff(ctx context.Context, countryCode string, partyID string, sessionID string) (*Tariff, error)

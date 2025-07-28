@@ -39,14 +39,41 @@ func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsPar
 	}, nil
 }
 
-func (c *ClientConn) GetLocation(ctx context.Context, locationID string) (*LocationResponse, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDLocations)
-	if err != nil {
+func (c *ClientConn) GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error) {
+	var res ocpi.Response[Location]
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + locationID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
+	return &res, nil
+}
 
-	var res LocationResponse
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+locationID, nil, &res); err != nil {
+func (c *ClientConn) GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error) {
+	var res ocpi.Response[Location]
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + locationID
+	}, nil, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *ClientConn) PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location Location) (*ocpi.Response[any], error) {
+	var res ocpi.Response[any]
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, http.MethodPut, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + locationID
+	}, location, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *ClientConn) PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location PartialLocation) (*ocpi.Response[any], error) {
+	var res ocpi.Response[any]
+	if err := c.CallEndpoint(ctx, ModuleIDLocations, http.MethodPatch, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + locationID
+	}, location, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil

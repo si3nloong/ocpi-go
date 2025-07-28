@@ -635,9 +635,6 @@ type GetLocationsParams struct {
 type GetCDRsParams struct {
 }
 
-type SessionsResponse = ocpi.Response[[]Session]
-type SessionResponse = ocpi.Response[Session]
-
 // GetTariffsParams defines parameters for GetOcpiTariffs.
 type GetTariffsParams struct {
 	// DateFrom Return Tariffs that have last_updated after or equal to Date/Time (inclusive).
@@ -652,8 +649,6 @@ type GetTariffsParams struct {
 	// Limit Maximum number of objects to GET.
 	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
 }
-
-type TariffsResponse = ocpi.Response[[]Tariff]
 
 type StartSession struct {
 	ResponseURL string  `json:"response_url" validate:"required"`
@@ -695,8 +690,6 @@ type Token struct {
 	LastUpdated  DateTime      `json:"last_updated"`
 }
 
-type LocationResponse = ocpi.Response[Location]
-
 type GetTokensParams struct {
 	// DateFrom Return Tokens that have last_updated after or equal to this date time (inclusive).
 	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
@@ -725,7 +718,7 @@ type LocationReferences struct {
 	ConnectorIDs *string `json:"connector_ids,omitempty"`
 }
 
-type CDRResponse struct {
+type ChargeDetailRecordResponse struct {
 	Location string
 }
 

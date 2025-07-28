@@ -5,17 +5,17 @@ import (
 	"fmt"
 )
 
-type clientTokenA struct {
+type unregisteredClient struct {
 	*ClientConn
 	tokenA    string
 	endpoints map[string]string
 }
 
-func (c *clientTokenA) GetCredentialsToken(ctx context.Context) (string, error) {
+func (c *unregisteredClient) GetCredentialsToken(ctx context.Context) (string, error) {
 	return c.tokenA, nil
 }
 
-func (c *clientTokenA) GetEndpoint(ctx context.Context, module ModuleID) (string, error) {
+func (c *unregisteredClient) GetEndpoint(ctx context.Context, module ModuleID) (string, error) {
 	c.rw.RLock()
 	if c.endpoints == nil {
 		c.rw.RUnlock()

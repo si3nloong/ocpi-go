@@ -6,19 +6,12 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetSessions(ctx context.Context, dateFrom time.Time, params ...GetSessionsParams) (*SessionsResponse, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions)
-	if err != nil {
-		return nil, err
-	}
-
-	u, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	query := u.Query()
+func (c *ClientConn) GetSessions(ctx context.Context, dateFrom time.Time, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
+	query := make(url.Values)
 	query.Add("date_from", dateFrom.Format(time.RFC3339))
 	if len(params) > 0 {
 		p := params[0]
@@ -32,23 +25,21 @@ func (c *ClientConn) GetSessions(ctx context.Context, dateFrom time.Time, params
 			query.Add("limit", strconv.FormatUint(uint64(*p.Limit), 10))
 		}
 	}
-	u.RawQuery = query.Encode()
 
-	var res SessionsResponse
-	if err := c.do(ctx, http.MethodGet, u.String(), nil, &res); err != nil {
+	var res ocpi.PaginationResponse[Session]
+	if err := c.CallEndpoint(ctx, ModuleIDSessions, http.MethodGet, func(endpoint string) string {
+		return endpoint + "?" + query.Encode()
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
-func (c *ClientConn) GetSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*SessionResponse, error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDSessions)
-	if err != nil {
-		return nil, err
-	}
-
-	var res SessionResponse
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+sessionID, nil, &res); err != nil {
+func (c *ClientConn) GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error) {
+	var res ocpi.Response[Session]
+	if err := c.CallEndpoint(ctx, ModuleIDTariffs, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + sessionID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil

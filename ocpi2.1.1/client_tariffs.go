@@ -40,13 +40,10 @@ func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams)
 }
 
 func (c *ClientConn) GetClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[Tariff], error) {
-	endpoint, err := c.getEndpoint(ctx, ModuleIDTariffs)
-	if err != nil {
-		return nil, err
-	}
-
 	var res ocpi.Response[Tariff]
-	if err := c.do(ctx, http.MethodGet, endpoint+"/"+countryCode+"/"+partyID+"/"+tariffID, nil, &res); err != nil {
+	if err := c.CallEndpoint(ctx, ModuleIDTariffs, http.MethodGet, func(endpoint string) string {
+		return endpoint + "/" + countryCode + "/" + partyID + "/" + tariffID
+	}, nil, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
