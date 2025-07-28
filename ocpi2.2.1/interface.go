@@ -85,7 +85,7 @@ type CDRsReceiver interface {
 	// (GET /ocpi/2.2.1/cdrs/{cdr_id})
 	OnGetCDR(ctx context.Context, cdrID string) (*CDR, error)
 	// (POST /ocpi/2.2.1/cdrs)
-	OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*CDRResponse, error)
+	OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*ChargeDetailRecordResponse, error)
 }
 
 type ChargingProfilesSender interface {

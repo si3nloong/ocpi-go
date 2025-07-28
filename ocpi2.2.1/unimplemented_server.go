@@ -110,7 +110,7 @@ func (UnimplementedServer) OnGetCDR(ctx context.Context, cdrID string) (*CDR, er
 }
 
 // OnPostCDR implements EMSP.
-func (UnimplementedServer) OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*CDRResponse, error) {
+func (UnimplementedServer) OnPostCDR(ctx context.Context, body ocpi.RawMessage[CDR]) (*ChargeDetailRecordResponse, error) {
 	return nil, ErrNotImplemented
 }
 

@@ -588,24 +588,6 @@ type SignedValue struct {
 	SignedData string `json:"signed_data" validate:"required,max=5000"`
 }
 
-// CdrBodyTariffsElementsRestrictions defines model for cdrBody_tariffs_elements_restrictions.
-type CdrBodyTariffsElementsRestrictions struct {
-	DayOfWeek   *DayOfWeek                  `json:"day_of_week,omitempty"`
-	EndDate     *string                     `json:"end_date,omitempty"`
-	EndTime     *string                     `json:"end_time,omitempty"`
-	MaxCurrent  *json.Number                `json:"max_current,omitempty"`
-	MaxDuration *int                        `json:"max_duration,omitempty"`
-	MaxKwh      *json.Number                `json:"max_kwh,omitempty"`
-	MaxPower    *json.Number                `json:"max_power,omitempty"`
-	MinCurrent  *json.Number                `json:"min_current,omitempty"`
-	MinDuration *int                        `json:"min_duration,omitempty"`
-	MinKwh      *json.Number                `json:"min_kwh,omitempty"`
-	MinPower    *json.Number                `json:"min_power,omitempty"`
-	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
-	StartDate   *string                     `json:"start_date,omitempty"`
-	StartTime   *string                     `json:"start_time,omitempty"`
-}
-
 // EnergyMix defines model for cdrBody_tariffs_energy_mix.
 type EnergyMix struct {
 	IsGreenEnergy     bool                  `json:"is_green_energy"`
@@ -663,14 +645,6 @@ type ChargingProfileResultResult string
 type ChargingProfilePeriod struct {
 	StartPeriod int         `json:"start_period" validate:"required"`
 	Limit       json.Number `json:"limit" validate:"required"`
-}
-
-// ChargingProfilesResponse defines model for chargingProfilesResponse.
-type ChargingProfilesResponse struct {
-	ChargingProfile *ChargingProfileResponse `json:"chargingProfile,omitempty"`
-	StatusCode      float32                  `json:"status_code"`
-	StatusMessage   *string                  `json:"status_message,omitempty"`
-	TimeStamp       *string                  `json:"timeStamp,omitempty"`
 }
 
 // ClearProfileResult defines model for clearProfileResult.
@@ -1186,14 +1160,6 @@ type TokenEnergyContract struct {
 	SupplierName string  `json:"supplier_name"`
 }
 
-// TokensResponse defines model for tokensResponse.
-type TokensResponse struct {
-	StatusCode    float32 `json:"status_code"`
-	StatusMessage *string `json:"status_message,omitempty"`
-	TimeStamp     *string `json:"timeStamp,omitempty"`
-	Tokens        *Token  `json:"tokens,omitempty"`
-}
-
 // UnlockConnector defines model for unlockConnector.
 type UnlockConnector struct {
 	ResponseURL string `json:"response_url"`
@@ -1292,6 +1258,6 @@ type GetTokensParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-type CDRResponse struct {
+type ChargeDetailRecordResponse struct {
 	Location string
 }
