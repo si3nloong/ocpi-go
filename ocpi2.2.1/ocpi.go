@@ -790,13 +790,10 @@ type Capability string
 
 // StatusSchedule defines model for evse_status_schedule.
 type StatusSchedule struct {
-	PeriodBegin DateTime             `json:"period_begin"`
-	PeriodEnd   *DateTime            `json:"period_end,omitempty"`
-	Status      StatusScheduleStatus `json:"status"`
+	PeriodBegin DateTime  `json:"period_begin"`
+	PeriodEnd   *DateTime `json:"period_end,omitempty"`
+	Status      Status    `json:"status"`
 }
-
-// StatusScheduleStatus defines model for StatusSchedule.Status.
-type StatusScheduleStatus string
 
 // LocationReferences defines model for locationReferences.
 type LocationReferences struct {
