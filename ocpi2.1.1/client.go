@@ -31,6 +31,15 @@ type TokenAClient interface {
 type Client interface {
 	TokenAClient
 	CallEndpoint(ctx context.Context, module ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
+	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
+	GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
+	GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error)
+	PutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session Session) (*ocpi.Response[any], error)
+	PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PartialSession) (*ocpi.Response[any], error)
+	StartSession(ctx context.Context, req StartSession) (*ocpi.Response[CommandResponse], error)
+	StopSession(ctx context.Context, req StopSession) (*ocpi.Response[CommandResponse], error)
+	ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Response[CommandResponse], error)
+	UnlockConnector(ctx context.Context, req UnlockConnector) (*ocpi.Response[CommandResponse], error)
 }
 
 var defaultClientOptions = ClientOptions{
@@ -67,10 +76,10 @@ func NewClient(versionUrl string, ocpi OCPIClient, opts *ClientOptions) *ClientC
 	return c
 }
 
-func NewClientWithTokenA(versionUrl string, tokenA string) TokenAClient {
-	c := new(ClientConn)
-	c.versionUrl = versionUrl
-	c.httpClient = &http.Client{}
+func NewClientWithTokenA(versionUrl string, tokenA string, opts *ClientOptions) TokenAClient {
+	c := &unregisteredClient{tokenA: tokenA}
+	client := NewClient(versionUrl, c, opts)
+	c.ClientConn = client
 	return c
 }
 

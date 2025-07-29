@@ -10,8 +10,9 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetSessions(ctx context.Context, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
+func (c *ClientConn) GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
 	query := make(url.Values)
+	query.Set("date_from", dateFrom.Format(time.RFC3339))
 	if len(params) > 0 {
 		p := params[0]
 		if p.DateFrom != nil && p.DateFrom.IsZero() {
