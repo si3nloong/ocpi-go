@@ -48,7 +48,11 @@ func (dt *DateTime) Format(layout string) string {
 }
 
 func (dt DateTime) MarshalJSON() ([]byte, error) {
-	return dt.Time.MarshalJSON()
+	b := make([]byte, 0, 22)
+	b = append(b, '"')
+	b = append(b, []byte(dt.Format("2006-01-02T15:04:05Z"))...)
+	b = append(b, '"')
+	return b, nil
 }
 
 func (dt *DateTime) UnmarshalJSON(b []byte) error {
