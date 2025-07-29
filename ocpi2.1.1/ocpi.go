@@ -680,13 +680,13 @@ type UnlockConnector struct {
 
 type Token struct {
 	UID          string        `json:"uid" validate:"required"`
-	Type         TokenType     `json:"type"`
+	Type         TokenType     `json:"type" validate:"required"`
 	AuthID       string        `json:"auth_id" validate:"required"`
 	VisualNumber *string       `json:"visual_number"`
 	Issuer       string        `json:"issuer"`
 	Valid        bool          `json:"valid"`
 	Whitelist    WhitelistType `json:"whitelist"`
-	Language     string        `json:"language" validate:"required,max=2"`
+	Language     *string       `json:"language"`
 	LastUpdated  DateTime      `json:"last_updated"`
 }
 
