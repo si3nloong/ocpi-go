@@ -52,7 +52,7 @@ type Client interface {
 var defaultClientOptions = ClientOptions{
 	HttpClient: http.DefaultClient,
 	TokenResolver: func(token string) string {
-		return token
+		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
 	},
 }
 
@@ -81,17 +81,15 @@ func NewClient(versionUrl string, ocpi OCPIClient, opts *ClientOptions) *ClientC
 	c.versionUrl = versionUrl
 	c.ocpi = ocpi
 	if opts.HttpClient == nil {
-		c.httpClient = &http.Client{}
-	} else {
-		c.httpClient = opts.HttpClient
+		opts.HttpClient = &http.Client{}
 	}
-	if opts.TokenResolver != nil {
-		c.tokenResolver = opts.TokenResolver
-	} else {
-		c.tokenResolver = func(token string) string {
+	if opts.TokenResolver == nil {
+		opts.TokenResolver = func(token string) string {
 			return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
 		}
 	}
+	c.tokenResolver = opts.TokenResolver
+	c.httpClient = opts.HttpClient
 	return c
 }
 
@@ -99,7 +97,7 @@ func NewClientWithTokenA(versionUrl string, tokenA string, opts *ClientOptions) 
 	c := &unregisteredClient{tokenA: tokenA}
 	client := NewClient(versionUrl, c, opts)
 	c.ClientConn = client
-	return client
+	return c
 }
 
 func (c *ClientConn) CallEndpoint(ctx context.Context, module ModuleID, role InterfaceRole, method string, resolver EndpointResolver, src, dst any) error {

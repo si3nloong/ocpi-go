@@ -69,10 +69,9 @@ func NewClient(versionUrl string, ocpi OCPIClient, opts *ClientOptions) *ClientC
 	c.versionUrl = versionUrl
 	c.ocpi = ocpi
 	if opts.HttpClient == nil {
-		c.httpClient = &http.Client{}
-	} else {
-		c.httpClient = opts.HttpClient
+		opts.HttpClient = &http.Client{}
 	}
+	c.httpClient = opts.HttpClient
 	return c
 }
 
