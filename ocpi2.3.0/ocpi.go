@@ -1,4 +1,4 @@
-package ocpi221
+package ocpi230
 
 import (
 	"encoding/json"
@@ -10,13 +10,13 @@ type Role string
 
 // Defines values for Role.
 const (
-	RoleCPO   Role = "CPO"
-	RoleEMSP  Role = "EMSP"
-	RoleHUB   Role = "HUB"
-	RoleNAP   Role = "NAP"
-	RoleNSP   Role = "NSP"
-	RoleOther Role = "OTHER"
-	RoleSCSP  Role = "SCSP"
+	RoleCPO  Role = "CPO"
+	RoleEMSP Role = "EMSP"
+	RoleHUB  Role = "HUB"
+	RoleNSP  Role = "NSP"
+	RoleNAP  Role = "NAP"
+	RoleSCSP Role = "SCSP"
+	RolePTP  Role = "PTP"
 )
 
 // InterfaceRole Interface role endpoint implements.
@@ -42,6 +42,7 @@ const (
 	ModuleIDSessions         ModuleID = "sessions"
 	ModuleIDTariffs          ModuleID = "tariffs"
 	ModuleIDTokens           ModuleID = "tokens"
+	ModuleIDPayments         ModuleID = "payments"
 )
 
 // ChargingProfileResultType defines model for ActiveChargingProfileResult.Result.
@@ -76,8 +77,8 @@ const (
 	CdrDimensionTypeEnergyExport    CdrDimensionType = "ENERGY_EXPORT"
 	CdrDimensionTypeEnergyImport    CdrDimensionType = "ENERGY_IMPORT"
 	CdrDimensionTypeMaxCurrent      CdrDimensionType = "MAX_CURRENT"
-	CdrDimensionTypeMaxPower        CdrDimensionType = "MAX_POWER"
 	CdrDimensionTypeMinCurrent      CdrDimensionType = "MIN_CURRENT"
+	CdrDimensionTypeMaxPower        CdrDimensionType = "MAX_POWER"
 	CdrDimensionTypeMinPower        CdrDimensionType = "MIN_POWER"
 	CdrDimensionTypeParkingTime     CdrDimensionType = "PARKING_TIME"
 	CdrDimensionTypePower           CdrDimensionType = "POWER"
@@ -459,9 +460,10 @@ const (
 )
 
 type Credentials struct {
-	Token string            `json:"token"`
-	URL   string            `json:"url"`
-	Roles []CredentialsRole `json:"roles"`
+	Token      string            `json:"token"`
+	URL        string            `json:"url"`
+	HubPartyID *string           `json:"hub_party_id,omitempty" validate:"omitempty,len=5"`
+	Roles      []CredentialsRole `json:"roles"`
 }
 
 type CredentialsRole struct {
@@ -737,35 +739,44 @@ type Endpoint struct {
 
 // EVSE defines model for evse.
 type EVSE struct {
-	UID                 string               `json:"uid" validate:"required"`
-	EvseID              *string              `json:"evse_id,omitempty"`
-	Status              Status               `json:"status" validate:"required"`
-	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty"`
-	Capabilities        []Capability         `json:"capabilities,omitempty"`
-	Connectors          []Connector          `json:"connectors" validate:"required"`
-	FloorLevel          *string              `json:"floor_level,omitempty"`
-	Coordinates         *GeoLocation         `json:"coordinates,omitempty"`
-	PhysicalReference   *string              `json:"physical_reference,omitempty"`
-	Directions          []DisplayText        `json:"directions,omitempty"`
-	ParkingRestrictions []ParkingRestriction `json:"parking_restrictions,omitempty"`
-	Images              []Image              `json:"images,omitempty"`
-	LastUpdated         DateTime             `json:"last_updated"`
+	UID                      string               `json:"uid" validate:"required"`
+	EvseID                   *string              `json:"evse_id,omitempty"`
+	Status                   Status               `json:"status" validate:"required"`
+	StatusSchedule           []StatusSchedule     `json:"status_schedule,omitempty"`
+	Capabilities             []Capability         `json:"capabilities,omitempty"`
+	Connectors               []Connector          `json:"connectors" validate:"required"`
+	FloorLevel               *string              `json:"floor_level,omitempty"`
+	Coordinates              *GeoLocation         `json:"coordinates,omitempty"`
+	PhysicalReference        *string              `json:"physical_reference,omitempty"`
+	Directions               []DisplayText        `json:"directions,omitempty"`
+	ParkingRestrictions      []ParkingRestriction `json:"parking_restrictions,omitempty"`
+	Parking                  []EVSEParking        `json:"parking,omitempty"`
+	Images                   []Image              `json:"images,omitempty"`
+	AcceptedServiceProviders *string              `json:"accepted_service_providers,omitempty"`
+	LastUpdated              DateTime             `json:"last_updated"`
 }
 
 type PartialEVSE struct {
-	UID                 *string              `json:"uid,omitempty"`
-	EvseID              *string              `json:"evse_id,omitempty"`
-	Status              *Status              `json:"status,omitempty"`
-	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty"`
-	Capabilities        []Capability         `json:"capabilities,omitempty"`
-	Connectors          []Connector          `json:"connectors"`
-	FloorLevel          *string              `json:"floor_level,omitempty"`
-	Coordinates         *GeoLocation         `json:"coordinates,omitempty"`
-	PhysicalReference   *string              `json:"physical_reference,omitempty"`
-	Directions          []DisplayText        `json:"directions,omitempty"`
-	ParkingRestrictions []ParkingRestriction `json:"parking_restrictions,omitempty"`
-	Images              []Image              `json:"images,omitempty"`
-	LastUpdated         DateTime             `json:"last_updated"`
+	UID                      *string              `json:"uid,omitempty"`
+	EvseID                   *string              `json:"evse_id,omitempty"`
+	Status                   *Status              `json:"status,omitempty"`
+	StatusSchedule           []StatusSchedule     `json:"status_schedule,omitempty"`
+	Capabilities             []Capability         `json:"capabilities,omitempty"`
+	Connectors               []Connector          `json:"connectors"`
+	FloorLevel               *string              `json:"floor_level,omitempty"`
+	Coordinates              *GeoLocation         `json:"coordinates,omitempty"`
+	PhysicalReference        *string              `json:"physical_reference,omitempty"`
+	Directions               []DisplayText        `json:"directions,omitempty"`
+	ParkingRestrictions      []ParkingRestriction `json:"parking_restrictions,omitempty"`
+	Parking                  []EVSEParking        `json:"parking,omitempty"`
+	Images                   []Image              `json:"images,omitempty"`
+	AcceptedServiceProviders *string              `json:"accepted_service_providers,omitempty"`
+	LastUpdated              DateTime             `json:"last_updated"`
+}
+
+type EVSEParking struct {
+	ParkingID    string        `json:"parking_id" validate:"required"`
+	EVSEPosition *EVSEPosition `json:"evse_position"`
 }
 
 type EVSEPosition string
@@ -802,10 +813,10 @@ type Location struct {
 	Name               *string                 `json:"name,omitempty"`
 	Address            string                  `json:"address"`
 	City               string                  `json:"city"`
-	PostalCode         *string                 `json:"postal_code,omitempty"`
-	State              *string                 `json:"state,omitempty" validate:"omitempty,required,max=20"`
+	PostalCode         *string                 `json:"postal_code,omitempty" validate:"omitempty,max=10"`
+	State              *string                 `json:"state,omitempty" validate:"omitempty,max=20"`
 	Country            string                  `json:"country" validate:"required,len=3"`
-	Coordinates        GeoLocation             `json:"coordinates"`
+	Coordinates        GeoLocation             `json:"coordinates" validate:"required"`
 	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
 	ParkingType        *ParkingType            `json:"parking_type,omitempty"`
 	EVSEs              []EVSE                  `json:"evses,omitempty"`
@@ -815,25 +826,45 @@ type Location struct {
 	Suboperator        *BusinessDetails        `json:"suboperator,omitempty"`
 	Owner              *BusinessDetails        `json:"owner,omitempty"`
 	Facilities         []Facility              `json:"facilities,omitempty"`
-	TimeZone           string                  `json:"time_zone" validate:"required"`
+	TimeZone           string                  `json:"time_zone" validate:"required,max=255"`
 	OpeningTimes       *Hours                  `json:"opening_times,omitempty"`
 	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
 	Images             []Image                 `json:"images,omitempty"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
+	HelpPhone          *string                 `json:"help_phone" validate:"omitempty,max=25"`
 	LastUpdated        DateTime                `json:"last_updated" validate:"required"`
 }
 
+type ParkingDirection string
+
+const (
+	ParkingDirectionParallel      ParkingDirection = "PARALLEL"
+	ParkingDirectionPerpendicular ParkingDirection = "PERPENDICULAR"
+	ParkingDirectionAngle         ParkingDirection = "ANGLE"
+)
+
 type Parking struct {
-	ID                           string        `json:"id"`
-	PhysicalReference            *string       `json:"physical_reference"`
-	VehicleTypes                 []VehicleType `json:"vehicle_types"`
-	MaxVehicleWeight             *json.Number  `json:"max_vehicle_weight"`
-	MaxVehicleHeight             *json.Number  `json:"max_vehicle_height"`
-	MaxVehicleLength             *json.Number  `json:"max_vehicle_length"`
-	MaxVehicleWidth              *json.Number  `json:"max_vehicle_width"`
-	MaxVehicleParkingSpaceLength *json.Number  `json:"parking_space_length"`
-	MaxVehicleParkingSpaceWidth  *json.Number  `json:"parking_space_width"`
-	DangerousGoodsAllowed        *bool         `json:"dangerous_goods_allowed"`
+	ID                           string            `json:"id"`
+	PhysicalReference            *string           `json:"physical_reference"`
+	VehicleTypes                 []VehicleType     `json:"vehicle_types"`
+	MaxVehicleWeight             *json.Number      `json:"max_vehicle_weight"`
+	MaxVehicleHeight             *json.Number      `json:"max_vehicle_height"`
+	MaxVehicleLength             *json.Number      `json:"max_vehicle_length"`
+	MaxVehicleWidth              *json.Number      `json:"max_vehicle_width"`
+	MaxVehicleParkingSpaceLength *json.Number      `json:"parking_space_length"`
+	MaxVehicleParkingSpaceWidth  *json.Number      `json:"parking_space_width"`
+	DangerousGoodsAllowed        *bool             `json:"dangerous_goods_allowed"`
+	Direction                    *ParkingDirection `json:"direction"`
+	DriveThrough                 *bool             `json:"drive_through"`
+	RestrictedToType             bool              `json:"restricted_to_type"`
+	ReservationRequired          bool              `json:"reservation_required"`
+	TimeLimit                    *json.Number      `json:"time_limit"`
+	Roofed                       *bool             `json:"roofed"`
+	Images                       []Image           `json:"images,omitempty"`
+	Lighting                     *bool             `json:"lighting"`
+	RefrigerationOutlet          *bool             `json:"refrigeration_outlet"`
+	Standards                    []string          `json:"standards,omitempty"`
+	ApdsReference                *string           `json:"apds_reference"`
 }
 
 type VehicleType string
@@ -877,6 +908,7 @@ type PartialLocation struct {
 	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
 	Images             []Image                 `json:"images,omitempty"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
+	HelpPhone          *string                 `json:"help_phone,omitempty"`
 	LastUpdated        DateTime                `json:"last_updated"`
 }
 
@@ -1012,22 +1044,37 @@ type StopSession struct {
 	SessionID   string `json:"session_id"`
 }
 
+type TaxIncluded string
+
+const (
+	TaxIncludedYes           TaxIncluded = "YES"
+	TaxIncludedNo            TaxIncluded = "NO"
+	TaxIncludedNotApplicable TaxIncluded = "N/A"
+)
+
 // Tariff defines model for tariff.
 type Tariff struct {
-	CountryCode   string          `json:"country_code" validate:"required,len=2"`
-	PartyID       string          `json:"party_id" validate:"required,len=3"`
-	ID            string          `json:"id" validate:"required"`
-	Currency      string          `json:"currency" validate:"required,len=3"`
-	Type          *TariffType     `json:"type,omitempty"`
-	TariffAltText []DisplayText   `json:"tariff_alt_text,omitempty"`
-	TariffAltURL  *string         `json:"tariff_alt_url,omitempty"`
-	MinPrice      *Price          `json:"min_price,omitempty"`
-	MaxPrice      *Price          `json:"max_price,omitempty"`
-	Elements      []TariffElement `json:"elements"`
-	StartDateTime *DateTime       `json:"start_date_time,omitempty"`
-	EndDateTime   *DateTime       `json:"end_date_time,omitempty"`
-	EnergyMix     *EnergyMix      `json:"energy_mix,omitempty"`
-	LastUpdated   DateTime        `json:"last_updated" validate:"required"`
+	CountryCode        string          `json:"country_code" validate:"required,len=2"`
+	PartyID            string          `json:"party_id" validate:"required,len=3"`
+	ID                 string          `json:"id" validate:"required"`
+	Currency           string          `json:"currency" validate:"required,len=3"`
+	Type               *TariffType     `json:"type,omitempty"`
+	TariffAltText      []DisplayText   `json:"tariff_alt_text,omitempty"`
+	TariffAltURL       *string         `json:"tariff_alt_url,omitempty"`
+	MinPrice           *PriceLimit     `json:"min_price,omitempty"`
+	MaxPrice           *PriceLimit     `json:"max_price,omitempty"`
+	PreauthorizeAmount *json.Number    `json:"preauthorize_amount,omitempty"`
+	Elements           []TariffElement `json:"elements"`
+	TaxIncluded        TaxIncluded     `json:"tax_included" validate:"required,oneof=YES NO N/A"`
+	StartDateTime      *DateTime       `json:"start_date_time,omitempty"`
+	EndDateTime        *DateTime       `json:"end_date_time,omitempty"`
+	EnergyMix          *EnergyMix      `json:"energy_mix,omitempty"`
+	LastUpdated        DateTime        `json:"last_updated" validate:"required"`
+}
+
+type PriceLimit struct {
+	BeforeTaxes json.Number  `json:"before_taxes"`
+	AfterTaxes  *json.Number `json:"after_taxes"`
 }
 
 // TariffElement defines model for tariff_elements.
@@ -1060,6 +1107,70 @@ type TariffRestrictions struct {
 	MaxDuration *int                        `json:"max_duration,omitempty"`
 	DayOfWeek   []DayOfWeek                 `json:"day_of_week,omitempty"`
 	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
+}
+
+type InvoiceCreator string
+
+const (
+	InvoiceCreatorCPO InvoiceCreator = "CPO"
+	InvoiceCreatorPTP InvoiceCreator = "PTP"
+)
+
+type Terminal struct {
+	TerminalID        string          `json:"terminal_id"`
+	CustomerReference *string         `json:"customer_reference,omitempty"`
+	PartyID           *string         `json:"party_id,omitempty"`
+	CountryCode       *string         `json:"country_code,omitempty"`
+	Address           *string         `json:"address,omitempty"`
+	City              *string         `json:"city,omitempty"`
+	PostalCode        *string         `json:"postal_code,omitempty"`
+	State             *string         `json:"state,omitempty"`
+	Country           *string         `json:"country,omitempty"`
+	Coordinates       *GeoLocation    `json:"coordinates,omitempty"`
+	InvoiceBaseUrl    *string         `json:"invoice_base_url,omitempty"`
+	InvoiceCreator    *InvoiceCreator `json:"invoice_creator,omitempty"`
+	Reference         *string         `json:"reference,omitempty"`
+	LocationIDs       []string        `json:"location_ids,omitempty"`
+	EvseUIDs          []string        `json:"evse_uids,omitempty"`
+	LastUpdated       DateTime        `json:"last_updated"`
+}
+
+type PartialTerminal struct {
+	TerminalID        *string         `json:"terminal_id,omitempty"`
+	CustomerReference *string         `json:"customer_reference,omitempty"`
+	PartyID           *string         `json:"party_id,omitempty"`
+	CountryCode       *string         `json:"country_code,omitempty"`
+	Address           *string         `json:"address,omitempty"`
+	City              *string         `json:"city,omitempty"`
+	PostalCode        *string         `json:"postal_code,omitempty"`
+	State             *string         `json:"state,omitempty"`
+	Country           *string         `json:"country,omitempty"`
+	Coordinates       *GeoLocation    `json:"coordinates,omitempty"`
+	InvoiceBaseUrl    *string         `json:"invoice_base_url,omitempty"`
+	InvoiceCreator    *InvoiceCreator `json:"invoice_creator,omitempty"`
+	Reference         *string         `json:"reference,omitempty"`
+	LocationIDs       []string        `json:"location_ids,omitempty"`
+	EvseUIDs          []string        `json:"evse_uids,omitempty"`
+	LastUpdated       DateTime        `json:"last_updated"`
+}
+
+type CaptureStatusCode string
+
+const (
+	CaptureStatusCodeSuccess        CaptureStatusCode = "SUCCESS"
+	CaptureStatusCodePartialSuccess CaptureStatusCode = "PARTIAL_SUCCESS"
+	CaptureStatusCodeFailed         CaptureStatusCode = "FAILED"
+)
+
+type FinancialAdviceConfirmation struct {
+	ID                     string            `json:"id"`
+	AuthorizationReference string            `json:"authorization_reference"`
+	TotalCosts             Price             `json:"total_costs"`
+	Currency               string            `json:"currency"`
+	EftData                string            `json:"eft_data"`
+	CaptureStatusCode      CaptureStatusCode `json:"capture_status_code"`
+	CaptureStatusMessage   *string           `json:"capture_status_message,omitempty"`
+	LastUpdated            DateTime          `json:"last_updated"`
 }
 
 // Token defines model for token.
@@ -1111,10 +1222,6 @@ type UnlockConnector struct {
 	ConnectorID string `json:"connector_id"`
 }
 
-type ChargeDetailRecordResponse struct {
-	Location string
-}
-
 // GetCDRsParams defines parameters for GetOcpiCdrs.
 type GetCDRsParams = ocpi.PaginatedRequest[DateTime]
 
@@ -1141,3 +1248,11 @@ type GetTariffsParams = ocpi.PaginatedRequest[DateTime]
 
 // GetTokensParams defines parameters for GetOcpiTokens.
 type GetTokensParams = ocpi.PaginatedRequest[DateTime]
+
+// GetTokensParams defines parameters for GetOcpiTokens.
+type GetPaymentTerminalsParams = ocpi.PaginatedRequest[DateTime]
+type GetPaymentFinancialAdviceConfirmationsParams = ocpi.PaginatedRequest[DateTime]
+
+type ChargeDetailRecordResponse struct {
+	Location string
+}

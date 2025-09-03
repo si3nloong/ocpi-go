@@ -1,4 +1,4 @@
-package ocpi221
+package ocpi230
 
 import (
 	"bytes"
@@ -51,14 +51,10 @@ type Client interface {
 
 var defaultClientOptions = ClientOptions{
 	HttpClient: http.DefaultClient,
-	TokenResolver: func(token string) string {
-		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
-	},
 }
 
 type ClientOptions struct {
-	HttpClient    *http.Client
-	TokenResolver TokenResolver
+	HttpClient *http.Client
 }
 
 type ClientConn struct {
@@ -68,7 +64,6 @@ type ClientConn struct {
 	ocpi           OCPIClient
 	versionUrl     string
 	httpClient     *http.Client
-	tokenResolver  TokenResolver
 }
 
 var _ Client = (*ClientConn)(nil)
@@ -83,12 +78,6 @@ func NewClient(versionUrl string, ocpi OCPIClient, opts *ClientOptions) *ClientC
 	if opts.HttpClient == nil {
 		opts.HttpClient = &http.Client{}
 	}
-	if opts.TokenResolver == nil {
-		opts.TokenResolver = func(token string) string {
-			return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
-		}
-	}
-	c.tokenResolver = opts.TokenResolver
 	c.httpClient = opts.HttpClient
 	return c
 }
@@ -150,7 +139,7 @@ func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst a
 		req.Header.Set(ocpi.HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 	}
 
-	req.Header.Set("Authorization", "Token "+c.tokenResolver(token))
+	req.Header.Set("Authorization", "Token "+base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token))))
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
@@ -160,7 +149,7 @@ func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst a
 
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		b, _ := io.ReadAll(res.Body)
-		return fmt.Errorf(`ocpi221: encounter status code (%d) due to %s`, res.StatusCode, unsafe.String(unsafe.SliceData(b), len(b)))
+		return fmt.Errorf(`ocpi230: encounter status code (%d) due to %s`, res.StatusCode, unsafe.String(unsafe.SliceData(b), len(b)))
 	}
 	return json.NewDecoder(res.Body).Decode(dst)
 }

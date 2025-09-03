@@ -1,4 +1,4 @@
-package ocpi221
+package ocpi230
 
 import (
 	"net/http"
@@ -77,6 +77,12 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 	}
 	if s.tokensReceiver != nil {
 		versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDTokens, Role: InterfaceRoleReceiver, URL: origin + "/tokens"})
+	}
+	if s.paymentsSender != nil {
+		versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDPayments, Role: InterfaceRoleReceiver, URL: "/ptp/2.3.0/payments"})
+	}
+	if s.paymentsReceiver != nil {
+		versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDPayments, Role: InterfaceRoleReceiver, URL: origin + "/payments"})
 	}
 
 	ocpihttp.Response(w, versionDetails)

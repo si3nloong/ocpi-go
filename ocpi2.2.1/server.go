@@ -3,12 +3,13 @@ package ocpi221
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 	"strings"
 	"unsafe"
+
+	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
 type TokenResolver func(token string) string
@@ -263,6 +264,46 @@ func (s *Server) withRole(role InterfaceRole, path string) string {
 	case InterfaceRoleReceiver:
 		return "/cpo" + path
 	default:
-		panic(fmt.Sprintf("ocpi221: invalid role %q", role))
+		panic("unreachable")
 	}
+}
+
+func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Accept", "application/json")
+
+		requestID := strings.TrimSpace(r.Header.Get(ocpi.HttpHeaderXRequestID))
+		correlationID := strings.TrimSpace(r.Header.Get(ocpi.HttpHeaderXCorrelationID))
+		defer func() {
+			w.Header().Set(ocpi.HttpHeaderXRequestID, requestID)
+			w.Header().Set(ocpi.HttpHeaderXCorrelationID, correlationID)
+		}()
+
+		token := strings.TrimSpace(r.Header.Get("Authorization"))
+		if token == "" {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		token = s.tokenResolver(token)
+		if err := s.ocpi.VerifyCredentialsToken(r.Context(), token); err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r.WithContext(ocpi.WithResponseContext(
+			ocpi.WithRequestContext(
+				r.Context(),
+				&ocpi.RequestContext{
+					Token:         token,
+					RequestID:     requestID,
+					RequestURI:    r.RequestURI,
+					CorrelationID: correlationID,
+				}), &ocpi.ResponseContext{
+				Token:         token,
+				RequestID:     requestID,
+				CorrelationID: correlationID,
+			})))
+	})
 }

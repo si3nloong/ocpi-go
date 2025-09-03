@@ -117,7 +117,7 @@ func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst a
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set(ocpi.HttpHeaderXRequestID, uuid.Must(uuid.NewV7()).String())
-	reqCtx := GetRequestContext(ctx)
+	reqCtx := ocpi.GetRequestContext(ctx)
 	// if reqCtx.FromCountryCode != "" && reqCtx.FromPartyID != "" {
 	// 	req.Header.Set(ocpi.HttpHeaderOCPIFromCountryCode, reqCtx.FromCountryCode)
 	// 	req.Header.Set(ocpi.HttpHeaderOCPIFromPartyID, reqCtx.FromPartyID)
@@ -126,8 +126,8 @@ func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst a
 	// 	req.Header.Set(ocpi.HttpHeaderOCPIToCountryCode, reqCtx.ToCountryCode)
 	// 	req.Header.Set(ocpi.HttpHeaderOCPIToPartyID, reqCtx.ToPartyID)
 	// }
-	if reqCtx.requestID != "" {
-		req.Header.Set(ocpi.HttpHeaderXCorrelationID, reqCtx.requestID)
+	if reqCtx.RequestID != "" {
+		req.Header.Set(ocpi.HttpHeaderXCorrelationID, reqCtx.RequestID)
 	} else {
 		req.Header.Set(ocpi.HttpHeaderXCorrelationID, uuid.Must(uuid.NewV7()).String())
 	}
