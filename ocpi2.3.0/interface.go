@@ -68,6 +68,11 @@ type SCSP interface {
 }
 
 type PTP interface {
+	CDRsReceiver
+	CommandsSender
+	LocationsReceiver
+	SessionsReceiver
+	TariffsReceiver
 	PaymentsSender
 }
 

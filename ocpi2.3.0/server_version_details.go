@@ -27,7 +27,7 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimSuffix(r.RequestURI, "/details")
 	origin := ocpihttp.GetHostname(r) + path
 	versionDetails := VersionDetails{}
-	versionDetails.Version = ocpi.VersionNumber221
+	versionDetails.Version = ocpi.VersionNumber230
 	versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDCredentials, Role: InterfaceRoleSender, URL: origin + "/credentials"})
 
 	if s.cdrsSender != nil {

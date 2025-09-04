@@ -78,6 +78,7 @@ func (s *Server) SetCPO(cpo CPO) {
 	s.sessionsSender = cpo
 	s.tariffsSender = cpo
 	s.tokensReceiver = cpo
+	s.paymentsReceiver = cpo
 }
 
 func (s *Server) SetEMSP(emsp EMSP) {
@@ -131,6 +132,16 @@ func (s *Server) SetSCSP(scsp SCSP) {
 	s.chargingProfilesSender = scsp
 	s.hubClientInfoReceiver = scsp
 	s.sessionsReceiver = scsp
+}
+
+func (s *Server) SetPTP(ptp PTP) {
+	s.roles[RoleSCSP] = struct{}{}
+	s.cdrsReceiver = ptp
+	s.commandsSender = ptp
+	s.locationsReceiver = ptp
+	s.sessionsReceiver = ptp
+	s.tariffsReceiver = ptp
+	s.paymentsSender = ptp
 }
 
 func (s *Server) Handler() http.Handler {
