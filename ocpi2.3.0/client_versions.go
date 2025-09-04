@@ -30,7 +30,7 @@ func (c *ClientConn) GetVersionDetails(ctx context.Context) (*ocpi.Response[Vers
 		}
 		c.rw.RLock()
 	}
-	mutualVersion, ok := c.versions.MutualVersion(ocpi.VersionNumber221)
+	mutualVersion, ok := c.versions.MutualVersion(ocpi.VersionNumber230)
 	if !ok {
 		c.rw.RUnlock()
 		return nil, ocpi.ErrNoMutualVersion

@@ -48,7 +48,7 @@ func (c *ClientConn) RegisterCredential(ctx context.Context, req Credentials) (*
 	if err != nil {
 		return nil, err
 	}
-	mutualVersion, ok := versions.MutualVersion(ocpi.VersionNumber221)
+	mutualVersion, ok := versions.MutualVersion(ocpi.VersionNumber230)
 	if !ok {
 		return nil, ocpi.ErrNoMutualVersion
 	}
@@ -84,7 +84,7 @@ func (c *ClientConn) UpdateCredential(ctx context.Context, credentialWithTokenB 
 		return nil, fmt.Errorf(`ocpi230: empty versions`)
 	}
 	sort.Sort(versions)
-	version, ok := versions.MutualVersion(ocpi.VersionNumber221)
+	version, ok := versions.MutualVersion(ocpi.VersionNumber230)
 	if !ok {
 		return nil, ocpi.ErrNoMutualVersion
 	}

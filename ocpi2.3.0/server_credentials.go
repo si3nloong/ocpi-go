@@ -60,7 +60,7 @@ func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 		ocpihttp.Response(w, ocpi.NewOCPIError(ocpi.StatusCodeServerErrorNoMatchingEndpoints, `no version available`))
 		return
 	}
-	if _, ok := versions.MutualVersion(ocpi.VersionNumber221); !ok {
+	if _, ok := versions.MutualVersion(ocpi.VersionNumber230); !ok {
 		ocpihttp.Response(w, ocpi.NewOCPIError(ocpi.StatusCodeServerErrorNoMatchingEndpoints, `no version available`))
 		return
 	}
