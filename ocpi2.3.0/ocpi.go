@@ -1256,3 +1256,45 @@ type GetPaymentFinancialAdviceConfirmationsParams = ocpi.PaginatedRequest[DateTi
 type ChargeDetailRecordResponse struct {
 	Location string
 }
+
+type CommandRequest json.RawMessage
+
+func (r CommandRequest) CancelReservation() (*CancelReservation, error) {
+	var o CancelReservation
+	if err := json.Unmarshal(r, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (r CommandRequest) ReserveNow() (*ReserveNow, error) {
+	var o ReserveNow
+	if err := json.Unmarshal(r, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (r CommandRequest) StartSession() (*StartSession, error) {
+	var o StartSession
+	if err := json.Unmarshal(r, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (r CommandRequest) StopSession() (*StopSession, error) {
+	var o StopSession
+	if err := json.Unmarshal(r, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+
+func (r CommandRequest) UnlockConnector() (*UnlockConnector, error) {
+	var o UnlockConnector
+	if err := json.Unmarshal(r, &o); err != nil {
+		return nil, err
+	}
+	return &o, nil
+}

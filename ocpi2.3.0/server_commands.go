@@ -16,7 +16,7 @@ func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
 	}
 
 	commandType := r.PathValue("command_type")
-	resp, err := s.commandsReceiver.OnPostCommand(r.Context(), CommandType(commandType), body)
+	resp, err := s.commandsReceiver.OnPostCommand(r.Context(), CommandType(commandType), CommandRequest(body))
 	if err != nil {
 		ocpihttp.Response(w, err)
 		return

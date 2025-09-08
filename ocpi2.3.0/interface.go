@@ -2,7 +2,6 @@ package ocpi230
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -123,7 +122,7 @@ type CommandsSender interface {
 }
 type CommandsReceiver interface {
 	// (POST /ocpi/2.3.0/commands/{command})
-	OnPostCommand(ctx context.Context, commandType CommandType, body json.RawMessage) (*CommandResponse, error)
+	OnPostCommand(ctx context.Context, commandType CommandType, body CommandRequest) (*CommandResponse, error)
 }
 
 type HubClientInfoSender interface {
