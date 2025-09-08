@@ -1251,6 +1251,7 @@ type GetTokensParams = ocpi.PaginatedRequest[DateTime]
 
 // GetTokensParams defines parameters for GetOcpiTokens.
 type GetPaymentTerminalsParams = ocpi.PaginatedRequest[DateTime]
+
 type GetPaymentFinancialAdviceConfirmationsParams = ocpi.PaginatedRequest[DateTime]
 
 type ChargeDetailRecordResponse struct {

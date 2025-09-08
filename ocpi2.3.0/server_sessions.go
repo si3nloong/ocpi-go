@@ -3,6 +3,7 @@ package ocpi230
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -10,7 +11,43 @@ import (
 
 func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 	params := GetSessionsParams{}
-	response, err := s.sessionsSender.OnGetSessions(r.Context(), params)
+	queryString := r.URL.Query()
+	if !queryString.Has("date_from") {
+		ocpihttp.BadRequest(w, r, `missing "date_from" parameter`)
+		return
+	}
+	dateFrom, err := ParseDateTime(queryString.Get("date_from"))
+	if err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+
+	if queryString.Has("date_to") {
+		dt, err := ParseDateTime(queryString.Get("date_to"))
+		if err != nil {
+			ocpihttp.Response(w, err)
+			return
+		}
+		params.DateTo = &dt
+	}
+	if queryString.Has("offset") {
+		offset, err := strconv.Atoi(queryString.Get("offset"))
+		if err != nil {
+			ocpihttp.Response(w, err)
+			return
+		}
+		params.Offset = &offset
+	}
+	if queryString.Has("limit") {
+		limit, err := strconv.Atoi(queryString.Get("limit"))
+		if err != nil {
+			ocpihttp.Response(w, err)
+			return
+		}
+		params.Limit = &limit
+	}
+
+	response, err := s.sessionsSender.OnGetSessions(r.Context(), dateFrom, params)
 	if err != nil {
 		ocpihttp.Response(w, err)
 		return

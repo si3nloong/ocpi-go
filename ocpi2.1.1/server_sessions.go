@@ -9,24 +9,19 @@ import (
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
 )
 
-type GetSessionsParams struct {
-	DateFrom DateTime
-	DateTo   *DateTime
-	Offset   *uint64
-	Limit    *uint16
-}
-
 func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 	params := GetSessionsParams{}
 	queryString := r.URL.Query()
-	if queryString.Has("date_from") {
-		dt, err := ParseDateTime(queryString.Get("date_from"))
-		if err != nil {
-			ocpihttp.Response(w, err)
-			return
-		}
-		params.DateFrom = dt
+	if !queryString.Has("date_from") {
+		ocpihttp.BadRequest(w, r, `missing "date_from" parameter`)
+		return
 	}
+	dateFrom, err := ParseDateTime(queryString.Get("date_from"))
+	if err != nil {
+		ocpihttp.Response(w, err)
+		return
+	}
+
 	if queryString.Has("date_to") {
 		dt, err := ParseDateTime(queryString.Get("date_to"))
 		if err != nil {
@@ -36,7 +31,7 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 		params.DateTo = &dt
 	}
 	if queryString.Has("offset") {
-		offset, err := strconv.ParseUint(queryString.Get("offset"), 10, 32)
+		offset, err := strconv.Atoi(queryString.Get("offset"))
 		if err != nil {
 			ocpihttp.Response(w, err)
 			return
@@ -44,16 +39,15 @@ func (s *Server) GetOcpiSessions(w http.ResponseWriter, r *http.Request) {
 		params.Offset = &offset
 	}
 	if queryString.Has("limit") {
-		limit, err := strconv.ParseUint(queryString.Get("limit"), 10, 32)
+		limit, err := strconv.Atoi(queryString.Get("limit"))
 		if err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}
-		u16 := uint16(limit)
-		params.Limit = &u16
+		params.Limit = &limit
 	}
 
-	response, err := s.cpo.OnGetSessions(r.Context(), params)
+	response, err := s.cpo.OnGetSessions(r.Context(), dateFrom, params)
 	if err != nil {
 		ocpihttp.Response(w, err)
 		return

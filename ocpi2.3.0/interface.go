@@ -170,7 +170,7 @@ type LocationsReceiver interface {
 type SessionsSender interface {
 	// GetOcpiSessions retrieves a list of sessions based on the provided parameters.
 	// (GET /ocpi/2.3.0/sessions)
-	OnGetSessions(ctx context.Context, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
+	OnGetSessions(ctx context.Context, dateFrom DateTime, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
 	// (PUT /ocpi/2.3.0/sessions/{session_id}/charging_preferences)
 	OnPutSessionChargingPreferences(ctx context.Context, sessionID string, body ocpi.RawMessage[ChargingPreferences]) (*ChargingPreferences, error)
 }

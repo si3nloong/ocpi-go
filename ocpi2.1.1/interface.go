@@ -13,7 +13,7 @@ type CPO interface {
 	// (GET /ocpi/2.1.1/cdrs)
 	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginationResponse[CDR], error)
 	// (GET /ocpi/2.1.1/sessions)
-	OnGetSessions(ctx context.Context, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
+	OnGetSessions(ctx context.Context, dateFrom DateTime, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
 	// (GET /ocpi/2.1.1/tariffs)
 	OnGetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginationResponse[Session], error)
 	// (GET /ocpi/2.1.1/tokens/{country_code}/{party_id}/{token_uid}[?type={type}])

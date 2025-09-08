@@ -617,39 +617,6 @@ type Image struct {
 	Height    *int          `json:"height,omitempty"`
 }
 
-// GetLocationsParams defines parameters for GetOcpiLocations.
-type GetLocationsParams struct {
-	// DateFrom Return Locations that have last_updated after or equal to this date time (inclusive).
-	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
-
-	// DateTo Return Locations that have last_updated up to this date time, but not including (exclusive).
-	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
-
-	// Offset The offset of the first object returned. Default is 0.
-	Offset *uint `form:"offset,omitempty" json:"offset,omitempty"`
-
-	// Limit Maximum number of objects to GET.
-	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
-}
-
-type GetCDRsParams struct {
-}
-
-// GetTariffsParams defines parameters for GetOcpiTariffs.
-type GetTariffsParams struct {
-	// DateFrom Return Tariffs that have last_updated after or equal to Date/Time (inclusive).
-	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
-
-	// DateTo Return Tariffs that have last_updated up to Date/Time, but not including (exclusive).
-	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
-
-	// Offset The offset of the first object returned. Default is 0.
-	Offset *uint `form:"offset,omitempty" json:"offset,omitempty"`
-
-	// Limit Maximum number of objects to GET.
-	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
-}
-
 type StartSession struct {
 	ResponseURL string  `json:"response_url" validate:"required"`
 	Token       Token   `json:"token" validate:"required"`
@@ -690,20 +657,6 @@ type Token struct {
 	LastUpdated  DateTime      `json:"last_updated"`
 }
 
-type GetTokensParams struct {
-	// DateFrom Return Tokens that have last_updated after or equal to this date time (inclusive).
-	DateFrom *DateTime `form:"date_from,omitempty" json:"date_from,omitempty"`
-
-	// DateTo Return Tokens that have last_updated up to this date time, but not including (exclusive).
-	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
-
-	// Offset The offset of the first object returned. Default is 0.
-	Offset *uint `form:"offset,omitempty" json:"offset,omitempty"`
-
-	// Limit Maximum number of objects to GET.
-	Limit *uint16 `form:"limit,omitempty" json:"limit,omitempty"`
-}
-
 // Authorization Changed name of the object from official docs due to colliding naming of info property
 type AuthorizationInfo struct {
 	Allowed  Allowed             `json:"allowed"`
@@ -733,3 +686,24 @@ type PartialToken struct {
 	Language     *string        `json:"language,omitempty" validate:"omitempty,required,max=2"`
 	LastUpdated  DateTime       `json:"last_updated" validate:"required"` // LastUpdated is required for PATCH request
 }
+
+// GetLocationsParams defines parameters for GetOcpiLocations.
+type GetLocationsParams = ocpi.PaginatedRequest[DateTime]
+
+type GetCDRsParams = ocpi.PaginatedRequest[DateTime]
+
+type GetSessionsParams struct {
+	// DateTo Return tokens that have last_updated up to Date/Time, but not including (exclusive).
+	DateTo *DateTime `form:"date_to,omitempty" json:"date_to,omitempty"`
+
+	// Offset The offset of the first object returned. Default is 0.
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Maximum number of objects to GET.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// GetTariffsParams defines parameters for GetOcpiTariffs.
+type GetTariffsParams = ocpi.PaginatedRequest[DateTime]
+
+type GetTokensParams = ocpi.PaginatedRequest[DateTime]

@@ -31,22 +31,20 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 		params.DateTo = &dt
 	}
 	if queryString.Has("offset") {
-		offset, err := strconv.ParseUint(queryString.Get("offset"), 10, 32)
+		offset, err := strconv.Atoi(queryString.Get("offset"))
 		if err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}
-		u := uint(offset)
-		params.Offset = &u
+		params.Offset = &offset
 	}
 	if queryString.Has("limit") {
-		limit, err := strconv.ParseUint(queryString.Get("limit"), 10, 16)
+		limit, err := strconv.Atoi(queryString.Get("limit"))
 		if err != nil {
 			ocpihttp.Response(w, err)
 			return
 		}
-		u16 := uint16(limit)
-		params.Limit = &u16
+		params.Limit = &limit
 	}
 	response, err := s.cpo.OnGetLocations(r.Context(), params)
 	if err != nil {

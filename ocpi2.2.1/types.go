@@ -14,6 +14,29 @@ var (
 	yyyymmddthhmmssnanoRegexp = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+$`)
 )
 
+func ParseDateTime(value string) (DateTime, error) {
+	switch {
+	case yyyymmddthhmmsszRegexp.MatchString(value):
+		t, err := time.Parse("2006-01-02T15:04:05Z", value)
+		if err != nil {
+			return DateTime{}, err
+		}
+		return DateTime{Time: t}, nil
+	case yyyymmddthhmmssRegexp.MatchString(value):
+		t, err := time.Parse("2006-01-02T15:04:05", value)
+		if err != nil {
+			return DateTime{}, err
+		}
+		return DateTime{Time: t}, nil
+	default:
+		t, err := time.Parse(time.RFC3339, value)
+		if err != nil {
+			return DateTime{}, err
+		}
+		return DateTime{Time: t}, nil
+	}
+}
+
 type DateTime struct {
 	Time time.Time
 }
