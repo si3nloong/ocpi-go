@@ -666,15 +666,15 @@ type ClientInfo struct {
 
 // CommandResponse defines model for commandResponse.
 type CommandResponse struct {
-	Message *DisplayText        `json:"message,omitempty"`
 	Result  CommandResponseType `json:"result"`
 	Timeout int                 `json:"timeout"`
+	Message []DisplayText       `json:"message,omitempty"`
 }
 
 // CommandResult defines model for commandResult.
 type CommandResult struct {
-	Message *DisplayText      `json:"message,omitempty"`
 	Result  CommandResultType `json:"result"`
+	Message []DisplayText     `json:"message,omitempty"`
 }
 
 // CommandResultType defines model for CommandResult.Result.
