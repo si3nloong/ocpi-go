@@ -752,7 +752,7 @@ type EVSE struct {
 	ParkingRestrictions      []ParkingRestriction `json:"parking_restrictions,omitempty"`
 	Parking                  []EVSEParking        `json:"parking,omitempty"`
 	Images                   []Image              `json:"images,omitempty"`
-	AcceptedServiceProviders *string              `json:"accepted_service_providers,omitempty"`
+	AcceptedServiceProviders []string             `json:"accepted_service_providers,omitempty" validate:"omitempty,dive,max=50"`
 	LastUpdated              DateTime             `json:"last_updated"`
 }
 
@@ -770,7 +770,7 @@ type PartialEVSE struct {
 	ParkingRestrictions      []ParkingRestriction `json:"parking_restrictions,omitempty"`
 	Parking                  []EVSEParking        `json:"parking,omitempty"`
 	Images                   []Image              `json:"images,omitempty"`
-	AcceptedServiceProviders *string              `json:"accepted_service_providers,omitempty"`
+	AcceptedServiceProviders []string             `json:"accepted_service_providers,omitempty"`
 	LastUpdated              DateTime             `json:"last_updated"`
 }
 
