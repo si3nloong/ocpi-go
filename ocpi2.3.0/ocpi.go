@@ -554,7 +554,7 @@ type CdrLocation struct {
 	EvseUID            string          `json:"evse_uid" validate:"required,max=36"`
 	EvseID             string          `json:"evse_id" validate:"required,max=48"`
 	ConnectorID        string          `json:"connector_id"`
-	ConnectorType      ConnectorType   `json:"connector_standard" validate:"required"`
+	ConnectorStandard  ConnectorType   `json:"connector_standard" validate:"required"`
 	ConnectorFormat    ConnectorFormat `json:"connector_format" validate:"required"`
 	ConnectorPowerType PowerType       `json:"connector_power_type" validate:"required"`
 }
