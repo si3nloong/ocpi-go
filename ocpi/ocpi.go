@@ -55,6 +55,17 @@ func (r RawMessage[T]) Data() (T, error) {
 	if err := json.Unmarshal((json.RawMessage)(r), &o); err != nil {
 		return o, err
 	}
+	return o, nil
+}
+
+func (r RawMessage[T]) StrictData() (T, error) {
+	var o T
+	if any(o) == nil && r == nil {
+		return o, nil
+	}
+	if err := json.Unmarshal((json.RawMessage)(r), &o); err != nil {
+		return o, err
+	}
 	if err := validate.Struct(o); err != nil {
 		return o, err
 	}
