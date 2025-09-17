@@ -126,6 +126,7 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		token = strings.TrimSpace(strings.TrimPrefix(token, "Token "))
 		if err := s.ocpi.VerifyCredentialsToken(r.Context(), token); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return

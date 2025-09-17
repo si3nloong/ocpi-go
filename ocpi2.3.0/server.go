@@ -300,7 +300,7 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		token = strings.TrimPrefix(token, "Token ")
+		token = strings.TrimSpace(strings.TrimPrefix(token, "Token "))
 		b, err := base64.StdEncoding.DecodeString(token)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
