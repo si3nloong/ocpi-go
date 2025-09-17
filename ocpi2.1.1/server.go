@@ -21,13 +21,15 @@ type OCPIServer interface {
 
 type Server struct {
 	roles  map[Role]struct{}
+	ocpi   OCPIServer
 	cpo    CPO
 	emsp   EMSP
 	logger *slog.Logger
 }
 
-func NewServer() *Server {
+func NewServer(ocpi OCPIServer) *Server {
 	s := new(Server)
+	s.ocpi = ocpi
 	s.roles = make(map[Role]struct{})
 	s.logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
@@ -117,6 +119,14 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 
 		token := strings.TrimSpace(r.Header.Get("Authorization"))
 		if token == "" {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		} else if !strings.HasPrefix(token, "Token ") {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		if err := s.ocpi.VerifyCredentialsToken(r.Context(), token); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

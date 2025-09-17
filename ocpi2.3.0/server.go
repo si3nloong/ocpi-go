@@ -295,6 +295,9 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 		if token == "" {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
+		} else if !strings.HasPrefix(token, "Token ") {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
 		}
 
 		token = strings.TrimPrefix(token, "Token ")

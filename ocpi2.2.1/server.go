@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"unsafe"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -25,9 +24,7 @@ type OCPIServer interface {
 }
 
 var defaultServerOptions = ServerOptions{
-	TokenResolver: func(token string) string {
-		return base64.StdEncoding.EncodeToString(unsafe.Slice(unsafe.StringData(token), len(token)))
-	},
+	TokenResolver: resolveToken,
 }
 
 type ServerOptions struct {
@@ -70,14 +67,7 @@ func NewServer(ocpi OCPIServer, opts *ServerOptions) *Server {
 	}))
 	s.enabledRole = opts.EnabledRole
 	if opts.TokenResolver == nil {
-		s.tokenResolver = func(token string) string {
-			token = strings.TrimPrefix(token, "Token ")
-			b, err := base64.StdEncoding.DecodeString(token)
-			if err == nil {
-				return string(b)
-			}
-			return token
-		}
+		s.tokenResolver = resolveToken
 	} else {
 		s.tokenResolver = opts.TokenResolver
 	}
@@ -284,9 +274,12 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 		if token == "" {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
+		} else if !strings.HasPrefix(token, "Token ") {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
 		}
 
-		token = s.tokenResolver(token)
+		token = s.tokenResolver(strings.TrimPrefix(token, "Token "))
 		if err := s.ocpi.VerifyCredentialsToken(r.Context(), token); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -306,4 +299,12 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 				CorrelationID: correlationID,
 			})))
 	})
+}
+
+func resolveToken(token string) string {
+	b, err := base64.StdEncoding.DecodeString(token)
+	if err == nil {
+		return string(b)
+	}
+	return token
 }
