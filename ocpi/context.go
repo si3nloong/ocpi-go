@@ -41,6 +41,12 @@ type ResponseContext struct {
 	RequestID string
 
 	CorrelationID string
+
+	ToPartyID     string
+	ToCountryCode string
+
+	FromPartyID     string
+	FromCountryCode string
 }
 
 func GetResponseContext(ctx context.Context) *ResponseContext {
