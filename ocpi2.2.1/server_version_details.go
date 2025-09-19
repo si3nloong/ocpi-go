@@ -17,10 +17,10 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		ocpihttp.Response(w, ocpi.NewResponse(VersionDetails{
+		ocpihttp.Response(w, VersionDetails{
 			Version:   ocpi.VersionNumber221,
 			Endpoints: endpoints,
-		}))
+		})
 		return
 	}
 
@@ -36,15 +36,9 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 	if s.cdrsReceiver != nil {
 		versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDCdrs, Role: InterfaceRoleReceiver, URL: origin + "/cdrs"})
 	}
-	// if s.chargingProfilesSender != nil {
-	// 	versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleSender, URL: origin + "/chargingprofiles"})
-	// }
 	if s.chargingProfilesReceiver != nil {
 		versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDChargingProfiles, Role: InterfaceRoleReceiver, URL: origin + "/chargingprofiles"})
 	}
-	// if s.commandsSender != nil {
-	// 	versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDCommands, Role: InterfaceRoleSender, URL: origin + "/commands"})
-	// }
 	if s.commandsReceiver != nil {
 		versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDCommands, Role: InterfaceRoleReceiver, URL: origin + "/commands"})
 	}

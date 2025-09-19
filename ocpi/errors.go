@@ -1,12 +1,14 @@
 package ocpi
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
 
 var (
 	ErrNoMutualVersion                  = fmt.Errorf(`ocpi: no mutual version`)
+	ErrNotImplemented                   = errors.New("ocpi: not implemented")
 	ErrClient                           = &OCPIError{StatusCode: StatusCodeClientError}
 	ErrClientInvalidOrMissingParameters = &OCPIError{StatusCode: StatusCodeClientErrorInvalidOrMissingParameters}
 )

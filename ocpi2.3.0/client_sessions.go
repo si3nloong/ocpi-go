@@ -5,24 +5,23 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
 func (c *ClientConn) GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
 	query := make(url.Values)
-	query.Set("date_from", dateFrom.Format(time.RFC3339))
+	query.Set("date_from", dateFrom.String())
 	if len(params) > 0 {
 		p := params[0]
 		if p.DateTo != nil && p.DateTo.IsZero() {
-			query.Set("date_to", p.DateTo.Format(time.RFC3339))
+			query.Set("date_to", p.DateTo.String())
 		}
 		if p.Offset != nil && *p.Offset > 0 {
-			query.Set("offset", strconv.FormatUint(uint64(*p.Offset), 10))
+			query.Set("offset", strconv.Itoa(*p.Offset))
 		}
 		if p.Limit != nil && *p.Limit > 0 {
-			query.Set("limit", strconv.FormatUint(uint64(*p.Limit), 10))
+			query.Set("limit", strconv.Itoa(*p.Limit))
 		}
 	}
 	var res ocpi.PaginationResponse[Session]

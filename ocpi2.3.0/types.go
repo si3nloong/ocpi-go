@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 	"unsafe"
 )
 
+const timeLayout = "2006-01-02T15:04:05.999Z"
+
 var (
-	yyyymmddthhmmsszRegexp    = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}Z$`)
-	yyyymmddthhmmssRegexp     = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}$`)
-	yyyymmddthhmmssnanoRegexp = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+$`)
+	yyyymmddthhmmsszRegexp     = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}Z$`)
+	yyyymmddthhmmssRegexp      = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}$`)
+	yyyymmddthhmmssnanozRegexp = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.(\d{0,3})Z$`)
+	yyyymmddthhmmssnanoRegexp  = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.(\d{0,3})$`)
 )
 
 func ParseDateTime(value string) (DateTime, error) {
@@ -28,6 +32,20 @@ func ParseDateTime(value string) (DateTime, error) {
 			return DateTime{}, err
 		}
 		return DateTime{Time: t}, nil
+	case yyyymmddthhmmssnanozRegexp.MatchString(value):
+		submatches := yyyymmddthhmmssnanozRegexp.FindStringSubmatch(value)
+		t, err := time.Parse("2006-01-02T15:04:05."+strings.Repeat("9", len(submatches[1]))+"Z", value)
+		if err != nil {
+			return DateTime{}, err
+		}
+		return DateTime{Time: t}, nil
+	case yyyymmddthhmmssnanoRegexp.MatchString(value):
+		submatches := yyyymmddthhmmssnanoRegexp.FindStringSubmatch(value)
+		t, err := time.Parse("2006-01-02T15:04:05."+strings.Repeat("9", len(submatches[1])), value)
+		if err != nil {
+			return DateTime{}, err
+		}
+		return DateTime{Time: t}, nil
 	default:
 		t, err := time.Parse(time.RFC3339, value)
 		if err != nil {
@@ -39,10 +57,6 @@ func ParseDateTime(value string) (DateTime, error) {
 
 type DateTime struct {
 	Time time.Time
-}
-
-func (dt DateTime) String() string {
-	return dt.Time.String()
 }
 
 func (dt DateTime) IsZero() bool {
@@ -61,8 +75,18 @@ func (dt DateTime) Format(layout string) string {
 	return dt.Time.Format(layout)
 }
 
+func (dt DateTime) String() string {
+	b := make([]byte, 0, len(timeLayout))
+	b = dt.Time.AppendFormat(b, timeLayout)
+	return string(b)
+}
+
 func (dt DateTime) MarshalJSON() ([]byte, error) {
-	return dt.Time.MarshalJSON()
+	b := make([]byte, 0, len(timeLayout)+2)
+	b = append(b, '"')
+	b = dt.Time.AppendFormat(b, timeLayout)
+	b = append(b, '"')
+	return b, nil
 }
 
 func (dt *DateTime) UnmarshalJSON(b []byte) error {
@@ -71,34 +95,8 @@ func (dt *DateTime) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("ocpi221: unable to parse DateTime due to %w", err)
 	}
-	switch {
-	case yyyymmddthhmmsszRegexp.MatchString(str):
-		t, err := time.ParseInLocation("2006-01-02T15:04:05Z", str, time.UTC)
-		if err != nil {
-			return err
-		}
-		*dt = DateTime{t}
-	case yyyymmddthhmmssnanoRegexp.MatchString(str):
-		t, err := time.ParseInLocation("2006-01-02T15:04:05.999999999", str, time.UTC)
-		if err != nil {
-			return err
-		}
-		*dt = DateTime{t}
-	case yyyymmddthhmmssRegexp.MatchString(str):
-		t, err := time.ParseInLocation("2006-01-02T15:04:05", str, time.UTC)
-		if err != nil {
-			return err
-		}
-		*dt = DateTime{t}
-
-	default:
-		t, err := time.Parse(time.RFC3339Nano, str)
-		if err != nil {
-			return err
-		}
-		*dt = DateTime{t}
-	}
-	return nil
+	*dt, err = ParseDateTime(str)
+	return err
 }
 
 // DisplayText defines model for cdrBody_tariffs_tariff_alt_text.

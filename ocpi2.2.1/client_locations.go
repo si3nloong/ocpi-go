@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -16,16 +15,16 @@ func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsPar
 	if len(params) > 0 {
 		p := params[0]
 		if p.DateFrom != nil && p.DateFrom.IsZero() {
-			query.Set("date_from", p.DateFrom.Format(time.RFC3339))
+			query.Set("date_from", p.DateFrom.String())
 		}
 		if p.DateTo != nil && p.DateTo.IsZero() {
-			query.Set("date_to", p.DateTo.Format(time.RFC3339))
+			query.Set("date_to", p.DateTo.String())
 		}
 		if p.Offset != nil && *p.Offset > 0 {
-			query.Set("offset", strconv.FormatUint(uint64(*p.Offset), 10))
+			query.Set("offset", strconv.Itoa(*p.Offset))
 		}
 		if p.Limit != nil && *p.Limit > 0 {
-			query.Set("limit", strconv.FormatUint(uint64(*p.Limit), 10))
+			query.Set("limit", strconv.Itoa(*p.Limit))
 		}
 	}
 	var res ocpi.Response[[]Location]

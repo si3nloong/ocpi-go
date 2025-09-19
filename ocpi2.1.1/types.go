@@ -8,10 +8,13 @@ import (
 	"unsafe"
 )
 
-const dateTimeFormat = "2006-01-02T15:04:05"
+const (
+	timeLayout = "2006-01-02T15:04:05Z"
+)
 
 var (
-	yyyymmddthhmmssRegexp = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}$`)
+	yyyymmddthhmmssRegexp  = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}$`)
+	yyyymmddthhmmsszRegexp = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}Z$`)
 )
 
 type DateTime struct {
@@ -21,7 +24,13 @@ type DateTime struct {
 func ParseDateTime(value string) (DateTime, error) {
 	switch {
 	case yyyymmddthhmmssRegexp.MatchString(value):
-		t, err := time.Parse(dateTimeFormat, value)
+		t, err := time.Parse("2006-01-02T15:04:05", value)
+		if err != nil {
+			return DateTime{}, err
+		}
+		return DateTime{Time: t}, nil
+	case yyyymmddthhmmsszRegexp.MatchString(value):
+		t, err := time.Parse("2006-01-02T15:04:05Z", value)
 		if err != nil {
 			return DateTime{}, err
 		}
@@ -47,10 +56,16 @@ func (dt *DateTime) Format(layout string) string {
 	return dt.Time.Format(layout)
 }
 
+func (dt DateTime) String() string {
+	b := make([]byte, 0, len(timeLayout))
+	b = dt.Time.AppendFormat(b, timeLayout)
+	return string(b)
+}
+
 func (dt DateTime) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0, 22)
+	b := make([]byte, 0, len(timeLayout)+2)
 	b = append(b, '"')
-	b = append(b, []byte(dt.Format("2006-01-02T15:04:05Z"))...)
+	b = dt.Time.AppendFormat(b, timeLayout)
 	b = append(b, '"')
 	return b, nil
 }
@@ -61,21 +76,8 @@ func (dt *DateTime) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return fmt.Errorf("ocpi211: unable to parse DateTime due to %w", err)
 	}
-	switch {
-	case yyyymmddthhmmssRegexp.MatchString(str):
-		t, err := time.Parse(dateTimeFormat, str)
-		if err != nil {
-			return err
-		}
-		*dt = DateTime{t}
-	default:
-		t, err := time.Parse(time.RFC3339, str)
-		if err != nil {
-			return err
-		}
-		*dt = DateTime{t}
-	}
-	return nil
+	*dt, err = ParseDateTime(str)
+	return err
 }
 
 // DisplayText defines model for cdrBody_tariffs_tariff_alt_text.

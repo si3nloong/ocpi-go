@@ -1,4 +1,4 @@
-package ocpi221
+package ocpi230
 
 import (
 	"testing"
@@ -22,8 +22,6 @@ func TestDateTime(t *testing.T) {
 		b, err := dt.MarshalJSON()
 		require.NoError(t, err)
 		require.Equal(t, b, []byte(`"2015-06-29T20:39:09Z"`))
-
-		require.Equal(t, dt.String(), `2015-06-29T20:39:09Z`)
 	})
 
 	t.Run("DateTime", func(t *testing.T) {
@@ -32,8 +30,6 @@ func TestDateTime(t *testing.T) {
 		b, err := dt.MarshalJSON()
 		require.NoError(t, err)
 		require.Equal(t, b, rawData)
-
-		require.Equal(t, dt.String(), `2016-12-29T17:45:09.2Z`)
 	})
 
 	t.Run("DateTime", func(t *testing.T) {

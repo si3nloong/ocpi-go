@@ -11,17 +11,17 @@ import (
 
 func (c *ClientConn) GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
 	query := make(url.Values)
-	query.Add("date_from", dateFrom.Format(dateTimeFormat))
+	query.Add("date_from", dateFrom.String())
 	if len(params) > 0 {
 		p := params[0]
 		if p.DateTo != nil && !p.DateTo.IsZero() {
-			query.Add("date_to", p.DateTo.Format(dateTimeFormat))
+			query.Add("date_to", p.DateTo.String())
 		}
 		if p.Offset != nil && *p.Offset > 0 {
-			query.Add("offset", strconv.FormatUint(uint64(*p.Offset), 10))
+			query.Add("offset", strconv.Itoa(*p.Offset))
 		}
 		if p.Limit != nil && *p.Limit > 0 {
-			query.Add("limit", strconv.FormatUint(uint64(*p.Limit), 10))
+			query.Add("limit", strconv.Itoa(*p.Limit))
 		}
 	}
 
