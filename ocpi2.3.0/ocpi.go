@@ -526,11 +526,11 @@ type CDR struct {
 	SignedData               *SignedData      `json:"signed_data,omitempty"`
 	TotalCost                Price            `json:"total_cost" validate:"required"`
 	TotalFixedCost           *Price           `json:"total_fixed_cost,omitempty"`
-	TotalEnergy              json.Number      `json:"total_energy" validate:"required"`
+	TotalEnergy              json.Number      `json:"total_energy" validate:"required,number"`
 	TotalEnergyCost          *Price           `json:"total_energy_cost,omitempty"`
-	TotalTime                json.Number      `json:"total_time" validate:"required"`
+	TotalTime                json.Number      `json:"total_time" validate:"required,number"`
 	TotalTimeCost            *Price           `json:"total_time_cost,omitempty"`
-	TotalParkingTime         *json.Number     `json:"total_parking_time,omitempty"`
+	TotalParkingTime         *json.Number     `json:"total_parking_time,omitempty" validate:"omitempty,number"`
 	TotalParkingCost         *Price           `json:"total_parking_cost,omitempty"`
 	TotalReservationCost     *Price           `json:"total_reservation_cost,omitempty"`
 	Remark                   *string          `json:"remark,omitempty"`
@@ -601,13 +601,13 @@ type EnergyMix struct {
 
 // EnergySource defines model for cdrBody_tariffs_energy_mix_energy_sources.
 type EnergySource struct {
-	Percentage json.Number          `json:"percentage"`
+	Percentage json.Number          `json:"percentage" validate:"required,number"`
 	Source     EnergySourceCategory `json:"source"`
 }
 
 // EnvironmentalImpact defines model for cdrBody_tariffs_energy_mix_environ_impact.
 type EnvironmentalImpact struct {
-	Amount   json.Number                 `json:"amount"`
+	Amount   json.Number                 `json:"amount" validate:"required,number"`
 	Category EnvironmentalImpactCategory `json:"category"`
 }
 
@@ -615,7 +615,7 @@ type EnvironmentalImpact struct {
 type ChargingPreferences struct {
 	ProfileType      ProfileType  `json:"profile_type"`
 	DepartureTime    *DateTime    `json:"departure_time,omitempty"`
-	EnergyNeed       *json.Number `json:"energy_need,omitempty"`
+	EnergyNeed       *json.Number `json:"energy_need,omitempty" validate:"omitempty,number"`
 	DischargeAllowed *bool        `json:"discharged_allowed"`
 }
 
@@ -624,7 +624,7 @@ type ChargingProfile struct {
 	StartDateTime         *DateTime               `json:"start_date_time,omitempty"`
 	Duration              *int                    `json:"duration,omitempty"`
 	ChargingRateUnit      ChargingRateUnit        `json:"charging_rate_unit" validate:"required"`
-	MinChargingRate       *json.Number            `json:"min_charging_rate,omitempty"`
+	MinChargingRate       *json.Number            `json:"min_charging_rate,omitempty" validate:"omitempty,number"`
 	ChargingProfilePeriod []ChargingProfilePeriod `json:"charging_profile_period,omitempty"`
 }
 
@@ -646,7 +646,7 @@ type ChargingProfileResultResult string
 // ChargingProfilePeriod defines model for chargingProfile_charging_profile_period.
 type ChargingProfilePeriod struct {
 	StartPeriod int         `json:"start_period" validate:"required"`
-	Limit       json.Number `json:"limit" validate:"required"`
+	Limit       json.Number `json:"limit" validate:"required,number"`
 }
 
 // ClearProfileResult defines model for clearProfileResult.
@@ -844,27 +844,27 @@ const (
 )
 
 type Parking struct {
-	ID                           string            `json:"id"`
-	PhysicalReference            *string           `json:"physical_reference"`
+	ID                           string            `json:"id" validate:"required"`
+	PhysicalReference            *string           `json:"physical_reference,omitempty"`
 	VehicleTypes                 []VehicleType     `json:"vehicle_types"`
-	MaxVehicleWeight             *json.Number      `json:"max_vehicle_weight"`
-	MaxVehicleHeight             *json.Number      `json:"max_vehicle_height"`
-	MaxVehicleLength             *json.Number      `json:"max_vehicle_length"`
-	MaxVehicleWidth              *json.Number      `json:"max_vehicle_width"`
-	MaxVehicleParkingSpaceLength *json.Number      `json:"parking_space_length"`
-	MaxVehicleParkingSpaceWidth  *json.Number      `json:"parking_space_width"`
-	DangerousGoodsAllowed        *bool             `json:"dangerous_goods_allowed"`
-	Direction                    *ParkingDirection `json:"direction"`
-	DriveThrough                 *bool             `json:"drive_through"`
+	MaxVehicleWeight             *json.Number      `json:"max_vehicle_weight,omitempty" validate:"omitempty,number"`
+	MaxVehicleHeight             *json.Number      `json:"max_vehicle_height,omitempty" validate:"omitempty,number"`
+	MaxVehicleLength             *json.Number      `json:"max_vehicle_length,omitempty" validate:"omitempty,number"`
+	MaxVehicleWidth              *json.Number      `json:"max_vehicle_width,omitempty" validate:"omitempty,number"`
+	MaxVehicleParkingSpaceLength *json.Number      `json:"parking_space_length,omitempty"  validate:"omitempty,number"`
+	MaxVehicleParkingSpaceWidth  *json.Number      `json:"parking_space_width,omitempty"  validate:"omitempty,number"`
+	DangerousGoodsAllowed        *bool             `json:"dangerous_goods_allowed,omitempty"`
+	Direction                    *ParkingDirection `json:"direction,omitempty"`
+	DriveThrough                 *bool             `json:"drive_through,omitempty"`
 	RestrictedToType             bool              `json:"restricted_to_type"`
 	ReservationRequired          bool              `json:"reservation_required"`
-	TimeLimit                    *json.Number      `json:"time_limit"`
-	Roofed                       *bool             `json:"roofed"`
+	TimeLimit                    *json.Number      `json:"time_limit,omitempty" validate:"omitempty,number"`
+	Roofed                       *bool             `json:"roofed,omitempty"`
 	Images                       []Image           `json:"images,omitempty"`
-	Lighting                     *bool             `json:"lighting"`
-	RefrigerationOutlet          *bool             `json:"refrigeration_outlet"`
+	Lighting                     *bool             `json:"lighting,omitempty"`
+	RefrigerationOutlet          *bool             `json:"refrigeration_outlet,omitempty"`
 	Standards                    []string          `json:"standards,omitempty"`
-	ApdsReference                *string           `json:"apds_reference"`
+	ApdsReference                *string           `json:"apds_reference,omitempty"`
 }
 
 type VehicleType string
@@ -944,15 +944,15 @@ type PublishTokenType struct {
 
 // AdditionalGeoLocation defines model for locations_data_related_locations.
 type AdditionalGeoLocation struct {
-	Latitude  string       `json:"latitude"`
-	Longitude string       `json:"longitude"`
+	Latitude  string       `json:"latitude" validate:"number=16 8"`
+	Longitude string       `json:"longitude" validate:"number=16 8"`
 	Name      *DisplayText `json:"name,omitempty"`
 }
 
 // Price defines model for price.
 type Price struct {
-	ExclVat json.Number  `json:"excl_vat"`
-	InclVat *json.Number `json:"incl_vat,omitempty"`
+	ExclVat json.Number  `json:"excl_vat" validate:"number"`
+	InclVat *json.Number `json:"incl_vat,omitempty" validate:"omitempty,number"`
 }
 
 // ReserveNow defines model for reserveNow.
@@ -973,7 +973,7 @@ type Session struct {
 	ID                     string           `json:"id" validate:"required"`
 	StartDateTime          DateTime         `json:"start_date_time" validate:"required"`
 	EndDateTime            *DateTime        `json:"end_date_time,omitempty"`
-	Kwh                    json.Number      `json:"kwh" validate:"required"`
+	Kwh                    json.Number      `json:"kwh" validate:"required,number"`
 	CdrToken               CdrToken         `json:"cdr_token"`
 	AuthMethod             AuthMethod       `json:"auth_method" validate:"required"`
 	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
@@ -998,13 +998,13 @@ type PartialSession struct {
 	Currency               *string          `json:"currency,omitempty"`
 	EndDateTime            *DateTime        `json:"end_date_time,omitempty"`
 	EvseUID                *string          `json:"evse_uid,omitempty"`
-	ID                     *string          `json:"id,omitempty"`
-	Kwh                    *json.Number     `json:"kwh,omitempty"`
-	LocationID             *string          `json:"location_id,omitempty"`
+	ID                     *string          `json:"id,omitempty" validate:"omitempty,required"`
+	Kwh                    *json.Number     `json:"kwh,omitempty" validate:"omitempty,number"`
+	LocationID             *string          `json:"location_id,omitempty" validate:"omitempty,required"`
 	MeterID                *string          `json:"meter_id,omitempty"`
-	PartyID                *string          `json:"party_id,omitempty"`
+	PartyID                *string          `json:"party_id,omitempty" validate:"omitempty,required"`
 	StartDateTime          *DateTime        `json:"start_date_time,omitempty"`
-	Status                 *SessionStatus   `json:"status,omitempty"`
+	Status                 *SessionStatus   `json:"status,omitempty" validate:"omitempty,required"`
 	TotalCost              *Price           `json:"total_cost,omitempty"`
 	LastUpdated            DateTime         `json:"last_updated" validate:"required"`
 }
@@ -1019,7 +1019,7 @@ type ChargingPeriod struct {
 // CdrDimension defines model for session_charging_periods_dimensions.
 type CdrDimension struct {
 	Type   CdrDimensionType `json:"type"`
-	Volume json.Number      `json:"volume"`
+	Volume json.Number      `json:"volume" validate:"number"`
 }
 
 // SetChargingProfile defines model for setChargingProfile.
@@ -1063,7 +1063,7 @@ type Tariff struct {
 	TariffAltURL       *string         `json:"tariff_alt_url,omitempty"`
 	MinPrice           *PriceLimit     `json:"min_price,omitempty"`
 	MaxPrice           *PriceLimit     `json:"max_price,omitempty"`
-	PreauthorizeAmount *json.Number    `json:"preauthorize_amount,omitempty"`
+	PreauthorizeAmount *json.Number    `json:"preauthorize_amount,omitempty" validate:"omitempty,number"`
 	Elements           []TariffElement `json:"elements"`
 	TaxIncluded        TaxIncluded     `json:"tax_included" validate:"required,oneof=YES NO N/A"`
 	StartDateTime      *DateTime       `json:"start_date_time,omitempty"`
@@ -1073,8 +1073,8 @@ type Tariff struct {
 }
 
 type PriceLimit struct {
-	BeforeTaxes json.Number  `json:"before_taxes"`
-	AfterTaxes  *json.Number `json:"after_taxes"`
+	BeforeTaxes json.Number  `json:"before_taxes" validate:"number"`
+	AfterTaxes  *json.Number `json:"after_taxes" validate:"omitempty,number"`
 }
 
 // TariffElement defines model for tariff_elements.
@@ -1086,8 +1086,8 @@ type TariffElement struct {
 // PriceComponent defines model for TariffElement.PriceComponents.
 type PriceComponent struct {
 	Type     TariffDimensionType `json:"type" validate:"required"`
-	Price    json.Number         `json:"price" validate:"required"`
-	Vat      *json.Number        `json:"vat,omitempty"`
+	Price    json.Number         `json:"price" validate:"required,number"`
+	Vat      *json.Number        `json:"vat,omitempty" validate:"omitempty,number"`
 	StepSize int                 `json:"step_size" validate:"required"`
 }
 
@@ -1097,14 +1097,14 @@ type TariffRestrictions struct {
 	EndTime     *string                     `json:"end_time,omitempty"`
 	StartDate   *string                     `json:"start_date,omitempty"`
 	EndDate     *string                     `json:"end_date,omitempty"`
-	MinKwh      *json.Number                `json:"min_kwh,omitempty"`
-	MaxKwh      *json.Number                `json:"max_kwh,omitempty"`
-	MinCurrent  *json.Number                `json:"min_current,omitempty"`
-	MaxCurrent  *json.Number                `json:"max_current,omitempty"`
-	MinPower    *json.Number                `json:"min_power,omitempty"`
-	MaxPower    *json.Number                `json:"max_power,omitempty"`
-	MinDuration *int                        `json:"min_duration,omitempty"`
-	MaxDuration *int                        `json:"max_duration,omitempty"`
+	MinKwh      *json.Number                `json:"min_kwh,omitempty" validate:"omitempty,number"`
+	MaxKwh      *json.Number                `json:"max_kwh,omitempty" validate:"omitempty,number"`
+	MinCurrent  *json.Number                `json:"min_current,omitempty" validate:"omitempty,number"`
+	MaxCurrent  *json.Number                `json:"max_current,omitempty" validate:"omitempty,number"`
+	MinPower    *json.Number                `json:"min_power,omitempty" validate:"omitempty,number"`
+	MaxPower    *json.Number                `json:"max_power,omitempty" validate:"omitempty,number"`
+	MinDuration *int                        `json:"min_duration,omitempty" validate:"omitempty,required"`
+	MaxDuration *int                        `json:"max_duration,omitempty" validate:"omitempty,required"`
 	DayOfWeek   []DayOfWeek                 `json:"day_of_week,omitempty"`
 	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
 }

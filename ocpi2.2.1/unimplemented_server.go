@@ -135,7 +135,7 @@ func (UnimplementedServer) OnDeleteClientOwnedTariff(ctx context.Context, countr
 }
 
 // OnGetTokens implements EMSP.
-func (UnimplementedServer) OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginationResponse[Token], error) {
+func (UnimplementedServer) OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginatedResponse[Token], error) {
 	return nil, ErrNotImplemented
 }
 

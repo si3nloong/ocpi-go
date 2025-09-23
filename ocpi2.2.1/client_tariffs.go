@@ -9,7 +9,7 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams) (*ocpi.PaginationResponse[Tariff], error) {
+func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams) (*ocpi.PaginatedResponse[Tariff], error) {
 	query := make(url.Values)
 	query.Set("limit", "100")
 	if len(params) > 0 {
@@ -27,15 +27,13 @@ func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams)
 			query.Set("limit", strconv.Itoa(*p.Limit))
 		}
 	}
-	var res ocpi.Response[[]Tariff]
+	var res ocpi.PaginatedResponse[Tariff]
 	if err := c.CallEndpoint(ctx, ModuleIDTariffs, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
 		return endpoint + "?" + query.Encode()
 	}, nil, &res); err != nil {
 		return nil, err
 	}
-	return &ocpi.PaginationResponse[Tariff]{
-		Response: res,
-	}, nil
+	return &res, nil
 }
 
 func (c *ClientConn) GetClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[Tariff], error) {

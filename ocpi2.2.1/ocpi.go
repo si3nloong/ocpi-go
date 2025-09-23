@@ -599,13 +599,13 @@ type EnergyMix struct {
 
 // EnergySource defines model for cdrBody_tariffs_energy_mix_energy_sources.
 type EnergySource struct {
-	Percentage json.Number          `json:"percentage"`
+	Percentage json.Number          `json:"percentage" validate:"required,number"`
 	Source     EnergySourceCategory `json:"source"`
 }
 
 // EnvironmentalImpact defines model for cdrBody_tariffs_energy_mix_environ_impact.
 type EnvironmentalImpact struct {
-	Amount   json.Number                 `json:"amount"`
+	Amount   json.Number                 `json:"amount" validate:"required,number"`
 	Category EnvironmentalImpactCategory `json:"category"`
 }
 
@@ -613,8 +613,8 @@ type EnvironmentalImpact struct {
 type ChargingPreferences struct {
 	ProfileType      ProfileType  `json:"profile_type"`
 	DepartureTime    *DateTime    `json:"departure_time,omitempty"`
-	EnergyNeed       *json.Number `json:"energy_need,omitempty"`
-	DischargeAllowed *bool        `json:"discharged_allowed"`
+	EnergyNeed       *json.Number `json:"energy_need,omitempty"  validate:"omitempty,number"`
+	DischargeAllowed *bool        `json:"discharged_allowed,omitempty"`
 }
 
 // ChargingProfile defines model for chargingProfile.

@@ -79,7 +79,7 @@ type CredentialsReceiver interface {
 
 type CDRsSender interface {
 	// (GET /ocpi/2.2.1/cdrs)
-	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginationResponse[CDR], error)
+	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginatedResponse[CDR], error)
 }
 type CDRsReceiver interface {
 	// (GET /ocpi/2.2.1/cdrs/{cdr_id})
@@ -118,7 +118,7 @@ type CommandsReceiver interface {
 
 type HubClientInfoSender interface {
 	// (GET /ocpi/2.2.1/hubclientinfo)
-	OnGetHubClientInfos(ctx context.Context, params GetHubClientInfoParams) (*ocpi.PaginationResponse[ClientInfo], error)
+	OnGetHubClientInfos(ctx context.Context, params GetHubClientInfoParams) (*ocpi.PaginatedResponse[ClientInfo], error)
 }
 type HubClientInfoReceiver interface {
 	// (GET /ocpi/2.2.1/clientinfo/{id})
@@ -129,7 +129,7 @@ type HubClientInfoReceiver interface {
 
 type LocationsSender interface {
 	// (GET /ocpi/2.2.1/locations)
-	OnGetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
+	OnGetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginatedResponse[Location], error)
 	// (GET /ocpi/2.2.1/locations/{location_id})
 	OnGetLocation(ctx context.Context, locationID string) (*Location, error)
 	// (GET /ocpi/2.2.1/locations/{location_id}/{evse_uid})
@@ -161,7 +161,7 @@ type LocationsReceiver interface {
 type SessionsSender interface {
 	// GetOcpiSessions retrieves a list of sessions based on the provided parameters.
 	// (GET /ocpi/2.2.1/sessions)
-	OnGetSessions(ctx context.Context, dateFrom DateTime, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
+	OnGetSessions(ctx context.Context, dateFrom DateTime, params GetSessionsParams) (*ocpi.PaginatedResponse[Session], error)
 	// (PUT /ocpi/2.2.1/sessions/{session_id}/charging_preferences)
 	OnPutSessionChargingPreferences(ctx context.Context, sessionID string, body ocpi.RawMessage[ChargingPreferences]) (*ChargingPreferences, error)
 }
@@ -177,7 +177,7 @@ type SessionsReceiver interface {
 type TariffsSender interface {
 	// GetOcpiTariffs retrieves a list of tariffs based on the provided parameters.
 	// (GET /ocpi/2.2.1/tariffs)
-	OnGetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginationResponse[Tariff], error)
+	OnGetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginatedResponse[Tariff], error)
 }
 
 type TariffsReceiver interface {
@@ -191,7 +191,7 @@ type TariffsReceiver interface {
 
 type TokensSender interface {
 	// (GET /ocpi/2.2.1/tokens)
-	OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginationResponse[Token], error)
+	OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginatedResponse[Token], error)
 	// (POST /ocpi/2.2.1/tokens/{token_uid}/authorize[?type={type}])
 	OnPostToken(ctx context.Context, tokenUID string, body ocpi.RawMessage[LocationReferences], tokenType ...TokenType) (*AuthorizationInfo, error)
 }
