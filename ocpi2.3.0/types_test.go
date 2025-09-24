@@ -3,10 +3,40 @@ package ocpi230
 import (
 	"testing"
 
+	"github.com/si3nloong/ocpi-go/ocpi"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDateTime(t *testing.T) {
+	t.Run("Validation with DateTime", func(t *testing.T) {
+		t.Run("Zero DateTime", func(t *testing.T) {
+			rawMsg := ocpi.RawMessage[Location]{}
+			data, err := rawMsg.StrictData()
+			require.Error(t, err)
+			require.NotNil(t, data)
+		})
+
+		t.Run("Non-zero DateTime", func(t *testing.T) {
+			rawMsg := ocpi.RawMessage[Location](`{
+	"id": "123",
+	"country_code": "MY",
+	"party_id": "ABC",
+	"address": "Testing",
+	"city": "Kuala Lumpur",
+	"country": "MYS",
+	"coordinates": {
+		"latitude": "3.7182828",
+		"longitude": "128.3123923"
+	},
+	"time_zone":"Asia/Kuala_Lumpur",
+	"last_updated": "2025-01-01T00:00:00Z"
+}`)
+			data, err := rawMsg.StrictData()
+			require.NoError(t, err)
+			require.NotNil(t, data)
+		})
+	})
+
 	dt := DateTime{}
 	t.Run("DateTime", func(t *testing.T) {
 		rawData := []byte(`"2025-07-07T15:28:54Z"`)

@@ -93,7 +93,7 @@ func (dt *DateTime) UnmarshalJSON(b []byte) error {
 	str := unsafe.String(unsafe.SliceData(b), len(b))
 	str, err := strconv.Unquote(str)
 	if err != nil {
-		return fmt.Errorf("ocpi221: unable to parse DateTime due to %w", err)
+		return fmt.Errorf("ocpi230: unable to parse DateTime due to %w", err)
 	}
 	*dt, err = ParseDateTime(str)
 	return err

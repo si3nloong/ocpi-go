@@ -326,12 +326,12 @@ type Credentials struct {
 type Location struct {
 	ID                 string                  `json:"id" validate:"required"`
 	Type               LocationType            `json:"type" validate:"required"`
-	Name               *string                 `json:"name"`
+	Name               *string                 `json:"name,omitempty" validate:"omitempty,required"`
 	Address            string                  `json:"address" validate:"required"`
 	City               string                  `json:"city" validate:"required"`
 	PostalCode         string                  `json:"postal_code" validate:"required,max=10"`
 	Country            string                  `json:"country" validate:"required,len=3"`
-	Coordinates        GeoLocation             `json:"coordinates"`
+	Coordinates        GeoLocation             `json:"coordinates" validate:"required"`
 	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
 	EVSEs              []EVSE                  `json:"evses,omitempty"`
 	Directions         []DisplayText           `json:"directions,omitempty"`
@@ -344,7 +344,7 @@ type Location struct {
 	ChargingWhenClosed *bool                   `json:"charging_when_closed,omitempty"`
 	Images             []Image                 `json:"images,omitempty"`
 	EnergyMix          *EnergyMix              `json:"energy_mix,omitempty"`
-	LastUpdated        DateTime                `json:"last_updated"`
+	LastUpdated        DateTime                `json:"last_updated" validate:"required"`
 }
 
 type Hours struct {
@@ -356,9 +356,9 @@ type Hours struct {
 
 // HoursRegularHours defines model for locations_data_opening_times_regular_hours.
 type RegularHours struct {
-	Weekday     int    `json:"weekday"`
-	PeriodBegin string `json:"period_begin"`
-	PeriodEnd   string `json:"period_end"`
+	Weekday     int    `json:"weekday" validate:"required,gte=1,lte=7"`
+	PeriodBegin string `json:"period_begin" validate:"required"`
+	PeriodEnd   string `json:"period_end" validate:"required"`
 }
 
 // HoursExceptionalOpenings defines model for locations_data_opening_times_exceptional_openings.
@@ -394,34 +394,34 @@ type PartialLocation struct {
 // EVSE defines model for evse.
 type EVSE struct {
 	UID                 string               `json:"uid" validate:"required"`
-	EvseID              *string              `json:"evse_id,omitempty"`
+	EvseID              *string              `json:"evse_id,omitempty" validate:"omitempty,required"`
 	Status              Status               `json:"status" validate:"required"`
 	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty"`
 	Capabilities        []Capability         `json:"capabilities,omitempty"`
 	Connectors          []Connector          `json:"connectors" validate:"required"`
-	FloorLevel          *string              `json:"floor_level,omitempty"`
-	Coordinates         *GeoLocation         `json:"coordinates,omitempty"`
-	PhysicalReference   *string              `json:"physical_reference,omitempty"`
-	Directions          []DisplayText        `json:"directions,omitempty"`
-	ParkingRestrictions []ParkingRestriction `json:"parking_restrictions,omitempty"`
-	Images              []Image              `json:"images,omitempty"`
-	LastUpdated         DateTime             `json:"last_updated"`
+	FloorLevel          *string              `json:"floor_level,omitempty" validate:"omitempty,required"`
+	Coordinates         *GeoLocation         `json:"coordinates,omitempty" validate:"omitempty,required"`
+	PhysicalReference   *string              `json:"physical_reference,omitempty" validate:"omitempty,required"`
+	Directions          []DisplayText        `json:"directions,omitempty" validate:"omitempty,required"`
+	ParkingRestrictions []ParkingRestriction `json:"parking_restrictions,omitempty" validate:"omitempty,required"`
+	Images              []Image              `json:"images,omitempty" validate:"omitempty,required"`
+	LastUpdated         DateTime             `json:"last_updated" validate:"required"`
 }
 
 type PartialEVSE struct {
-	UID                 *string              `json:"uid,omitempty"`
-	EvseID              *string              `json:"evse_id,omitempty"`
-	Status              *Status              `json:"status,omitempty"`
-	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty"`
-	Capabilities        []Capability         `json:"capabilities,omitempty"`
+	UID                 *string              `json:"uid,omitempty" validate:"omitempty,required"`
+	EvseID              *string              `json:"evse_id,omitempty" validate:"omitempty,required"`
+	Status              *Status              `json:"status,omitempty" validate:"omitempty,required"`
+	StatusSchedule      []StatusSchedule     `json:"status_schedule,omitempty" validate:"omitempty,required"`
+	Capabilities        []Capability         `json:"capabilities,omitempty" validate:"omitempty,required"`
 	Connectors          []Connector          `json:"connectors" validate:"required"`
-	FloorLevel          *string              `json:"floor_level,omitempty"`
-	Coordinates         *GeoLocation         `json:"coordinates,omitempty"`
-	PhysicalReference   *string              `json:"physical_reference,omitempty"`
-	Directions          []DisplayText        `json:"directions,omitempty"`
-	ParkingRestrictions []ParkingRestriction `json:"parking_restrictions,omitempty"`
-	Images              []Image              `json:"images,omitempty"`
-	LastUpdated         DateTime             `json:"last_updated"`
+	FloorLevel          *string              `json:"floor_level,omitempty" validate:"omitempty,required"`
+	Coordinates         *GeoLocation         `json:"coordinates,omitempty" validate:"omitempty,required"`
+	PhysicalReference   *string              `json:"physical_reference,omitempty" validate:"omitempty,required"`
+	Directions          []DisplayText        `json:"directions,omitempty" validate:"omitempty,required"`
+	ParkingRestrictions []ParkingRestriction `json:"parking_restrictions,omitempty" validate:"omitempty,required"`
+	Images              []Image              `json:"images,omitempty" validate:"omitempty,required"`
+	LastUpdated         DateTime             `json:"last_updated" validate:"required"`
 }
 
 // Connector defines model for connector.

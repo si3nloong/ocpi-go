@@ -267,14 +267,11 @@ type ParkingRestriction string
 
 // Defines values for ParkingRestriction.
 const (
-	ParkingRestrictionCustomers   ParkingRestriction = "CUSTOMERS"
-	ParkingRestrictionDisabled    ParkingRestriction = "DISABLED"
-	ParkingRestrictionEmployees   ParkingRestriction = "EMPLOYEES"
 	ParkingRestrictionEVOnly      ParkingRestriction = "EV_ONLY"
-	ParkingRestrictionMotorcycles ParkingRestriction = "MOTORCYCLES"
 	ParkingRestrictionPlugged     ParkingRestriction = "PLUGGED"
-	ParkingRestrictionTaxis       ParkingRestriction = "TAXIS"
-	ParkingRestrictionTenants     ParkingRestriction = "TENANTS"
+	ParkingRestrictionDisabled    ParkingRestriction = "DISABLED"
+	ParkingRestrictionCustomers   ParkingRestriction = "CUSTOMERS"
+	ParkingRestrictionMotorcycles ParkingRestriction = "MOTORCYCLES"
 )
 
 // Status defines model for Evse.Status.
@@ -340,10 +337,10 @@ type ParkingType string
 // Defines values for ParkingType.
 const (
 	ParkingTypeAlongMotorway     ParkingType = "ALONG_MOTORWAY"
-	ParkingTypeOnDriveway        ParkingType = "ON_DRIVEWAY"
-	ParkingTypeOnStreet          ParkingType = "ON_STREET"
 	ParkingTypeParkingGarage     ParkingType = "PARKING_GARAGE"
 	ParkingTypeParkingLot        ParkingType = "PARKING_LOT"
+	ParkingTypeOnDriveway        ParkingType = "ON_DRIVEWAY"
+	ParkingTypeOnStreet          ParkingType = "ON_STREET"
 	ParkingTypeUndergroundGarage ParkingType = "UNDERGROUND_GARAGE"
 )
 
@@ -635,7 +632,7 @@ type ChargingProfileResponse struct {
 
 // ChargingProfileResult defines model for chargingProfileResult.
 type ChargingProfileResult struct {
-	Result ChargingProfileResultResult `json:"result"`
+	Result ChargingProfileResultResult `json:"result" validate:"required"`
 }
 
 // ChargingProfileResultResult defines model for ChargingProfileResult.Result.
@@ -649,7 +646,7 @@ type ChargingProfilePeriod struct {
 
 // ClearProfileResult defines model for clearProfileResult.
 type ClearProfileResult struct {
-	Result ClearProfileResultResult `json:"result"`
+	Result ClearProfileResultResult `json:"result" validate:"required"`
 }
 
 // ClearProfileResultResult defines model for ClearProfileResult.Result.
@@ -666,14 +663,14 @@ type ClientInfo struct {
 
 // CommandResponse defines model for commandResponse.
 type CommandResponse struct {
-	Result  CommandResponseType `json:"result"`
+	Result  CommandResponseType `json:"result" validate:"required"`
 	Timeout int                 `json:"timeout"`
 	Message []DisplayText       `json:"message,omitempty"`
 }
 
 // CommandResult defines model for commandResult.
 type CommandResult struct {
-	Result  CommandResultType `json:"result"`
+	Result  CommandResultType `json:"result" validate:"required"`
 	Message []DisplayText     `json:"message,omitempty"`
 }
 
@@ -682,16 +679,16 @@ type CommandResultType string
 
 // Connector defines model for connector.
 type Connector struct {
-	ID                 string          `json:"id"`
-	Standard           ConnectorType   `json:"standard"`
-	Format             ConnectorFormat `json:"format"`
-	PowerType          PowerType       `json:"power_type"`
-	MaxVoltage         int             `json:"max_voltage"`
-	MaxAmperage        int             `json:"max_amperage"`
+	ID                 string          `json:"id" validate:"required"`
+	Standard           ConnectorType   `json:"standard" validate:"required"`
+	Format             ConnectorFormat `json:"format" validate:"required"`
+	PowerType          PowerType       `json:"power_type" validate:"required"`
+	MaxVoltage         int             `json:"max_voltage" validate:"required"`
+	MaxAmperage        int             `json:"max_amperage" validate:"required"`
 	MaxElectricPower   *int            `json:"max_electric_power,omitempty"`
 	TariffIDs          []string        `json:"tariff_ids,omitempty"`
 	TermsAndConditions *string         `json:"terms_and_conditions,omitempty"`
-	LastUpdated        DateTime        `json:"last_updated"`
+	LastUpdated        DateTime        `json:"last_updated" validate:"required"`
 }
 
 type PartialConnector struct {
@@ -704,7 +701,7 @@ type PartialConnector struct {
 	MaxElectricPower   *int             `json:"max_electric_power,omitempty"`
 	TariffIDs          []string         `json:"tariff_ids,omitempty"`
 	TermsAndConditions *string          `json:"terms_and_conditions,omitempty"`
-	LastUpdated        DateTime         `json:"last_updated"`
+	LastUpdated        DateTime         `json:"last_updated" validate:"required"`
 }
 
 // Image defines model for credentials_data_roles_business_details_logo.

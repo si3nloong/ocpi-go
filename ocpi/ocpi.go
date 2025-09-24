@@ -58,10 +58,18 @@ func init() {
 			if _, err := strconv.ParseFloat(s, 64); err != nil {
 				return false
 			}
-		} else if val.Kind() == reflect.Float32 || val.Kind() == reflect.Float64 {
-			s = fmt.Sprintf("%.20f", val.Float())
 		} else {
-			return false
+			switch val.Kind() {
+			case reflect.String:
+				s = fl.Field().String()
+				if _, err := strconv.ParseFloat(s, 64); err != nil {
+					return false
+				}
+			case reflect.Float32, reflect.Float64:
+				s = fmt.Sprintf("%.20f", val.Float())
+			default:
+				return false
+			}
 		}
 
 		// Format with enough decimals
@@ -89,6 +97,10 @@ func init() {
 			return false
 		}
 	}))
+}
+
+func RegisterValidation(tag string, fn validator.Func) {
+	noError(validate.RegisterValidation(tag, fn))
 }
 
 type RawMessage[T any] json.RawMessage
