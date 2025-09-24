@@ -2,7 +2,6 @@ package ocpi
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -69,7 +68,6 @@ func TestValidation(t *testing.T) {
 			var n struct {
 				Number *json.Number `validate:"number"`
 			}
-			fmt.Println(validate.StructCtx(t.Context(), n))
 			require.Error(t, validate.StructCtx(t.Context(), n))
 		})
 

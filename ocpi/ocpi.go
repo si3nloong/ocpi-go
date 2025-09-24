@@ -66,7 +66,6 @@ func init() {
 
 		// Format with enough decimals
 		s = strings.TrimRight(s, "0")
-		fmt.Println(s)
 		parts := strings.Split(s, ".")
 
 		intDigits := len(parts[0])
