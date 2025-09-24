@@ -951,14 +951,21 @@ type AdditionalGeoLocation struct {
 
 // Price defines model for price.
 type Price struct {
-	ExclVat json.Number  `json:"excl_vat" validate:"number"`
-	InclVat *json.Number `json:"incl_vat,omitempty" validate:"omitempty,number"`
+	BeforeTaxes json.Number `json:"before_taxes" validate:"number"`
+	Taxes       []TaxAmount `json:"taxes,omitempty" validate:"omitempty"`
+}
+
+type TaxAmount struct {
+	Name          string       `json:"name" validate:"required"`
+	AccountNumber *string      `json:"account_number,omitempty" validate:"omitempty,required"`
+	Percentage    *json.Number `json:"percentage,omitempty" validate:"omitempty,number"`
+	Amount        json.Number  `json:"amount" validate:"number"`
 }
 
 // ReserveNow defines model for reserveNow.
 type ReserveNow struct {
 	ResponseURL            string   `json:"response_url" validate:"required"`
-	Token                  Token    `json:"token"`
+	Token                  Token    `json:"token" validate:"required"`
 	ExpiryDate             DateTime `json:"expiry_date" validate:"required"`
 	ReservationID          string   `json:"reservation_id" validate:"required"`
 	LocationID             string   `json:"location_id" validate:"required"`
