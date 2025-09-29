@@ -36,13 +36,7 @@ func (s *server) GenerateCredentialsTokenC(ctx context.Context, tokenA string) (
 // IsClientRegistered implements ocpi221.OCPIServer.
 // Subtle: this method shadows the method (UnimplementedServer).IsClientRegistered of server.UnimplementedServer.
 func (s *server) IsClientRegistered(ctx context.Context, tokenA string) bool {
-	panic("unimplemented")
-}
-
-// OnDeleteCredential implements ocpi221.OCPIServer.
-// Subtle: this method shadows the method (UnimplementedServer).OnDeleteCredential of server.UnimplementedServer.
-func (s *server) OnDeleteCredential(ctx context.Context, tokenC string) error {
-	panic("unimplemented")
+	return true
 }
 
 // OnGetCredential implements ocpi221.OCPIServer.
@@ -60,6 +54,12 @@ func (s *server) OnPostCredential(ctx context.Context, tokenA string, body ocpi.
 // OnPutCredential implements ocpi221.OCPIServer.
 // Subtle: this method shadows the method (UnimplementedServer).OnPutCredential of server.UnimplementedServer.
 func (s *server) OnPutCredential(ctx context.Context, tokenC string, body ocpi.RawMessage[ocpi221.Credentials]) (*ocpi221.Credentials, error) {
+	panic("unimplemented")
+}
+
+// OnDeleteCredential implements ocpi221.OCPIServer.
+// Subtle: this method shadows the method (UnimplementedServer).OnDeleteCredential of server.UnimplementedServer.
+func (s *server) OnDeleteCredential(ctx context.Context, tokenC string) error {
 	panic("unimplemented")
 }
 
@@ -83,13 +83,14 @@ func (s *server) VerifyCredentialsToken(ctx context.Context, token string) error
 func main() {
     // Running a OCPI 2.2.1 server
     mux := http.NewServeMux()
-	srv := ocpi230.NewServer(&server{}, nil)
+	srv := ocpi221.NewServer(&server{}, nil)
 	mux.Handle("/ocpi", http.StripPrefix("/ocpi", srv.Handler()))
 	http.ListenAndServe(":8080", mux)
 }
 ```
 
 ## Features and supported versions
+
 ### Supported versions
 
 -   [x] OCPP 2.1.1
@@ -97,7 +98,7 @@ func main() {
 -   [x] OCPI 2.3.0
 -   [ ] OCPI 3.0.0
 
-## Tested with Local CPO
+### Tested with Local CPO
 
 | CPO             | Version | Verify and Tested |
 | --------------- | ------- | ----------------- |
@@ -106,15 +107,15 @@ func main() {
 | Zura Charge     | 2.1.1   | ✅                 |
 | Kineta          | 2.2.1   | ✅                 |
 | Electron (TNBX) | 2.3.0   | ✅                 |
-| EVlution        | 2.1     | ❌                 |
-| chargEV         | 2.1     | ❌                 |
-| JomCharge       | 2.1     | ❌                 |
+| EVlution        | 2.2.1   | ❌                 |
+| chargEV         | 2.2.1   | ❌                 |
+| JomCharge       | 2.2.1   | ❌                 |
 
 ## Big Thanks To
 
 Thanks to these awesome companies for their support of Open Source developers ❤
 
-[![GitHub](https://jstools.dev/img/badges/github.svg)](https://github.com/open-source)
+<!-- [![GitHub](https://jstools.dev/img/badges/github.svg)](https://github.com/open-source) -->
 
 ## License
 
