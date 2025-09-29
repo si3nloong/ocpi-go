@@ -7,11 +7,12 @@ import (
 )
 
 func init() {
-	ocpi.RegisterValidation("connectorCapability230", func(fl validator.FieldLevel) bool {
-		return util.Contains([]ConnectorCapability{
-			ConnectorCapabilityISO151182PlugAndCharge,
-			ConnectorCapabilityISO1511820PlugAndCharge,
-		}, ConnectorCapability(fl.Field().String()))
+	ocpi.RegisterValidation("authMethod230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]AuthMethod{
+			AuthMethodAuthRequest,
+			AuthMethodCommand,
+			AuthMethodWhitelist,
+		}, AuthMethod(fl.Field().String()))
 	})
 	ocpi.RegisterValidation("connectorFormat230", func(fl validator.FieldLevel) bool {
 		return util.Contains([]ConnectorFormat{
@@ -19,13 +20,52 @@ func init() {
 			ConnectorFormatSocket,
 		}, ConnectorFormat(fl.Field().String()))
 	})
-	ocpi.RegisterValidation("profileType230", func(fl validator.FieldLevel) bool {
-		return util.Contains([]ProfileType{
-			ProfileTypeCheap,
-			ProfileTypeFast,
-			ProfileTypeGreen,
-			ProfileTypeRegular,
-		}, ProfileType(fl.Field().String()))
+	ocpi.RegisterValidation("connectionStatus230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]ConnectionStatus{
+			ConnectionStatusConnected,
+			ConnectionStatusOffline,
+			ConnectionStatusPlanned,
+			ConnectionStatusSuspended,
+		}, ConnectionStatus(fl.Field().String()))
+	})
+	ocpi.RegisterValidation("dayOfWeek230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]DayOfWeek{
+			DayOfWeekMonday,
+			DayOfWeekTuesday,
+			DayOfWeekWednesday,
+			DayOfWeekThursday,
+			DayOfWeekFriday,
+			DayOfWeekSaturday,
+			DayOfWeekSunday,
+		}, DayOfWeek(fl.Field().String()))
+	})
+	ocpi.RegisterValidation("energySourceCategory230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]EnergySourceCategory{
+			EnergySourceCategoryNuclear,
+			EnergySourceCategoryGeneralFossil,
+			EnergySourceCategoryCoal,
+			EnergySourceCategoryGas,
+			EnergySourceCategoryGeneralGreen,
+			EnergySourceCategorySolar,
+			EnergySourceCategoryWind,
+			EnergySourceCategoryWater,
+		}, EnergySourceCategory(fl.Field().String()))
+	})
+	ocpi.RegisterValidation("reservationRestrictionType230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]ReservationRestrictionType{
+			ReservationRestrictionTypeReservation,
+			ReservationRestrictionTypeReservationExpires,
+		}, ReservationRestrictionType(fl.Field().String()))
+	})
+	ocpi.RegisterValidation("role230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]Role{
+			RoleCPO,
+			RoleEMSP,
+			RoleNAP,
+			RoleNSP,
+			RoleOther,
+			RoleSCSP,
+		}, Role(fl.Field().String()))
 	})
 	ocpi.RegisterValidation("status230", func(fl validator.FieldLevel) bool {
 		return util.Contains([]Status{
@@ -40,6 +80,31 @@ func init() {
 			StatusUnknown,
 		}, Status(fl.Field().String()))
 	})
+	ocpi.RegisterValidation("sessionStatus230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]SessionStatus{
+			SessionStatusActive,
+			SessionStatusCompleted,
+			SessionStatusInvalid,
+			SessionStatusPending,
+			SessionStatusReservation,
+		}, SessionStatus(fl.Field().String()))
+	})
+	ocpi.RegisterValidation("tariffDimensionType230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]TariffDimensionType{
+			TariffDimensionTypeEnergy,
+			TariffDimensionTypeFlat,
+			TariffDimensionTypeParkingTime,
+			TariffDimensionTypeTime,
+		}, TariffDimensionType(fl.Field().String()))
+	})
+	ocpi.RegisterValidation("profileType230", func(fl validator.FieldLevel) bool {
+		return util.Contains([]ProfileType{
+			ProfileTypeCheap,
+			ProfileTypeFast,
+			ProfileTypeGreen,
+			ProfileTypeRegular,
+		}, ProfileType(fl.Field().String()))
+	})
 	ocpi.RegisterValidation("powerType230", func(fl validator.FieldLevel) bool {
 		return util.Contains([]PowerType{
 			PowerTypeAC1Phase,
@@ -48,17 +113,5 @@ func init() {
 			PowerTypeAC3Phase,
 			PowerTypeDC,
 		}, PowerType(fl.Field().String()))
-	})
-	ocpi.RegisterValidation("energySourceCategory230", func(fl validator.FieldLevel) bool {
-		return util.Contains([]EnergySourceCategory{
-			EnergySourceCategoryNuclear,
-			EnergySourceCategoryGeneralFossil,
-			EnergySourceCategoryCoal,
-			EnergySourceCategoryGas,
-			EnergySourceCategoryGeneralGreen,
-			EnergySourceCategorySolar,
-			EnergySourceCategoryWind,
-			EnergySourceCategoryWater,
-		}, EnergySourceCategory(fl.Field().String()))
 	})
 }

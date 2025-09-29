@@ -10,13 +10,12 @@ type Role string
 
 // Defines values for Role.
 const (
-	RoleCPO  Role = "CPO"
-	RoleEMSP Role = "EMSP"
-	RoleHUB  Role = "HUB"
-	RoleNSP  Role = "NSP"
-	RoleNAP  Role = "NAP"
-	RoleSCSP Role = "SCSP"
-	RolePTP  Role = "PTP"
+	RoleCPO   Role = "CPO"
+	RoleEMSP  Role = "EMSP"
+	RoleNAP   Role = "NAP"
+	RoleNSP   Role = "NSP"
+	RoleOther Role = "OTHER"
+	RoleSCSP  Role = "SCSP"
 )
 
 // InterfaceRole Interface role endpoint implements.
@@ -474,8 +473,8 @@ type Credentials struct {
 }
 
 type CredentialsRole struct {
-	Role            Role            `json:"role"`
-	BusinessDetails BusinessDetails `json:"business_details"`
+	Role            Role            `json:"role" validate:"required,role230"`
+	BusinessDetails BusinessDetails `json:"business_details" validate:"required"`
 	PartyID         string          `json:"party_id" validate:"required,len=3"`
 	CountryCode     string          `json:"country_code" validate:"required,len=2"`
 }
@@ -523,7 +522,7 @@ type CDR struct {
 	EndDateTime              DateTime         `json:"end_date_time" validate:"required"`
 	SessionID                *string          `json:"session_id,omitempty" validate:"omitempty,required"`
 	CdrToken                 CdrToken         `json:"cdr_token" validate:"required"`
-	AuthMethod               AuthMethod       `json:"auth_method" validate:"required"`
+	AuthMethod               AuthMethod       `json:"auth_method" validate:"required,authMethod230"`
 	AuthorizationReference   *string          `json:"authorization_reference,omitempty" validate:"omitempty,required"`
 	CdrLocation              CdrLocation      `json:"cdr_location" validate:"required"`
 	MeterID                  *string          `json:"meter_id,omitempty" validate:"omitempty,required"`
@@ -668,22 +667,22 @@ type ClearProfileResultResult string
 type ClientInfo struct {
 	PartyID     string           `json:"party_id" validate:"required,len=3"`
 	CountryCode string           `json:"country_code" validate:"required,len=2"`
-	Role        Role             `json:"role" valdate:"required"`
-	Status      ConnectionStatus `json:"status" valdate:"required"`
-	LastUpdated DateTime         `json:"last_updated" valdate:"required"`
+	Role        Role             `json:"role" validate:"required,role230"`
+	Status      ConnectionStatus `json:"status" validate:"required,connectionStatus230"`
+	LastUpdated DateTime         `json:"last_updated" validate:"required"`
 }
 
 // CommandResponse defines model for commandResponse.
 type CommandResponse struct {
-	Result  CommandResponseType `json:"result"`
+	Result  CommandResponseType `json:"result" validate:"required"`
 	Timeout int                 `json:"timeout"`
-	Message []DisplayText       `json:"message,omitempty"`
+	Message []DisplayText       `json:"message,omitempty" validate:"omitempty"`
 }
 
 // CommandResult defines model for commandResult.
 type CommandResult struct {
-	Result  CommandResultType `json:"result"`
-	Message []DisplayText     `json:"message,omitempty"`
+	Result  CommandResultType `json:"result" validate:"required"`
+	Message []DisplayText     `json:"message,omitempty" validate:"omitempty"`
 }
 
 // CommandResultType defines model for CommandResult.Result.
@@ -700,7 +699,7 @@ type Connector struct {
 	MaxElectricPower   *int                  `json:"max_electric_power,omitempty" validate:"omitempty,required"`
 	TariffIDs          []string              `json:"tariff_ids,omitempty" validate:"omitempty,required"`
 	TermsAndConditions *string               `json:"terms_and_conditions,omitempty" validate:"omitempty,required"`
-	Capabilities       []ConnectorCapability `json:"capabilities,omitempty" validate:"omitempty,dive,connectorCapability230"`
+	Capabilities       []ConnectorCapability `json:"capabilities,omitempty" validate:"omitempty,dive,required"`
 	LastUpdated        DateTime              `json:"last_updated" validate:"required"`
 }
 
@@ -714,7 +713,7 @@ type PartialConnector struct {
 	MaxElectricPower   *int                  `json:"max_electric_power,omitempty" validate:"omitempty,required"`
 	TariffIDs          []string              `json:"tariff_ids,omitempty" validate:"omitempty,required"`
 	TermsAndConditions *string               `json:"terms_and_conditions,omitempty" validate:"omitempty,required"`
-	Capabilities       []ConnectorCapability `json:"capabilities,omitempty" validate:"omitempty,dive,connectorCapability230"`
+	Capabilities       []ConnectorCapability `json:"capabilities,omitempty" validate:"omitempty,dive,required"`
 	LastUpdated        DateTime              `json:"last_updated" validate:"required"`
 }
 
@@ -827,7 +826,7 @@ type Location struct {
 	Country            string                  `json:"country" validate:"required,len=3"`
 	Coordinates        GeoLocation             `json:"coordinates" validate:"required"`
 	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
-	ParkingType        *ParkingType            `json:"parking_type,omitempty"`
+	ParkingType        *ParkingType            `json:"parking_type,omitempty" validate:"omitempty,required"`
 	EVSEs              []EVSE                  `json:"evses,omitempty"`
 	ParkingPlaces      []Parking               `json:"parking_places,omitempty"`
 	Directions         []DisplayText           `json:"directions,omitempty"`
@@ -904,7 +903,7 @@ type PartialLocation struct {
 	Country            *string                 `json:"country,omitempty"`
 	Coordinates        *GeoLocation            `json:"coordinates,omitempty"`
 	RelatedLocations   []AdditionalGeoLocation `json:"related_locations,omitempty"`
-	ParkingType        *ParkingType            `json:"parking_type,omitempty"`
+	ParkingType        *ParkingType            `json:"parking_type,omitempty" validate:"omitempty,required"`
 	EVSEs              []EVSE                  `json:"evses,omitempty"`
 	ParkingPlaces      []Parking               `json:"parking_places,omitempty"`
 	Directions         []DisplayText           `json:"directions,omitempty"`
@@ -991,7 +990,7 @@ type Session struct {
 	EndDateTime            *DateTime        `json:"end_date_time,omitempty"`
 	Kwh                    json.Number      `json:"kwh" validate:"required,number"`
 	CdrToken               CdrToken         `json:"cdr_token"`
-	AuthMethod             AuthMethod       `json:"auth_method" validate:"required"`
+	AuthMethod             AuthMethod       `json:"auth_method" validate:"required,authMethod230"`
 	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
 	LocationID             string           `json:"location_id" validate:"required"`
 	EvseUID                string           `json:"evse_uid" validate:"required"`
@@ -1000,12 +999,12 @@ type Session struct {
 	Currency               string           `json:"currency" validate:"required,len=3"`
 	ChargingPeriods        []ChargingPeriod `json:"charging_periods,omitempty"`
 	TotalCost              *Price           `json:"total_cost,omitempty"`
-	Status                 SessionStatus    `json:"status" validate:"required"`
+	Status                 SessionStatus    `json:"status" validate:"required,sessionStatus230"`
 	LastUpdated            DateTime         `json:"last_updated" validate:"required"`
 }
 
 type PartialSession struct {
-	AuthMethod             *AuthMethod      `json:"auth_method,omitempty"`
+	AuthMethod             *AuthMethod      `json:"auth_method,omitempty" validate:"omitempty,authMethod230"`
 	AuthorizationReference *string          `json:"authorization_reference,omitempty"`
 	CdrToken               *CdrToken        `json:"cdr_token,omitempty"`
 	ChargingPeriods        []ChargingPeriod `json:"charging_periods,omitempty"`
@@ -1020,7 +1019,7 @@ type PartialSession struct {
 	MeterID                *string          `json:"meter_id,omitempty"`
 	PartyID                *string          `json:"party_id,omitempty" validate:"omitempty,required"`
 	StartDateTime          *DateTime        `json:"start_date_time,omitempty"`
-	Status                 *SessionStatus   `json:"status,omitempty" validate:"omitempty,required"`
+	Status                 *SessionStatus   `json:"status,omitempty" validate:"omitempty,required,sessionStatus230"`
 	TotalCost              *Price           `json:"total_cost,omitempty"`
 	LastUpdated            DateTime         `json:"last_updated" validate:"required"`
 }
@@ -1101,7 +1100,7 @@ type TariffElement struct {
 
 // PriceComponent defines model for TariffElement.PriceComponents.
 type PriceComponent struct {
-	Type     TariffDimensionType `json:"type" validate:"required"`
+	Type     TariffDimensionType `json:"type" validate:"required,tariffDimensionType230"`
 	Price    json.Number         `json:"price" validate:"required,number"`
 	Vat      *json.Number        `json:"vat,omitempty" validate:"omitempty,number"`
 	StepSize int                 `json:"step_size" validate:"required"`
@@ -1121,8 +1120,8 @@ type TariffRestrictions struct {
 	MaxPower    *json.Number                `json:"max_power,omitempty" validate:"omitempty,number"`
 	MinDuration *int                        `json:"min_duration,omitempty" validate:"omitempty,required"`
 	MaxDuration *int                        `json:"max_duration,omitempty" validate:"omitempty,required"`
-	DayOfWeek   []DayOfWeek                 `json:"day_of_week,omitempty"`
-	Reservation *ReservationRestrictionType `json:"reservation,omitempty"`
+	DayOfWeek   []DayOfWeek                 `json:"day_of_week,omitempty" validate:"omitempty,dive,dayOfWeek230"`
+	Reservation *ReservationRestrictionType `json:"reservation,omitempty" validate:"omitempty,reservationRestrictionType230"`
 }
 
 type InvoiceCreator string
