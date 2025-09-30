@@ -294,16 +294,8 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ocpi.WithResponseContext(
 			ocpi.WithRequestContext(
 				r.Context(),
-				&ocpi.RequestContext{
-					Token:           token,
-					RequestID:       requestID,
-					RequestURI:      r.RequestURI,
-					CorrelationID:   correlationID,
-					ToPartyID:       r.Header.Get(ocpi.HttpHeaderOCPIToPartyID),
-					ToCountryCode:   r.Header.Get(ocpi.HttpHeaderOCPIToCountryCode),
-					FromPartyID:     r.Header.Get(ocpi.HttpHeaderOCPIFromPartyID),
-					FromCountryCode: r.Header.Get(ocpi.HttpHeaderOCPIFromCountryCode),
-				}), responseCtx)))
+				ocpi.NewRequestContextWithRequest(r, token),
+			), responseCtx)))
 
 		w.Header().Set(ocpi.HttpHeaderOCPIToPartyID, responseCtx.ToPartyID)
 		w.Header().Set(ocpi.HttpHeaderOCPIToCountryCode, responseCtx.ToCountryCode)

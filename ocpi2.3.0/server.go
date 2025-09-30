@@ -297,12 +297,8 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ocpi.WithResponseContext(
 			ocpi.WithRequestContext(
 				r.Context(),
-				&ocpi.RequestContext{
-					Token:         token,
-					RequestID:     requestID,
-					RequestURI:    r.RequestURI,
-					CorrelationID: correlationID,
-				}), &ocpi.ResponseContext{
+				ocpi.NewRequestContextWithRequest(r, token),
+			), &ocpi.ResponseContext{
 				Token:         token,
 				RequestID:     requestID,
 				CorrelationID: correlationID,
