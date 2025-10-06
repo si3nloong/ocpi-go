@@ -2,6 +2,7 @@ package ocpi221
 
 import (
 	"encoding/json"
+	"net/http"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -1110,6 +1111,11 @@ type UnlockConnector struct {
 
 type ChargeDetailRecordResponse struct {
 	Location string
+}
+
+func (r *ChargeDetailRecordResponse) ScanHeader(h http.Header) error {
+	r.Location = h.Get("Location")
+	return nil
 }
 
 // GetCDRsParams defines parameters for GetOcpiCdrs.

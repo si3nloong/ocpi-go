@@ -2,6 +2,7 @@ package ocpi230
 
 import (
 	"encoding/json"
+	"net/http"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -1271,6 +1272,11 @@ type GetPaymentFinancialAdviceConfirmationsParams = ocpi.PaginatedRequest[DateTi
 
 type ChargeDetailRecordResponse struct {
 	Location string
+}
+
+func (r *ChargeDetailRecordResponse) ScanHeader(h http.Header) error {
+	r.Location = h.Get("Location")
+	return nil
 }
 
 type CommandRequest json.RawMessage

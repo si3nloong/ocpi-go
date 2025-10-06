@@ -40,6 +40,9 @@ type Client interface {
 	StopSession(ctx context.Context, req StopSession) (*ocpi.Response[CommandResponse], error)
 	ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Response[CommandResponse], error)
 	UnlockConnector(ctx context.Context, req UnlockConnector) (*ocpi.Response[CommandResponse], error)
+	GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocpi.PaginatedResponse[CDR], error)
+	GetCDR(ctx context.Context, cdrID string) (*ocpi.Response[CDR], error)
+	PostCDR(ctx context.Context, endpoint string, req CDR) (*ocpi.Response[ChargeDetailRecordResponse], error)
 }
 
 var defaultClientOptions = ClientOptions{

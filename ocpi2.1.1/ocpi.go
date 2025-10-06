@@ -2,6 +2,7 @@ package ocpi211
 
 import (
 	"encoding/json"
+	"net/http"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
@@ -673,6 +674,11 @@ type LocationReferences struct {
 
 type ChargeDetailRecordResponse struct {
 	Location string
+}
+
+func (r *ChargeDetailRecordResponse) ScanHeader(h http.Header) error {
+	r.Location = h.Get("Location")
+	return nil
 }
 
 type PartialToken struct {

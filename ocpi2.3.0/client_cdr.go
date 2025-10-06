@@ -1,4 +1,4 @@
-package ocpi211
+package ocpi230
 
 import (
 	"context"
@@ -28,7 +28,7 @@ func (c *ClientConn) GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocp
 		}
 	}
 	var res ocpi.PaginatedResponse[CDR]
-	if err := c.CallEndpoint(ctx, ModuleIDCdrs, http.MethodGet, func(endpoint string) string {
+	if err := c.CallEndpoint(ctx, ModuleIDCdrs, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
 		return endpoint + "?" + query.Encode()
 	}, nil, &res); err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (c *ClientConn) GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocp
 
 func (c *ClientConn) GetCDR(ctx context.Context, cdrID string) (*ocpi.Response[CDR], error) {
 	var res ocpi.Response[CDR]
-	if err := c.CallEndpoint(ctx, ModuleIDCdrs, http.MethodGet, func(endpoint string) string {
+	if err := c.CallEndpoint(ctx, ModuleIDCdrs, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
 		return endpoint + "/" + cdrID
 	}, nil, &res); err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (c *ClientConn) GetCDR(ctx context.Context, cdrID string) (*ocpi.Response[C
 
 func (c *ClientConn) PostCDR(ctx context.Context, endpoint string, req CDR) (*ocpi.Response[ChargeDetailRecordResponse], error) {
 	var res ocpi.Response[ChargeDetailRecordResponse]
-	if err := c.CallEndpoint(ctx, ModuleIDCdrs, http.MethodPost, func(_ string) string {
+	if err := c.CallEndpoint(ctx, ModuleIDCdrs, InterfaceRoleSender, http.MethodPost, func(_ string) string {
 		return endpoint
 	}, nil, &res); err != nil {
 		return nil, err
