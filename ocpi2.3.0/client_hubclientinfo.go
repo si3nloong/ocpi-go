@@ -14,10 +14,10 @@ func (c *ClientConn) GetHubClientInfos(ctx context.Context, params ...GetHubClie
 	query.Set("limit", "100")
 	if len(params) > 0 {
 		p := params[0]
-		if p.DateFrom != nil && p.DateFrom.IsZero() {
+		if p.DateFrom != nil && !p.DateFrom.IsZero() {
 			query.Set("date_from", p.DateFrom.String())
 		}
-		if p.DateTo != nil && p.DateTo.IsZero() {
+		if p.DateTo != nil && !p.DateTo.IsZero() {
 			query.Set("date_to", p.DateTo.String())
 		}
 		if p.Offset != nil && *p.Offset > 0 {

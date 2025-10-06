@@ -14,7 +14,7 @@ func (c *ClientConn) GetSessions(ctx context.Context, dateFrom DateTime, params 
 	query.Set("date_from", dateFrom.String())
 	if len(params) > 0 {
 		p := params[0]
-		if p.DateTo != nil && p.DateTo.IsZero() {
+		if p.DateTo != nil && !p.DateTo.IsZero() {
 			query.Set("date_to", p.DateTo.String())
 		}
 		if p.Offset != nil && *p.Offset > 0 {
