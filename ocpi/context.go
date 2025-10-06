@@ -1,6 +1,10 @@
 package ocpi
 
-import "context"
+import (
+	"context"
+	"net/http"
+	"net/url"
+)
 
 type ctxKey string
 
@@ -11,6 +15,8 @@ type RequestContext struct {
 
 	RequestID string
 
+	Host       string
+	URL        *url.URL
 	RequestURI string
 
 	CorrelationID string
@@ -20,6 +26,25 @@ type RequestContext struct {
 
 	FromPartyID     string
 	FromCountryCode string
+}
+
+func NewRequestContextWithRequest(r *http.Request, token string) *RequestContext {
+	uri, err := url.Parse(r.URL.String())
+	if err != nil {
+		panic(err)
+	}
+	return &RequestContext{
+		Token:           token,
+		URL:             uri,
+		RequestURI:      r.RequestURI,
+		Host:            r.Host,
+		RequestID:       r.Header.Get(HttpHeaderXRequestID),
+		CorrelationID:   r.Header.Get(HttpHeaderXCorrelationID),
+		ToPartyID:       r.Header.Get(HttpHeaderOCPIToPartyID),
+		ToCountryCode:   r.Header.Get(HttpHeaderOCPIToCountryCode),
+		FromPartyID:     r.Header.Get(HttpHeaderOCPIFromPartyID),
+		FromCountryCode: r.Header.Get(HttpHeaderOCPIFromCountryCode),
+	}
 }
 
 func GetRequestContext(ctx context.Context) *RequestContext {
@@ -41,6 +66,12 @@ type ResponseContext struct {
 	RequestID string
 
 	CorrelationID string
+
+	ToPartyID     string
+	ToCountryCode string
+
+	FromPartyID     string
+	FromCountryCode string
 }
 
 func GetResponseContext(ctx context.Context) *ResponseContext {

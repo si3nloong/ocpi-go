@@ -9,7 +9,7 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error) {
+func (c *ClientConn) GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginatedResponse[Session], error) {
 	query := make(url.Values)
 	query.Add("date_from", dateFrom.String())
 	if len(params) > 0 {
@@ -25,7 +25,7 @@ func (c *ClientConn) GetSessions(ctx context.Context, dateFrom DateTime, params 
 		}
 	}
 
-	var res ocpi.PaginationResponse[Session]
+	var res ocpi.PaginatedResponse[Session]
 	if err := c.CallEndpoint(ctx, ModuleIDSessions, http.MethodGet, func(endpoint string) string {
 		return endpoint + "?" + query.Encode()
 	}, nil, &res); err != nil {

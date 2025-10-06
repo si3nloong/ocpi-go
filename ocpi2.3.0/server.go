@@ -92,25 +92,6 @@ func (s *Server) SetEMSP(emsp EMSP) {
 	s.tokensSender = emsp
 }
 
-func (s *Server) SetHub(hub Hub) {
-	s.roles[RoleHUB] = struct{}{}
-	s.cdrsSender = hub
-	s.cdrsReceiver = hub
-	s.chargingProfilesSender = hub
-	s.chargingProfilesReceiver = hub
-	s.commandsSender = hub
-	s.commandsReceiver = hub
-	s.hubClientInfoSender = hub
-	s.locationsSender = hub
-	s.locationsReceiver = hub
-	s.sessionsSender = hub
-	s.sessionsReceiver = hub
-	s.tariffsSender = hub
-	s.tariffsReceiver = hub
-	s.tokensSender = hub
-	s.tokensReceiver = hub
-}
-
 func (s *Server) SetNSP(nsp NSP) {
 	s.roles[RoleNSP] = struct{}{}
 	s.hubClientInfoReceiver = nsp
@@ -316,12 +297,8 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ocpi.WithResponseContext(
 			ocpi.WithRequestContext(
 				r.Context(),
-				&ocpi.RequestContext{
-					Token:         token,
-					RequestID:     requestID,
-					RequestURI:    r.RequestURI,
-					CorrelationID: correlationID,
-				}), &ocpi.ResponseContext{
+				ocpi.NewRequestContextWithRequest(r, token),
+			), &ocpi.ResponseContext{
 				Token:         token,
 				RequestID:     requestID,
 				CorrelationID: correlationID,

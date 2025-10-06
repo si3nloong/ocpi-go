@@ -7,4 +7,7 @@ const (
 	HttpHeaderOCPIFromCountryCode = "OCPI-from-country-code"
 	HttpHeaderXRequestID          = "X-Request-ID"
 	HttpHeaderXCorrelationID      = "X-Correlation-ID"
+	HttpHeaderLink                = "Link"
+	HttpHeaderXTotalCount         = "X-Total-Count"
+	HttpHeaderXLimit              = "X-Limit"
 )

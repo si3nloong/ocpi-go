@@ -9,13 +9,13 @@ import (
 
 type CPO interface {
 	// (GET /ocpi/2.1.1/locations)
-	OnGetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
+	OnGetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginatedResponse[Location], error)
 	// (GET /ocpi/2.1.1/cdrs)
-	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginationResponse[CDR], error)
+	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginatedResponse[CDR], error)
 	// (GET /ocpi/2.1.1/sessions)
-	OnGetSessions(ctx context.Context, dateFrom DateTime, params GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
+	OnGetSessions(ctx context.Context, dateFrom DateTime, params GetSessionsParams) (*ocpi.PaginatedResponse[Session], error)
 	// (GET /ocpi/2.1.1/tariffs)
-	OnGetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginationResponse[Session], error)
+	OnGetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginatedResponse[Session], error)
 	// (GET /ocpi/2.1.1/tokens/{country_code}/{party_id}/{token_uid}[?type={type}])
 	OnGetClientOwnedToken(ctx context.Context, countryCode string, partyID string, tokenUID string, tokenType ...TokenType) (*Token, error)
 	// (PUT /ocpi/2.1.1/tokens/{country_code}/{party_id}/{token_uid})
@@ -68,7 +68,7 @@ type EMSP interface {
 	OnDeleteClientOwnedTariff(ctx context.Context, countryCode string, partyID string, tariffID string) error
 
 	// (GET /ocpi/2.1.1/tokens)
-	OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginationResponse[Token], error)
+	OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginatedResponse[Token], error)
 	// (POST /ocpi/2.1.1/tokens/{token_uid}/authorize?{type=token_type})
 	OnPostToken(ctx context.Context, tokenUID string, tokenType TokenType, body ocpi.RawMessage[*LocationReferences]) (*AuthorizationInfo, error)
 

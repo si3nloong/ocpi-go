@@ -263,8 +263,8 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Accept", "application/json")
 
-		requestID := strings.TrimSpace(r.Header.Get(ocpi.HttpHeaderXRequestID))
-		correlationID := strings.TrimSpace(r.Header.Get(ocpi.HttpHeaderXCorrelationID))
+		requestID := r.Header.Get(ocpi.HttpHeaderXRequestID)
+		correlationID := r.Header.Get(ocpi.HttpHeaderXCorrelationID)
 		defer func() {
 			w.Header().Set(ocpi.HttpHeaderXRequestID, requestID)
 			w.Header().Set(ocpi.HttpHeaderXCorrelationID, correlationID)
@@ -286,19 +286,21 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		responseCtx := &ocpi.ResponseContext{
+			Token:         token,
+			RequestID:     requestID,
+			CorrelationID: correlationID,
+		}
 		next.ServeHTTP(w, r.WithContext(ocpi.WithResponseContext(
 			ocpi.WithRequestContext(
 				r.Context(),
-				&ocpi.RequestContext{
-					Token:         token,
-					RequestID:     requestID,
-					RequestURI:    r.RequestURI,
-					CorrelationID: correlationID,
-				}), &ocpi.ResponseContext{
-				Token:         token,
-				RequestID:     requestID,
-				CorrelationID: correlationID,
-			})))
+				ocpi.NewRequestContextWithRequest(r, token),
+			), responseCtx)))
+
+		w.Header().Set(ocpi.HttpHeaderOCPIToPartyID, responseCtx.ToPartyID)
+		w.Header().Set(ocpi.HttpHeaderOCPIToCountryCode, responseCtx.ToCountryCode)
+		w.Header().Set(ocpi.HttpHeaderOCPIFromPartyID, responseCtx.FromPartyID)
+		w.Header().Set(ocpi.HttpHeaderOCPIFromCountryCode, responseCtx.FromCountryCode)
 	})
 }
 

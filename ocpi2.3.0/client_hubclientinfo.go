@@ -9,7 +9,7 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetHubClientInfos(ctx context.Context, params ...GetHubClientInfoParams) (*ocpi.PaginationResponse[ClientInfo], error) {
+func (c *ClientConn) GetHubClientInfos(ctx context.Context, params ...GetHubClientInfoParams) (*ocpi.PaginatedResponse[ClientInfo], error) {
 	query := make(url.Values)
 	query.Set("limit", "100")
 	if len(params) > 0 {
@@ -27,15 +27,13 @@ func (c *ClientConn) GetHubClientInfos(ctx context.Context, params ...GetHubClie
 			query.Set("limit", strconv.Itoa(*p.Limit))
 		}
 	}
-	var res ocpi.Response[[]ClientInfo]
+	var res ocpi.PaginatedResponse[ClientInfo]
 	if err := c.CallEndpoint(ctx, ModuleIDHubClientInfo, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
 		return endpoint + "?" + query.Encode()
 	}, nil, &res); err != nil {
 		return nil, err
 	}
-	return &ocpi.PaginationResponse[ClientInfo]{
-		Response: res,
-	}, nil
+	return &res, nil
 }
 
 func (c *ClientConn) GetClientInfo(ctx context.Context, countryCode, partyID string) (*ocpi.Response[ClientInfo], error) {

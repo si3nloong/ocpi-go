@@ -32,12 +32,12 @@ type TokenAClient interface {
 type Client interface {
 	TokenAClient
 	CallEndpoint(ctx context.Context, module ModuleID, role InterfaceRole, method string, endpointResolver EndpointResolver, src, dst any) error
-	GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error)
+	GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginatedResponse[Location], error)
 	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
 	GetClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string) (*ocpi.Response[Location], error)
 	PutClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location Location) (*ocpi.Response[any], error)
 	PatchClientOwnedLocation(ctx context.Context, countryCode string, partyID string, locationID string, location PartialLocation) (*ocpi.Response[any], error)
-	GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginationResponse[Session], error)
+	GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginatedResponse[Session], error)
 	GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error)
 	PutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session Session) (*ocpi.Response[any], error)
 	PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PartialSession) (*ocpi.Response[any], error)
@@ -146,6 +146,12 @@ func (c *ClientConn) do(ctx context.Context, method, endpoint string, src, dst a
 		return err
 	}
 	defer res.Body.Close()
+
+	if scanner, ok := dst.(ocpi.HeaderScanner); ok {
+		if err := scanner.ScanHeader(res.Header); err != nil {
+			return fmt.Errorf(`ocpi230: unable to scan headers: %w`, err)
+		}
+	}
 
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		b, _ := io.ReadAll(res.Body)

@@ -9,7 +9,7 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginationResponse[Location], error) {
+func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsParams) (*ocpi.PaginatedResponse[Location], error) {
 	query := make(url.Values)
 	query.Set("limit", "100")
 	if len(params) > 0 {
@@ -27,15 +27,13 @@ func (c *ClientConn) GetLocations(ctx context.Context, params ...GetLocationsPar
 			query.Set("limit", strconv.Itoa(*p.Limit))
 		}
 	}
-	var res ocpi.Response[[]Location]
+	var res ocpi.PaginatedResponse[Location]
 	if err := c.CallEndpoint(ctx, ModuleIDLocations, http.MethodGet, func(endpoint string) string {
 		return endpoint + "?" + query.Encode()
 	}, nil, &res); err != nil {
 		return nil, err
 	}
-	return &ocpi.PaginationResponse[Location]{
-		Response: res,
-	}, nil
+	return &res, nil
 }
 
 func (c *ClientConn) GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error) {

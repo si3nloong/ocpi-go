@@ -2,7 +2,11 @@ package ocpi
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -26,9 +30,61 @@ type HeaderScanner interface {
 
 var validate *validator.Validate
 
+var typeOfJsonNumber = reflect.TypeOf(json.Number(""))
+
 func init() {
 	validate = validator.New()
-	if err := validate.RegisterValidation("version", func(fl validator.FieldLevel) bool {
+	noError(validate.RegisterValidation("number", func(fl validator.FieldLevel) bool {
+		val := fl.Field()
+
+		var precision, scale int
+		// Parse params
+		params := strings.Split(fl.Param(), " ")
+		if len(params) != 2 {
+			precision = 12
+			scale = 4
+		} else {
+			var err1, err2 error
+			precision, err1 = strconv.Atoi(strings.TrimSpace(params[0]))
+			scale, err2 = strconv.Atoi(strings.TrimSpace(params[1]))
+			if err1 != nil || err2 != nil {
+				return false
+			}
+		}
+
+		var s string
+		if fl.Field().Type() == typeOfJsonNumber {
+			s = fl.Field().Interface().(fmt.Stringer).String()
+			if _, err := strconv.ParseFloat(s, 64); err != nil {
+				return false
+			}
+		} else {
+			switch val.Kind() {
+			case reflect.String:
+				s = fl.Field().String()
+				if _, err := strconv.ParseFloat(s, 64); err != nil {
+					return false
+				}
+			case reflect.Float32, reflect.Float64:
+				s = fmt.Sprintf("%.20f", val.Float())
+			default:
+				return false
+			}
+		}
+
+		// Format with enough decimals
+		s = strings.TrimRight(s, "0")
+		parts := strings.Split(s, ".")
+
+		intDigits := len(parts[0])
+		decDigits := 0
+		if len(parts) == 2 {
+			decDigits = len(parts[1])
+		}
+		// total digits must fit precision, decimals must fit scale
+		return intDigits <= precision && decDigits <= scale
+	}))
+	noError(validate.RegisterValidation("version", func(fl validator.FieldLevel) bool {
 		v, ok := fl.Field().Interface().(VersionNumber)
 		if !ok {
 			return false
@@ -40,9 +96,11 @@ func init() {
 		default:
 			return false
 		}
-	}); err != nil {
-		panic(err)
-	}
+	}))
+}
+
+func RegisterValidation(tag string, fn validator.Func) {
+	noError(validate.RegisterValidation(tag, fn))
 }
 
 type RawMessage[T any] json.RawMessage
@@ -70,4 +128,10 @@ func (r RawMessage[T]) StrictData() (T, error) {
 		return o, err
 	}
 	return o, nil
+}
+
+func noError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
