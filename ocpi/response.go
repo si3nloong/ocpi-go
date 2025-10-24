@@ -21,7 +21,7 @@ func (r *Response[T]) Decode(dest any) error {
 
 func (r *Response[T]) Data() (T, error) {
 	var o T
-	if r.StatusCode >= 1_000 && r.StatusCode < 2_000 {
+	if r.StatusCode >= StatusCodeSuccess && r.StatusCode < 2_000 {
 		if len(r.RawData) == 0 {
 			return o, nil
 		}
@@ -31,6 +31,26 @@ func (r *Response[T]) Data() (T, error) {
 		return o, nil
 	}
 	return o, NewOCPIError(r.StatusCode, r.StatusMessage)
+}
+
+func (r *Response[T]) StrictData() ([]T, error) {
+	if r.StatusCode >= StatusCodeSuccess && r.StatusCode < 2_000 {
+		var o []T
+		if len(r.RawData) == 0 {
+			return o, nil
+		}
+		if err := json.Unmarshal(r.RawData, &o); err != nil {
+			return nil, err
+		}
+		var s = struct {
+			v []T `validate:"omitempty,dive,required"`
+		}{o}
+		if err := validate.Struct(s); err != nil {
+			return nil, err
+		}
+		return o, nil
+	}
+	return nil, NewOCPIError(r.StatusCode, r.StatusMessage)
 }
 
 func NewResponse[T any](value T) *Response[T] {

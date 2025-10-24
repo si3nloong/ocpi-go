@@ -26,3 +26,13 @@ func (c *ClientConn) PostCredential(ctx context.Context, req Credentials) (*ocpi
 	}
 	return &res, nil
 }
+
+func (c *ClientConn) PutCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error) {
+	var res ocpi.Response[Credentials]
+	if err := c.CallEndpoint(ctx, ModuleIDCredentials, http.MethodPut, func(endpoint string) string {
+		return endpoint
+	}, req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
