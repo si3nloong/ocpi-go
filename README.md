@@ -98,19 +98,6 @@ func main() {
 -   [x] OCPI 2.3.0
 -   [ ] OCPI 3.0.0
 
-### Tested with Local CPO
-
-| CPO             | Version | Verify and Tested |
-| --------------- | ------- | ----------------- |
-| Charge Sini     | 2.2.1   | ✅                 |
-| Gentari         | 2.2.1   | ✅                 |
-| Zura Charge     | 2.1.1   | ✅                 |
-| Kineta          | 2.2.1   | ✅                 |
-| Electron (TNBX) | 2.3.0   | ✅                 |
-| EVlution        | 2.2.1   | ❌                 |
-| chargEV         | 2.2.1   | ❌                 |
-| JomCharge       | 2.2.1   | ❌                 |
-
 ## Big Thanks To
 
 Thanks to these awesome companies for their support of Open Source developers ❤
