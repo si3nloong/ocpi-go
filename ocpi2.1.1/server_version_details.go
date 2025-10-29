@@ -10,6 +10,20 @@ import (
 
 func (s *Server) GetOcpiVersionDetails(role Role) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if recv, ok := s.ocpi.(VersionsReceiver); ok {
+			ctx := r.Context()
+			endpoints, err := recv.OnVersionDetails(ctx, role, ocpi.GetRequestContext(ctx).Token)
+			if err != nil {
+				ocpihttp.Response(w, err)
+				return
+			}
+
+			ocpihttp.Response(w, VersionDetails{
+				Version:   ocpi.VersionNumber211,
+				Endpoints: endpoints,
+			})
+			return
+		}
 		path := strings.TrimSuffix(r.RequestURI, "/details")
 		origin := ocpihttp.GetHostname(r) + path
 

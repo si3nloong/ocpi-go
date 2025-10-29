@@ -75,3 +75,8 @@ type EMSP interface {
 	// (POST /ocpi/2.1.1/commands/{command}/{uid})
 	OnPostAsyncCommand(ctx context.Context, commandType CommandType, uid string, body ocpi.RawMessage[CommandResponse]) error
 }
+
+type VersionsReceiver interface {
+	// (GET /ocpi/2.1.1/details)
+	OnVersionDetails(ctx context.Context, role Role, token string) ([]Endpoint, error)
+}
