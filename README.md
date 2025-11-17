@@ -93,8 +93,8 @@ func main() {
 
 ### Supported versions
 
--   [x] OCPP 2.1.1
--   [x] OCPP 2.2.1
+-   [x] OCPI 2.1.1
+-   [x] OCPI 2.2.1
 -   [x] OCPI 2.3.0
 -   [ ] OCPI 3.0.0
 
