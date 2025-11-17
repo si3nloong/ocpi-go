@@ -9,7 +9,7 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams) (*ocpi.PaginatedResponse[Tariff], error) {
+func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams) (*ocpi.PaginatedResponse[DateTime, Tariff], error) {
 	query := make(url.Values)
 	query.Set("limit", "100")
 	if len(params) > 0 {
@@ -27,7 +27,7 @@ func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams)
 			query.Set("limit", strconv.Itoa(*p.Limit))
 		}
 	}
-	var res ocpi.PaginatedResponse[Tariff]
+	var res ocpi.PaginatedResponse[DateTime, Tariff]
 	if err := c.CallEndpoint(ctx, ModuleIDTariffs, http.MethodGet, func(endpoint string) string {
 		return endpoint + "?" + query.Encode()
 	}, nil, &res); err != nil {
@@ -36,8 +36,8 @@ func (c *ClientConn) GetTariffs(ctx context.Context, params ...GetTariffsParams)
 	return &res, nil
 }
 
-func (c *ClientConn) GetClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[Tariff], error) {
-	var res ocpi.Response[Tariff]
+func (c *ClientConn) GetClientOwnedTariff(ctx context.Context, countryCode, partyID, tariffID string) (*ocpi.Response[DateTime, Tariff], error) {
+	var res ocpi.Response[DateTime, Tariff]
 	if err := c.CallEndpoint(ctx, ModuleIDTariffs, http.MethodGet, func(endpoint string) string {
 		return endpoint + "/" + countryCode + "/" + partyID + "/" + tariffID
 	}, nil, &res); err != nil {

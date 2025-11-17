@@ -3,6 +3,7 @@ package ocpi211
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -12,11 +13,11 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 	params := GetTokensParams{}
 	response, err := s.emsp.OnGetTokens(r.Context(), params)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, DateTime{Time: time.Now().UTC()}, response)
 }
 
 func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -39,12 +40,12 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	authInfo, err := s.emsp.OnPostToken(r.Context(), tokenUID, tokenType, ocpi.RawMessage[*LocationReferences](body))
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
 	// When the eMSP receives a 'real-time' authorization request from a CPO that contains too little information (no LocationReferences provided) to determine if the Token might be used, the eMSP SHOULD respond with the OCPI status: 2002
-	ocpihttp.Response(w, authInfo)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, authInfo)
 }
 
 func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -64,11 +65,11 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 
 	token, err := s.cpo.OnGetClientOwnedToken(r.Context(), countryCode, partyID, tokenUID, tokenType)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, token)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, token)
 }
 
 func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -93,11 +94,11 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.cpo.OnPutClientOwnedToken(r.Context(), countryCode, partyID, tokenUID, ocpi.RawMessage[Token](body), tokenType); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }
 
 func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -122,9 +123,9 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.cpo.OnPatchClientOwnedToken(r.Context(), countryCode, partyID, tokenUID, ocpi.RawMessage[PartialToken](body), tokenType); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }

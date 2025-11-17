@@ -3,6 +3,7 @@ package ocpi221
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -13,11 +14,11 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		endpoints, err := recv.OnVersionDetails(ctx, ocpi.GetRequestContext(ctx).Token)
 		if err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 
-		ocpihttp.Response(w, VersionDetails{
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, VersionDetails{
 			Version:   ocpi.VersionNumber221,
 			Endpoints: endpoints,
 		})
@@ -73,5 +74,5 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 		versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDTokens, Role: InterfaceRoleReceiver, URL: origin + "/tokens"})
 	}
 
-	ocpihttp.Response(w, versionDetails)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, versionDetails)
 }

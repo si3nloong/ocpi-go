@@ -2,26 +2,26 @@ package ocpi
 
 import (
 	"encoding/json"
-	"time"
+	"reflect"
 )
 
-type Response[T any] struct {
+type Response[T Timestamp, D any] struct {
 	RawData       json.RawMessage `json:"data,omitempty"`
 	StatusCode    StatusCode      `json:"status_code"`
 	StatusMessage string          `json:"status_message,omitempty,omitzero"`
-	Timestamp     time.Time       `json:"timestamp"`
+	Timestamp     T               `json:"timestamp"`
 }
 
-func (r *Response[T]) Decode(dest any) error {
+func (r *Response[T, D]) Decode(dest any) error {
 	if err := json.Unmarshal(r.RawData, dest); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Response[T]) Data() (T, error) {
-	var o T
-	if r.StatusCode >= StatusCodeSuccess && r.StatusCode < 2_000 {
+func (r *Response[T, D]) Data() (D, error) {
+	var o D
+	if r.StatusCode >= StatusCodeSuccess && r.StatusCode < StatusCodeClientError {
 		if len(r.RawData) == 0 {
 			return o, nil
 		}
@@ -33,40 +33,39 @@ func (r *Response[T]) Data() (T, error) {
 	return o, NewOCPIError(r.StatusCode, r.StatusMessage)
 }
 
-func (r *Response[T]) StrictData() ([]T, error) {
-	if r.StatusCode >= StatusCodeSuccess && r.StatusCode < 2_000 {
-		var o []T
+func (r *Response[T, D]) StrictData() (D, error) {
+	var o D
+	if r.StatusCode >= StatusCodeSuccess && r.StatusCode < StatusCodeClientError {
 		if len(r.RawData) == 0 {
 			return o, nil
 		}
 		if err := json.Unmarshal(r.RawData, &o); err != nil {
-			return nil, err
+			return o, err
 		}
-		var s = struct {
-			v []T `validate:"omitempty,dive,required"`
-		}{o}
-		if err := validate.Struct(s); err != nil {
-			return nil, err
+		if reflect.TypeOf(o).Kind() == reflect.Struct {
+			if err := validate.Struct(o); err != nil {
+				return o, err
+			}
 		}
 		return o, nil
 	}
-	return nil, NewOCPIError(r.StatusCode, r.StatusMessage)
+	return o, NewOCPIError(r.StatusCode, r.StatusMessage)
 }
 
-func NewResponse[T any](value T) *Response[T] {
-	b, _ := json.Marshal(value)
-	return &Response[T]{
+func NewResponse[D any](ts Timestamp, data D) *Response[Timestamp, D] {
+	b, _ := json.Marshal(data)
+	return &Response[Timestamp, D]{
 		RawData:       b,
 		StatusCode:    StatusCodeSuccess,
 		StatusMessage: StatusCodeSuccess.String(),
-		Timestamp:     time.Now().UTC(),
+		Timestamp:     ts,
 	}
 }
 
-func NewEmptyResponse() *Response[any] {
-	return &Response[any]{
+func NewEmptyResponse(ts Timestamp) *Response[Timestamp, any] {
+	return &Response[Timestamp, any]{
 		StatusCode:    StatusCodeSuccess,
 		StatusMessage: StatusCodeSuccess.String(),
-		Timestamp:     time.Now().UTC(),
+		Timestamp:     ts,
 	}
 }

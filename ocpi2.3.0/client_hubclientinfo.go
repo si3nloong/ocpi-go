@@ -9,7 +9,7 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetHubClientInfos(ctx context.Context, params ...GetHubClientInfoParams) (*ocpi.PaginatedResponse[ClientInfo], error) {
+func (c *ClientConn) GetHubClientInfos(ctx context.Context, params ...GetHubClientInfoParams) (*ocpi.PaginatedResponse[DateTime, ClientInfo], error) {
 	query := make(url.Values)
 	query.Set("limit", "100")
 	if len(params) > 0 {
@@ -27,7 +27,7 @@ func (c *ClientConn) GetHubClientInfos(ctx context.Context, params ...GetHubClie
 			query.Set("limit", strconv.Itoa(*p.Limit))
 		}
 	}
-	var res ocpi.PaginatedResponse[ClientInfo]
+	var res ocpi.PaginatedResponse[DateTime, ClientInfo]
 	if err := c.CallEndpoint(ctx, ModuleIDHubClientInfo, InterfaceRoleSender, http.MethodGet, func(endpoint string) string {
 		return endpoint + "?" + query.Encode()
 	}, nil, &res); err != nil {
@@ -36,8 +36,8 @@ func (c *ClientConn) GetHubClientInfos(ctx context.Context, params ...GetHubClie
 	return &res, nil
 }
 
-func (c *ClientConn) GetClientInfo(ctx context.Context, countryCode, partyID string) (*ocpi.Response[ClientInfo], error) {
-	var res ocpi.Response[ClientInfo]
+func (c *ClientConn) GetClientInfo(ctx context.Context, countryCode, partyID string) (*ocpi.Response[DateTime, ClientInfo], error) {
+	var res ocpi.Response[DateTime, ClientInfo]
 	if err := c.CallEndpoint(ctx, ModuleIDHubClientInfo, InterfaceRoleReceiver, http.MethodGet, func(endpoint string) string {
 		return endpoint + "/" + countryCode + "/" + partyID
 	}, nil, &res); err != nil {
@@ -46,8 +46,8 @@ func (c *ClientConn) GetClientInfo(ctx context.Context, countryCode, partyID str
 	return &res, nil
 }
 
-func (c *ClientConn) PutClientInfo(ctx context.Context, countryCode, partyID string) (*ocpi.Response[any], error) {
-	var res ocpi.Response[any]
+func (c *ClientConn) PutClientInfo(ctx context.Context, countryCode, partyID string) (*ocpi.Response[DateTime, any], error) {
+	var res ocpi.Response[DateTime, any]
 	if err := c.CallEndpoint(ctx, ModuleIDHubClientInfo, InterfaceRoleReceiver, http.MethodPut, func(endpoint string) string {
 		return endpoint + "/" + countryCode + "/" + partyID
 	}, nil, &res); err != nil {

@@ -3,6 +3,7 @@ package ocpi221
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -13,11 +14,11 @@ func (s *Server) GetOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 	requestCtx := ocpi.GetRequestContext(ctx)
 	credential, err := s.ocpi.OnGetCredential(ctx, requestCtx.Token)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, credential)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, credential)
 }
 
 func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
@@ -39,55 +40,55 @@ func (s *Server) PostOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 
 	credentialData, err := body.Data()
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
 	// Store token B
 	if err := s.ocpi.StoreCredentialsTokenB(ctx, credentialData); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
 	clientConn := NewClientWithTokenA(credentialData.URL, credentialData.Token, nil)
 	versionsResponse, err := clientConn.GetVersions(ctx)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 	versions, err := versionsResponse.Data()
 	if err != nil {
-		ocpihttp.Response(w, ocpi.NewOCPIError(ocpi.StatusCodeServerErrorNoMatchingEndpoints, `no version available`))
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, ocpi.NewOCPIError(ocpi.StatusCodeServerErrorNoMatchingEndpoints, `no version available`))
 		return
 	}
 	if _, ok := versions.MutualVersion(ocpi.VersionNumber221); !ok {
-		ocpihttp.Response(w, ocpi.NewOCPIError(ocpi.StatusCodeServerErrorNoMatchingEndpoints, `no version available`))
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, ocpi.NewOCPIError(ocpi.StatusCodeServerErrorNoMatchingEndpoints, `no version available`))
 		return
 	}
 
 	versionDetailsResponse, err := clientConn.GetVersionDetails(ctx)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 	versionDetails, err := versionDetailsResponse.Data()
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
 	if err := s.ocpi.StoreVersionDetails(ctx, versionDetails); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
 	credentialsWithTokenC, err := s.ocpi.GenerateCredentialsTokenC(ctx, tokenA)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, credentialsWithTokenC)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, credentialsWithTokenC)
 }
 
 func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
@@ -110,11 +111,11 @@ func (s *Server) PutOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 	// TODO: call sender side to get versions and version_details
 	credential, err := s.ocpi.OnPutCredential(ctx, token, ocpi.RawMessage[Credentials](body))
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, credential)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, credential)
 }
 
 func (s *Server) DeleteOcpiCredentials(w http.ResponseWriter, r *http.Request) {
@@ -130,9 +131,9 @@ func (s *Server) DeleteOcpiCredentials(w http.ResponseWriter, r *http.Request) {
 
 	err := s.ocpi.OnDeleteCredential(r.Context(), token)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }

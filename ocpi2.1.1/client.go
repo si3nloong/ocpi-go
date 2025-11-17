@@ -22,27 +22,27 @@ type OCPIClient interface {
 }
 
 type TokenAClient interface {
-	GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error)
-	GetVersionDetails(ctx context.Context) (*ocpi.Response[VersionDetails], error)
-	GetCredential(ctx context.Context) (*ocpi.Response[Credentials], error)
-	PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[Credentials], error)
+	GetVersions(ctx context.Context) (*ocpi.Response[DateTime, ocpi.Versions], error)
+	GetVersionDetails(ctx context.Context) (*ocpi.Response[DateTime, VersionDetails], error)
+	GetCredential(ctx context.Context) (*ocpi.Response[DateTime, Credentials], error)
+	PostCredential(ctx context.Context, req Credentials) (*ocpi.Response[DateTime, Credentials], error)
 }
 
 type Client interface {
 	TokenAClient
 	CallEndpoint(ctx context.Context, module ModuleID, method string, endpointResolver EndpointResolver, src, dst any) error
-	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[Location], error)
-	GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginatedResponse[Session], error)
-	GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[Session], error)
-	PutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session Session) (*ocpi.Response[any], error)
-	PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PartialSession) (*ocpi.Response[any], error)
-	StartSession(ctx context.Context, req StartSession) (*ocpi.Response[CommandResponse], error)
-	StopSession(ctx context.Context, req StopSession) (*ocpi.Response[CommandResponse], error)
-	ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Response[CommandResponse], error)
-	UnlockConnector(ctx context.Context, req UnlockConnector) (*ocpi.Response[CommandResponse], error)
-	GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocpi.PaginatedResponse[CDR], error)
-	GetCDR(ctx context.Context, cdrID string) (*ocpi.Response[CDR], error)
-	PostCDR(ctx context.Context, endpoint string, req CDR) (*ocpi.Response[ChargeDetailRecordResponse], error)
+	GetLocation(ctx context.Context, locationID string) (*ocpi.Response[DateTime, Location], error)
+	GetSessions(ctx context.Context, dateFrom DateTime, params ...GetSessionsParams) (*ocpi.PaginatedResponse[DateTime, Session], error)
+	GetClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string) (*ocpi.Response[DateTime, Session], error)
+	PutClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session Session) (*ocpi.Response[DateTime, any], error)
+	PatchClientOwnedSession(ctx context.Context, countryCode string, partyID string, sessionID string, session PartialSession) (*ocpi.Response[DateTime, any], error)
+	StartSession(ctx context.Context, req StartSession) (*ocpi.Response[DateTime, CommandResponse], error)
+	StopSession(ctx context.Context, req StopSession) (*ocpi.Response[DateTime, CommandResponse], error)
+	ReserveNow(ctx context.Context, req ReserveNow) (*ocpi.Response[DateTime, CommandResponse], error)
+	UnlockConnector(ctx context.Context, req UnlockConnector) (*ocpi.Response[DateTime, CommandResponse], error)
+	GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocpi.PaginatedResponse[DateTime, CDR], error)
+	GetCDR(ctx context.Context, cdrID string) (*ocpi.Response[DateTime, CDR], error)
+	PostCDR(ctx context.Context, endpoint string, req CDR) (*ocpi.Response[DateTime, ChargeDetailRecordResponse], error)
 }
 
 var defaultClientOptions = ClientOptions{

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -28,11 +29,11 @@ func (s *Server) GetOcpiActiveChargingProfile(w http.ResponseWriter, r *http.Req
 	responseUrl := strings.TrimSpace(r.URL.Query().Get("response_url"))
 	response, err := s.chargingProfilesReceiver.OnGetActiveChargingProfile(r.Context(), sessionID, duration, responseUrl)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, response)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, response)
 }
 
 func (s *Server) PutOcpiChargingProfile(w http.ResponseWriter, r *http.Request) {
@@ -45,11 +46,11 @@ func (s *Server) PutOcpiChargingProfile(w http.ResponseWriter, r *http.Request) 
 	sessionID := r.PathValue("session_id")
 	response, err := s.chargingProfilesReceiver.OnPutChargingProfile(r.Context(), sessionID, body)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, response)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, response)
 }
 
 func (s *Server) DeleteOcpiChargingProfile(w http.ResponseWriter, r *http.Request) {
@@ -62,11 +63,11 @@ func (s *Server) DeleteOcpiChargingProfile(w http.ResponseWriter, r *http.Reques
 	responseUrl := strings.TrimSpace(r.URL.Query().Get("response_url"))
 	response, err := s.chargingProfilesReceiver.OnDeleteChargingProfile(r.Context(), sessionID, responseUrl)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, response)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, response)
 }
 
 func (s *Server) PostOcpiActiveChargingProfile(w http.ResponseWriter, r *http.Request) {
@@ -78,11 +79,11 @@ func (s *Server) PostOcpiActiveChargingProfile(w http.ResponseWriter, r *http.Re
 
 	sessionID := r.PathValue("session_id")
 	if err := s.chargingProfilesSender.OnPostActiveChargingProfile(r.Context(), sessionID, body); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }
 
 func (s *Server) PostOcpiChargingProfile(w http.ResponseWriter, r *http.Request) {
@@ -94,11 +95,11 @@ func (s *Server) PostOcpiChargingProfile(w http.ResponseWriter, r *http.Request)
 
 	sessionID := r.PathValue("session_id")
 	if err := s.chargingProfilesSender.OnPostChargingProfile(r.Context(), sessionID, body); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }
 
 func (s *Server) PostOcpiClearProfile(w http.ResponseWriter, r *http.Request) {
@@ -110,11 +111,11 @@ func (s *Server) PostOcpiClearProfile(w http.ResponseWriter, r *http.Request) {
 
 	sessionID := r.PathValue("session_id")
 	if err := s.chargingProfilesSender.OnPostClearProfile(r.Context(), sessionID, body); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }
 
 func (s *Server) PutOcpiActiveChargingProfile(w http.ResponseWriter, r *http.Request) {
@@ -126,9 +127,9 @@ func (s *Server) PutOcpiActiveChargingProfile(w http.ResponseWriter, r *http.Req
 
 	sessionID := r.PathValue("session_id")
 	if err := s.chargingProfilesSender.OnPutActiveChargingProfile(r.Context(), sessionID, body); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }

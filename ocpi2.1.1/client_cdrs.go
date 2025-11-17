@@ -9,7 +9,7 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocpi.PaginatedResponse[CDR], error) {
+func (c *ClientConn) GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocpi.PaginatedResponse[DateTime, CDR], error) {
 	query := make(url.Values)
 	query.Set("limit", "100")
 	if len(params) > 0 {
@@ -27,7 +27,7 @@ func (c *ClientConn) GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocp
 			query.Set("limit", strconv.Itoa(*p.Limit))
 		}
 	}
-	var res ocpi.PaginatedResponse[CDR]
+	var res ocpi.PaginatedResponse[DateTime, CDR]
 	if err := c.CallEndpoint(ctx, ModuleIDCdrs, http.MethodGet, func(endpoint string) string {
 		return endpoint + "?" + query.Encode()
 	}, nil, &res); err != nil {
@@ -36,8 +36,8 @@ func (c *ClientConn) GetCDRs(ctx context.Context, params ...GetCDRsParams) (*ocp
 	return &res, nil
 }
 
-func (c *ClientConn) GetCDR(ctx context.Context, cdrID string) (*ocpi.Response[CDR], error) {
-	var res ocpi.Response[CDR]
+func (c *ClientConn) GetCDR(ctx context.Context, cdrID string) (*ocpi.Response[DateTime, CDR], error) {
+	var res ocpi.Response[DateTime, CDR]
 	if err := c.CallEndpoint(ctx, ModuleIDCdrs, http.MethodGet, func(endpoint string) string {
 		return endpoint + "/" + cdrID
 	}, nil, &res); err != nil {
@@ -46,8 +46,8 @@ func (c *ClientConn) GetCDR(ctx context.Context, cdrID string) (*ocpi.Response[C
 	return &res, nil
 }
 
-func (c *ClientConn) PostCDR(ctx context.Context, endpoint string, req CDR) (*ocpi.Response[ChargeDetailRecordResponse], error) {
-	var res ocpi.Response[ChargeDetailRecordResponse]
+func (c *ClientConn) PostCDR(ctx context.Context, endpoint string, req CDR) (*ocpi.Response[DateTime, ChargeDetailRecordResponse], error) {
+	var res ocpi.Response[DateTime, ChargeDetailRecordResponse]
 	if err := c.CallEndpoint(ctx, ModuleIDCdrs, http.MethodPost, func(_ string) string {
 		return endpoint
 	}, nil, &res); err != nil {

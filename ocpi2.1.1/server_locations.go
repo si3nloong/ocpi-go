@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -17,7 +18,7 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 	if queryString.Has("date_from") {
 		dt, err := ParseDateTime(queryString.Get("date_from"))
 		if err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 		params.DateFrom = &dt
@@ -25,7 +26,7 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 	if queryString.Has("date_to") {
 		dt, err := ParseDateTime(queryString.Get("date_to"))
 		if err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 		params.DateTo = &dt
@@ -33,7 +34,7 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 	if queryString.Has("offset") {
 		offset, err := strconv.Atoi(queryString.Get("offset"))
 		if err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 		params.Offset = &offset
@@ -41,18 +42,18 @@ func (s *Server) GetOcpiLocations(w http.ResponseWriter, r *http.Request) {
 	if queryString.Has("limit") {
 		limit, err := strconv.Atoi(queryString.Get("limit"))
 		if err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 		params.Limit = &limit
 	}
 	response, err := s.cpo.OnGetLocations(r.Context(), params)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, DateTime{Time: time.Now().UTC()}, response)
 }
 
 func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
@@ -76,11 +77,11 @@ func (s *Server) GetOcpiLocation(w http.ResponseWriter, r *http.Request) {
 		resp, err = s.emsp.OnGetClientOwnedLocation(ctx, countryCode, partyID, locationID)
 	}
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, resp)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, resp)
 }
 
 func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
@@ -99,22 +100,22 @@ func (s *Server) PutOcpiLocation(w http.ResponseWriter, r *http.Request) {
 
 	if evseUID != "" && connectorID != "" {
 		if err := s.emsp.OnPutClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID, ocpi.RawMessage[Connector](body)); err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 	} else if evseUID != "" {
 		if err := s.emsp.OnPutClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID, ocpi.RawMessage[EVSE](body)); err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 	} else {
 		if err := s.emsp.OnPutClientOwnedLocation(ctx, countryCode, partyID, locationID, ocpi.RawMessage[Location](body)); err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }
 
 func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
@@ -133,20 +134,20 @@ func (s *Server) PatchOcpiLocation(w http.ResponseWriter, r *http.Request) {
 
 	if evseUID != "" && connectorID != "" {
 		if err := s.emsp.OnPatchClientOwnedLocationConnector(ctx, countryCode, partyID, locationID, evseUID, connectorID, ocpi.RawMessage[PartialConnector](body)); err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 	} else if evseUID != "" {
 		if err := s.emsp.OnPatchClientOwnedLocationEVSE(ctx, countryCode, partyID, locationID, evseUID, ocpi.RawMessage[PartialEVSE](body)); err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 	} else {
 		if err := s.emsp.OnPatchClientOwnedLocation(ctx, countryCode, partyID, locationID, ocpi.RawMessage[PartialLocation](body)); err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }
