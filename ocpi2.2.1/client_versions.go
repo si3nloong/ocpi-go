@@ -7,8 +7,8 @@ import (
 	"github.com/si3nloong/ocpi-go/ocpi"
 )
 
-func (c *ClientConn) GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versions], error) {
-	var res ocpi.Response[ocpi.Versions]
+func (c *ClientConn) GetVersions(ctx context.Context) (*ocpi.Response[DateTime, ocpi.Versions], error) {
+	var res ocpi.Response[DateTime, ocpi.Versions]
 	if err := c.do(ctx, http.MethodGet, c.versionUrl, nil, &res); err != nil {
 		return nil, err
 	}
@@ -21,7 +21,7 @@ func (c *ClientConn) GetVersions(ctx context.Context) (*ocpi.Response[ocpi.Versi
 	return &res, nil
 }
 
-func (c *ClientConn) GetVersionDetails(ctx context.Context) (*ocpi.Response[VersionDetails], error) {
+func (c *ClientConn) GetVersionDetails(ctx context.Context) (*ocpi.Response[DateTime, VersionDetails], error) {
 	c.rw.RLock()
 	if c.versions == nil {
 		c.rw.RUnlock()
@@ -36,7 +36,7 @@ func (c *ClientConn) GetVersionDetails(ctx context.Context) (*ocpi.Response[Vers
 		return nil, ocpi.ErrNoMutualVersion
 	}
 	c.rw.RUnlock()
-	var res ocpi.Response[VersionDetails]
+	var res ocpi.Response[DateTime, VersionDetails]
 	if err := c.do(ctx, http.MethodGet, mutualVersion.URL, nil, &res); err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package ocpi230
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -13,14 +14,16 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		endpoints, err := recv.OnVersionDetails(ctx, ocpi.GetRequestContext(ctx).Token)
 		if err != nil {
-			ocpihttp.Response(w, err)
+			ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 			return
 		}
 
-		ocpihttp.Response(w, ocpi.NewResponse(VersionDetails{
-			Version:   ocpi.VersionNumber230,
-			Endpoints: endpoints,
-		}))
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, ocpi.NewResponse(
+			DateTime{Time: time.Now().UTC()},
+			VersionDetails{
+				Version:   ocpi.VersionNumber230,
+				Endpoints: endpoints,
+			}))
 		return
 	}
 
@@ -85,5 +88,5 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 		versionDetails.Endpoints = append(versionDetails.Endpoints, Endpoint{Identifier: ModuleIDPayments, Role: InterfaceRoleReceiver, URL: origin + "/payments"})
 	}
 
-	ocpihttp.Response(w, versionDetails)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, versionDetails)
 }

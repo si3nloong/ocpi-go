@@ -3,6 +3,7 @@ package ocpi230
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -12,11 +13,11 @@ func (s *Server) GetOcpiTokens(w http.ResponseWriter, r *http.Request) {
 	params := GetTokensParams{}
 	response, err := s.tokensSender.OnGetTokens(r.Context(), params)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, DateTime{Time: time.Now().UTC()}, response)
 }
 
 func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -46,18 +47,11 @@ func (s *Server) GetOcpiToken(w http.ResponseWriter, r *http.Request) {
 		tokenType,
 	)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse(token))
-	if err != nil {
-		ocpihttp.Response(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, token)
 }
 
 func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -89,17 +83,11 @@ func (s *Server) PostOcpiToken(w http.ResponseWriter, r *http.Request) {
 		tokenType,
 	)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewResponse(authInfo))
-	if err != nil {
-		ocpihttp.Response(w, err)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, authInfo)
 }
 
 func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -135,18 +123,11 @@ func (s *Server) PutOcpiToken(w http.ResponseWriter, r *http.Request) {
 		ocpi.RawMessage[Token](body),
 		tokenType,
 	); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewEmptyResponse())
-	if err != nil {
-		ocpihttp.Response(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	w.Write(b)
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }
 
 func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
@@ -182,16 +163,9 @@ func (s *Server) PatchOcpiToken(w http.ResponseWriter, r *http.Request) {
 		ocpi.RawMessage[PartialToken](body),
 		tokenType,
 	); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	b, err := json.Marshal(ocpi.NewEmptyResponse())
-	if err != nil {
-		ocpihttp.Response(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }

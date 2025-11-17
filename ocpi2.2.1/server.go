@@ -146,6 +146,7 @@ func (s *Server) Handler() http.Handler {
 	router := http.NewServeMux()
 
 	router.HandleFunc("/2.2.1/details", s.GetOcpiVersionDetails)
+
 	router.HandleFunc("/2.2.1/credentials", s.GetOcpiCredentials)
 	router.HandleFunc("POST /2.2.1/credentials", s.PostOcpiCredentials)
 	router.HandleFunc("PUT /2.2.1/credentials", s.PutOcpiCredentials)
@@ -297,10 +298,14 @@ func (s *Server) authorizeMiddleware(next http.Handler) http.Handler {
 				ocpi.NewRequestContextWithRequest(r, token),
 			), responseCtx)))
 
-		w.Header().Set(ocpi.HttpHeaderOCPIToPartyID, responseCtx.ToPartyID)
-		w.Header().Set(ocpi.HttpHeaderOCPIToCountryCode, responseCtx.ToCountryCode)
-		w.Header().Set(ocpi.HttpHeaderOCPIFromPartyID, responseCtx.FromPartyID)
-		w.Header().Set(ocpi.HttpHeaderOCPIFromCountryCode, responseCtx.FromCountryCode)
+		if responseCtx.FromPartyID != "" && responseCtx.FromCountryCode != "" {
+			w.Header().Set(ocpi.HttpHeaderOCPIFromPartyID, responseCtx.FromPartyID)
+			w.Header().Set(ocpi.HttpHeaderOCPIFromCountryCode, responseCtx.FromCountryCode)
+		}
+		if responseCtx.ToPartyID != "" && responseCtx.ToCountryCode != "" {
+			w.Header().Set(ocpi.HttpHeaderOCPIToPartyID, responseCtx.ToPartyID)
+			w.Header().Set(ocpi.HttpHeaderOCPIToCountryCode, responseCtx.ToCountryCode)
+		}
 	})
 }
 

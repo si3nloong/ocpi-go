@@ -3,6 +3,7 @@ package ocpi211
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -18,11 +19,11 @@ func (s *Server) PostOcpiCommand(w http.ResponseWriter, r *http.Request) {
 	commandType := r.PathValue("command_type")
 	resp, err := s.cpo.OnPostCommand(r.Context(), CommandType(commandType), body)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, resp)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, resp)
 }
 
 func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request) {
@@ -35,9 +36,9 @@ func (s *Server) PostOcpiCommandResponse(w http.ResponseWriter, r *http.Request)
 	commandType := r.PathValue("command_type")
 	uid := r.PathValue("uid")
 	if err := s.emsp.OnPostAsyncCommand(r.Context(), CommandType(commandType), uid, ocpi.RawMessage[CommandResponse](body)); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }

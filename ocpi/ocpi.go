@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -23,6 +24,11 @@ const (
 	VersionNumber221 VersionNumber = "2.2.1"
 	VersionNumber230 VersionNumber = "2.3.0"
 )
+
+type Timestamp interface {
+	UTC() time.Time
+	json.Marshaler
+}
 
 type HeaderScanner interface {
 	ScanHeader(httpHeader http.Header) error

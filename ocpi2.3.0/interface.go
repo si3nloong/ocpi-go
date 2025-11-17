@@ -88,7 +88,7 @@ type CredentialsReceiver interface {
 
 type CDRsSender interface {
 	// (GET /ocpi/2.3.0/cdrs)
-	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginatedResponse[CDR], error)
+	OnGetCDRs(ctx context.Context, params GetCDRsParams) (*ocpi.PaginatedResponse[DateTime, CDR], error)
 }
 type CDRsReceiver interface {
 	// (GET /ocpi/2.3.0/cdrs/{cdr_id})
@@ -127,7 +127,7 @@ type CommandsReceiver interface {
 
 type HubClientInfoSender interface {
 	// (GET /ocpi/2.3.0/hubclientinfo)
-	OnGetHubClientInfos(ctx context.Context, params GetHubClientInfoParams) (*ocpi.PaginatedResponse[ClientInfo], error)
+	OnGetHubClientInfos(ctx context.Context, params GetHubClientInfoParams) (*ocpi.PaginatedResponse[DateTime, ClientInfo], error)
 }
 type HubClientInfoReceiver interface {
 	// (GET /ocpi/2.3.0/clientinfo/{id})
@@ -138,7 +138,7 @@ type HubClientInfoReceiver interface {
 
 type LocationsSender interface {
 	// (GET /ocpi/2.3.0/locations)
-	OnGetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginatedResponse[Location], error)
+	OnGetLocations(ctx context.Context, params GetLocationsParams) (*ocpi.PaginatedResponse[DateTime, Location], error)
 	// (GET /ocpi/2.3.0/locations/{location_id})
 	OnGetLocation(ctx context.Context, locationID string) (*Location, error)
 	// (GET /ocpi/2.3.0/locations/{location_id}/{evse_uid})
@@ -170,7 +170,7 @@ type LocationsReceiver interface {
 type SessionsSender interface {
 	// GetOcpiSessions retrieves a list of sessions based on the provided parameters.
 	// (GET /ocpi/2.3.0/sessions)
-	OnGetSessions(ctx context.Context, dateFrom DateTime, params GetSessionsParams) (*ocpi.PaginatedResponse[Session], error)
+	OnGetSessions(ctx context.Context, dateFrom DateTime, params GetSessionsParams) (*ocpi.PaginatedResponse[DateTime, Session], error)
 	// (PUT /ocpi/2.3.0/sessions/{session_id}/charging_preferences)
 	OnPutSessionChargingPreferences(ctx context.Context, sessionID string, body ocpi.RawMessage[ChargingPreferences]) (*ChargingPreferences, error)
 }
@@ -186,7 +186,7 @@ type SessionsReceiver interface {
 type TariffsSender interface {
 	// GetOcpiTariffs retrieves a list of tariffs based on the provided parameters.
 	// (GET /ocpi/2.3.0/tariffs)
-	OnGetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginatedResponse[Tariff], error)
+	OnGetTariffs(ctx context.Context, params GetTariffsParams) (*ocpi.PaginatedResponse[DateTime, Tariff], error)
 }
 
 type TariffsReceiver interface {
@@ -200,7 +200,7 @@ type TariffsReceiver interface {
 
 type TokensSender interface {
 	// (GET /ocpi/2.3.0/tokens)
-	OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginatedResponse[Token], error)
+	OnGetTokens(ctx context.Context, params GetTokensParams) (*ocpi.PaginatedResponse[DateTime, Token], error)
 	// (POST /ocpi/2.3.0/tokens/{token_uid}/authorize[?type={type}])
 	OnPostToken(ctx context.Context, tokenUID string, body ocpi.RawMessage[LocationReferences], tokenType ...TokenType) (*AuthorizationInfo, error)
 }
@@ -227,7 +227,7 @@ type PaymentsSender interface {
 
 type PaymentTerminalsSender interface {
 	// (GET /ocpi/ptp/2.3.0/payments/terminals)
-	OnGetPaymentTerminals(ctx context.Context, params GetPaymentTerminalsParams) (*ocpi.PaginatedResponse[Terminal], error)
+	OnGetPaymentTerminals(ctx context.Context, params GetPaymentTerminalsParams) (*ocpi.PaginatedResponse[DateTime, Terminal], error)
 	// (GET /ocpi/ptp/2.3.0/payments/terminals/{terminal_id})
 	OnGetPaymentTerminal(ctx context.Context, terminalID string) (*Terminal, error)
 	// (POST /ocpi/ptp/2.3.0/payments/terminals/activate)
@@ -242,7 +242,7 @@ type PaymentTerminalsSender interface {
 
 type FinancialAdviceConfirmationSender interface {
 	// (GET /ocpi/2.3.0/payments/financial-advice-confirmations)
-	OnGetPaymentFinancialAdviceConfirmations(ctx context.Context, params GetPaymentFinancialAdviceConfirmationsParams) (*ocpi.PaginatedResponse[FinancialAdviceConfirmation], error)
+	OnGetPaymentFinancialAdviceConfirmations(ctx context.Context, params GetPaymentFinancialAdviceConfirmationsParams) (*ocpi.PaginatedResponse[DateTime, FinancialAdviceConfirmation], error)
 	// (GET /ocpi/2.3.0/payments/financial-advice-confirmations/{financial_advice_confirmation_id})
 	OnGetPaymentFinancialAdviceConfirmation(ctx context.Context, financialAdviceConfirmationID string) (*FinancialAdviceConfirmation, error)
 }

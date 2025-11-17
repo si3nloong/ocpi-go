@@ -12,7 +12,7 @@ func TestResponse(t *testing.T) {
 		type A struct {
 			Name string `validate:"required"`
 		}
-		var o Response[A]
+		var o Response[Timestamp, A]
 		o.RawData = []byte(`[{}]`)
 		o.StatusCode = StatusCodeSuccess
 		o.Timestamp = time.Now()

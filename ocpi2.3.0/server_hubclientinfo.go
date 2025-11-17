@@ -3,6 +3,7 @@ package ocpi230
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/si3nloong/ocpi-go/ocpi"
 	ocpihttp "github.com/si3nloong/ocpi-go/ocpi/http"
@@ -12,11 +13,11 @@ func (s *Server) GetOcpiClientInfos(w http.ResponseWriter, r *http.Request) {
 	params := GetHubClientInfoParams{}
 	response, err := s.hubClientInfoSender.OnGetHubClientInfos(r.Context(), params)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.ResponsePagination(w, r, response)
+	ocpihttp.ResponsePagination(w, r, DateTime{Time: time.Now().UTC()}, response)
 }
 
 func (s *Server) GetOcpiClientInfo(w http.ResponseWriter, r *http.Request) {
@@ -25,11 +26,11 @@ func (s *Server) GetOcpiClientInfo(w http.ResponseWriter, r *http.Request) {
 
 	clientInfo, err := s.hubClientInfoReceiver.OnGetHubClientInfo(r.Context(), countryCode, partyID)
 	if err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, clientInfo)
+	ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, clientInfo)
 }
 
 func (s *Server) PutOcpiClientInfo(w http.ResponseWriter, r *http.Request) {
@@ -43,9 +44,9 @@ func (s *Server) PutOcpiClientInfo(w http.ResponseWriter, r *http.Request) {
 	partyID := r.PathValue("party_id")
 
 	if err := s.hubClientInfoReceiver.OnPutHubClientInfo(r.Context(), countryCode, partyID, ocpi.RawMessage[ClientInfo](body)); err != nil {
-		ocpihttp.Response(w, err)
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, err)
 		return
 	}
 
-	ocpihttp.Response(w, ocpi.NewEmptyResponse())
+	ocpihttp.EmptyResponse(w, DateTime{Time: time.Now().UTC()})
 }
