@@ -12,13 +12,12 @@ func TestResponse(t *testing.T) {
 		type A struct {
 			Name string `validate:"required"`
 		}
-		var o Response[Timestamp, A]
+		var o Response[Timestamp, []A]
 		o.RawData = []byte(`[{}]`)
 		o.StatusCode = StatusCodeSuccess
 		o.Timestamp = time.Now()
 		result, err := o.StrictData()
 		require.NoError(t, err)
-		_ = result
-		// require.ElementsMatch(t, result, []A{})
+		require.ElementsMatch(t, result, []A{{}})
 	})
 }
