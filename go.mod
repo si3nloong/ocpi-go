@@ -6,7 +6,7 @@ require (
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/gofrs/uuid/v5 v5.4.0
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/mod v0.29.0
+	golang.org/x/mod v0.30.0
 )
 
 require (
