@@ -18,12 +18,10 @@ func (s *Server) GetOcpiVersionDetails(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, ocpi.NewResponse(
-			DateTime{Time: time.Now().UTC()},
-			VersionDetails{
-				Version:   ocpi.VersionNumber230,
-				Endpoints: endpoints,
-			}))
+		ocpihttp.Response(w, DateTime{Time: time.Now().UTC()}, VersionDetails{
+			Version:   ocpi.VersionNumber230,
+			Endpoints: endpoints,
+		})
 		return
 	}
 
